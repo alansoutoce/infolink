@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Consulta — Prêmio e Produção</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --cor-primaria: #1e3a8a;
+    --cor-primaria-hover: #1e40af;
+    --cor-secundaria: #f59e0b;
+    --cor-fundo: #f3f4f6;
+    --cor-card: #ffffff;
+    --cor-texto: #111827;
+    --cor-texto-suave: #6b7280;
+    --cor-borda: #e5e7eb;
+    --cor-sucesso: #16a34a;
+    --cor-sucesso-bg: #ecfdf5;
+    --cor-alerta: #dc2626;
+    --cor-alerta-bg: #fef2f2;
+    --cor-aviso-bg: #fef3c7;
+    --cor-aviso-borda: #f59e0b;
+    --cor-aviso-texto: #78350f;
+    --sombra: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --sombra-forte: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --raio: 12px;
+    --raio-sm: 8px;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  body {
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .tela {
+    padding: 24px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* ============================================================
+     TELA DE OPÇÕES
+     ============================================================ */
+  .card-opcoes {
+    background: var(--cor-card);
+    border-radius: var(--raio);
+    padding: 32px;
+    box-shadow: var(--sombra);
+    max-width: 480px;
+    width: 100%;
+    margin-top: 60px;
+  }
+
+  .card-opcoes h2 {
+    font-size: 22px;
+    color: var(--cor-primaria);
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .btn-opcao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px;
+    margin: 12px 0;
+    font-size: 17px;
+    font-weight: 600;
+    background: var(--cor-primaria);
+    color: #fff;
+    border: none;
+    border-radius: var(--raio-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-opcao:hover {
+    background: var(--cor-primaria-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-forte);
+  }
+
+  .btn-opcao:active {
+    transform: translateY(0);
+  }
+
+  /* ============================================================
+     TELA DE PRODUÇÃO
+     ============================================================ */
+  .header-tela {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 900px;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .header-tela h2 {
+    color: var(--cor-primaria);
+    font-size: 22px;
+  }
+
+  .btn-voltar {
+    background: transparent;
+    color: var(--cor-primaria);
+    border: 2px solid var(--cor-primaria);
+    padding: 8px 16px;
+    border-radius: var(--raio-sm);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-voltar:hover {
+    background: var(--cor-primaria);
+    color: #fff;
+  }
+
+  .card {
+    background: var(--cor-card);
+    border-radius: var(--raio);
+    padding: 24px;
+    box-shadow: var(--sombra);
+    max-width: 900px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .card h3 {
+    color: var(--cor-primaria);
+    font-size: 17px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--cor-borda);
+  }
+
+  .tabela-resumo {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .tabela-resumo thead th {
+    background: var(--cor-primaria);
+    color: #fff;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+  }
+
+  .tabela-resumo thead th:first-child {
+    border-radius: var(--raio-sm) 0 0 0;
+  }
+
+  .tabela-resumo thead th:last-child {
+    border-radius: 0 var(--raio-sm) 0 0;
+    text-align: center;
+    width: 120px;
+  }
+
+  .tabela-resumo tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--cor-borda);
+  }
+
+  .tabela-resumo tbody td:last-child {
+    text-align: center;
+    font-weight: 700;
+    color: var(--cor-primaria);
+  }
+
+  .tabela-resumo tbody tr:hover td {
+    background: #f9fafb;
+  }
+
+  .tabela-resumo tbody tr.total-geral td {
+    background: #f3f4f6;
+    font-weight: 700;
+    color: var(--cor-primaria);
+    font-size: 15px;
+    border-top: 2px solid var(--cor-primaria);
+  }
+
+  .btn-abrir-calendario {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    background: var(--cor-secundaria);
+    color: #fff;
+    border: none;
+    border-radius: var(--raio-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-abrir-calendario:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-forte);
+  }
+
+  .aviso-rodape {
+    max-width: 900px;
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: var(--cor-aviso-bg);
+    border-left: 4px solid var(--cor-aviso-borda);
+    border-radius: var(--raio-sm);
+    font-size: 13px;
+    color: var(--cor-aviso-texto);
+    line-height: 1.5;
+  }
+
+  /* ============================================================
+     MODAL
+     ============================================================ */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-content {
+    background: #fff;
+    border-radius: var(--raio);
+    padding: 24px;
+    max-width: 620px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: var(--sombra-forte);
+    animation: slideUp 0.25s ease;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--cor-borda);
+  }
+
+  .modal-header h3 {
+    color: var(--cor-primaria);
+    font-size: 17px;
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .btn-fechar {
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    color: var(--cor-texto-suave);
+    cursor: pointer;
+    padding: 0 6px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .btn-fechar:hover {
+    color: var(--cor-alerta);
+  }
+
+  /* ============================================================
+     TOGGLE PRODUÇÃO / RETRABALHO
+     ============================================================ */
+  .toggle-container {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 18px;
+    background: #e5e7eb;
+    padding: 5px;
+    border-radius: var(--raio-sm);
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--cor-texto-suave);
+    transition: all 0.2s;
+  }
+
+  .toggle-btn.active {
+    background: var(--cor-primaria);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  /* ============================================================
+     CALENDÁRIO
+     ============================================================ */
+  .calendario-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-weight: 700;
+    color: var(--cor-primaria);
+  }
+
+  .calendario-nav button {
+    background: var(--cor-primaria);
+    color: #fff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+
+  .calendario-nav button:hover {
+    background: var(--cor-primaria-hover);
+  }
+
+  #mes-ano-atual {
+    font-size: 16px;
+    text-transform: capitalize;
+  }
+
+  .grid-calendario {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .dia-semana {
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--cor-primaria);
+    padding: 8px 0;
+    text-transform: uppercase;
+  }
+
+  .dia {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--raio-sm);
+    cursor: pointer;
+    background: #f9fafb;
+    border: 1px solid var(--cor-borda);
+    font-size: 12px;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .dia:hover {
+    background: #dbeafe;
+    border-color: var(--cor-primaria);
+    transform: scale(1.04);
+  }
+
+  .dia.vazio {
+    background: transparent;
+    border: none;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .dia .num {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--cor-texto);
+  }
+
+  .dia .valor {
+    color: var(--cor-sucesso);
+    font-weight: 800;
+    font-size: 13px;
+    margin-top: 1px;
+  }
+
+  .dia .valor.retrabalho {
+    color: var(--cor-alerta);
+  }
+
+  .dia.tem-dados {
+    background: var(--cor-sucesso-bg);
+    border-color: var(--cor-sucesso);
+  }
+
+  .dia.tem-dados.retrabalho {
+    background: var(--cor-alerta-bg);
+    border-color: var(--cor-alerta);
+  }
+
+  /* ============================================================
+     LISTA DO DIA
+     ============================================================ */
+  .lista-dia {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lista-dia .item {
+    padding: 12px 14px;
+    border-left: 4px solid var(--cor-primaria);
+    background: #f9fafb;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .lista-dia .item.retrabalho {
+    border-left-color: var(--cor-alerta);
+  }
+
+  .lista-dia .item .protocolo {
+    font-weight: 700;
+    color: var(--cor-primaria);
+    font-size: 12px;
+    letter-spacing: 0.3px;
+    margin-bottom: 3px;
+  }
+
+  .lista-dia .item.retrabalho .protocolo {
+    color: var(--cor-alerta);
+  }
+
+  .lista-dia .item .cliente {
+    color: var(--cor-texto);
+    font-size: 14px;
+  }
+
+  .lista-dia .vazio {
+    text-align: center;
+    color: var(--cor-texto-suave);
+    padding: 24px;
+    font-style: italic;
+  }
+
+  /* ============================================================
+     LOADING
+     ============================================================ */
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--cor-texto-suave);
+    gap: 16px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--cor-borda);
+    border-top-color: var(--cor-primaria);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* ============================================================
+     RESPONSIVO
+     ============================================================ */
+  @media (max-width: 600px) {
+    .tela { padding: 16px; }
+    .card, .card-opcoes { padding: 18px; }
+    .header-tela h2 { font-size: 18px; }
+    .tabela-resumo { font-size: 13px; }
+    .tabela-resumo thead th, .tabela-resumo tbody td { padding: 8px; }
+    .dia .num { font-size: 12px; }
+    .dia .valor { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     TELA 0: LOADING
+     ============================================================ -->
+<div id="tela-loading" class="tela">
+  <div class="loading">
+    <div class="spinner"></div>
+    <p>Carregando dados...</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     TELA 1: OPÇÕES PÓS-CPF
+     ============================================================ -->
+<div id="tela-opcoes" class="tela hidden">
+  <div class="card-opcoes">
+    <h2>Selecione uma opção</h2>
+    <button class="btn-opcao" onclick="abrirConsultaPremio()">
+      <span>🏆</span> Consulta Prêmio
+    </button>
+    <button class="btn-opcao" onclick="abrirConsultaProducao()">
+      <span>📊</span> Consulta Produção
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================
+     TELA 2: CONSULTA PRÊMIO (estrutura preservada)
+     ============================================================ -->
+<div id="tela-premio" class="tela hidden">
+  <div class="header-tela">
+    <h2>Consulta Prêmio</h2>
+    <button class="btn-voltar" onclick="voltarOpcoes()">← Voltar</button>
+  </div>
+  <div class="card">
+    <p style="text-align:center; padding: 40px 20px; color: var(--cor-texto-suave);">
+      Área de Consulta Prêmio (mantida conforme sistema original).
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================
+     TELA 3: CONSULTA PRODUÇÃO
+     ============================================================ -->
+<div id="tela-producao" class="tela hidden">
+  <div class="header-tela">
+    <h2>Consulta Produção</h2>
+    <button class="btn-voltar" onclick="voltarOpcoes()">← Voltar</button>
+  </div>
+
+  <div class="card">
+    <h3>Total por Tipo de Atividade</h3>
+    <table class="tabela-resumo">
+      <thead>
+        <tr>
+          <th>Tipo de Atividade</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="tbody-resumo-producao">
+        <tr><td colspan="2" style="text-align:center; color:#6b7280;">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <button class="btn-abrir-calendario" onclick="abrirCalendario()">
+      📅 Abrir Calendário de Produção
+    </button>
+  </div>
+
+  <div class="aviso-rodape">
+    ⚠️ <strong>Atenção:</strong> Os dados podem sofrer alterações no fechamento.
+    Devem ser considerados apenas como <strong>referência aproximada</strong>
+    para acompanhamento de produção.
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: CALENDÁRIO
+     ============================================================ -->
+<div id="modal-calendario" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Calendário de Produção</h3>
+      <button class="btn-fechar" onclick="fecharCalendario()" aria-label="Fechar">✖</button>
+    </div>
+
+    <div class="toggle-container">
+      <button id="btn-modo-producao" class="toggle-btn active" onclick="setModo('producao')">
+        Produção
+      </button>
+      <button id="btn-modo-retrabalho" class="toggle-btn" onclick="setModo('retrabalho')">
+        Retrabalhos
+      </button>
+    </div>
+
+    <div class="calendario-nav">
+      <button onclick="mesAnterior()" aria-label="Mês anterior">◀</button>
+      <span id="mes-ano-atual"></span>
+      <button onclick="proximoMes()" aria-label="Próximo mês">▶</button>
+    </div>
+
+    <div id="grid-calendario" class="grid-calendario"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: DETALHE DO DIA
+     ============================================================ -->
+<div id="modal-dia" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="titulo-dia"></h3>
+      <button class="btn-fechar" onclick="fecharModalDia()" aria-label="Fechar">✖</button>
+    </div>
+    <div id="lista-dia" class="lista-dia"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURAÇÃO
+   ============================================================ */
+const ARQUIVO_PLANILHA = 'PREMIO.xlsx'; // caminho do arquivo
+
+const TIPOS_ATIVIDADES_PERMITIDOS = [
+  'ACOMPANHAMENTO TECNICO',
+  'INSTALACAO',
+  'PENDENCIA',
+  'REATIVACAO',
+  'REATIVACAO RADIO',
+  'RECOLHIMENTO',
+  'REPETIDOR',
+  'RETIRADA',
+  'SERVICO',
+  'TRANSFERENCIA',
+  'TROCA REPETIDOR',
+  'TROCA ROTEADOR',
+  'TROCA TECNOLOGIA',
+  'UPGRADE',
+  'VALIDACAO INVIABILIDADE'
+];
+
+// Mapeamento de regras (ordem importa: mais específico antes do genérico)
+const REGRAS_TIPO = [
+  { regex: /ACOMPANHAMENTO\s*TECNICO/,                tipo: 'ACOMPANHAMENTO TECNICO' },
+  { regex: /TROCA\s*REPETIDOR/,                       tipo: 'TROCA REPETIDOR' },
+  { regex: /TROCA\s*ROTEADOR/,                        tipo: 'TROCA ROTEADOR' },
+  { regex: /TROCA\s*TECNOLOGIA/,                      tipo: 'TROCA TECNOLOGIA' },
+  { regex: /REATIVACAO\s*RADIO/,                      tipo: 'REATIVACAO RADIO' },
+  { regex: /VALIDACAO\s*INVIABILIDADE/,               tipo: 'VALIDACAO INVIABILIDADE' },
+  { regex: /RECOLHIMENTO/,                            tipo: 'RECOLHIMENTO' },
+  { regex: /RETIRADA/,                                tipo: 'RETIRADA' },
+  { regex: /TRANSFERENCIA/,                           tipo: 'TRANSFERENCIA' },
+  { regex: /REATIVACAO/,                              tipo: 'REATIVACAO' },
+  { regex: /REPETIDOR/,                               tipo: 'REPETIDOR' },
+  { regex: /UPGRADE/,                                 tipo: 'UPGRADE' },
+  { regex: /INSTALACAO/,                              tipo: 'INSTALACAO' },
+  { regex: /PENDENCIA/,                               tipo: 'PENDENCIA' },
+  { regex: /SERVICO/,                                 tipo: 'SERVICO' }
+];
+
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
+let usuarioLogado = '';         // nome do colaborador logado
+let modoAtual = 'producao';     // 'producao' | 'retrabalho'
+let mesAtual = new Date();      // mês exibido no calendário
+let dadosConcluidas = [];       // linhas da guia CONCLUIDAS
+let cacheProducao = {};         // { 'YYYY-MM-DD': [ {protocolo, cliente} ] }
+let cacheRetrabalho = {};       // { 'YYYY-MM-DD': [ {cliente, protocoloOriginal} ] }
+
+/* ============================================================
+   UTILITÁRIOS — NORMALIZAÇÃO DE NOMES
+   ============================================================ */
+function normalizarNome(nome) {
+  if (!nome) return '';
+  return String(nome)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[m][n];
+}
+
+function similaridade(a, b) {
+  a = normalizarNome(a);
+  b = normalizarNome(b);
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  if (a.includes(b) || b.includes(a)) return 0.9;
+
+  const tokensA = a.split(' ');
+  const tokensB = b.split(' ');
+  const comuns = tokensA.filter(t => tokensB.includes(t)).length;
+  const maxTokens = Math.max(tokensA.length, tokensB.length);
+  const scoreTokens = comuns / maxTokens;
+
+  const dist = levenshtein(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  const scoreLev = 1 - dist / maxLen;
+
+  return Math.max(scoreTokens, scoreLev);
+}
+
+function nomeCorresponde(nomeColuna, nomeUsuario, limiar = 0.75) {
+  if (!nomeColuna || !nomeUsuario) return false;
+  return similaridade(nomeColuna, nomeUsuario) >= limiar;
+}
+
+/* ============================================================
+   UTILITÁRIOS — DATA
+   ============================================================ */
+function parseData(valor) {
+  if (!valor) return null;
+  if (valor instanceof Date) return isNaN(valor) ? null : valor;
+
+  const s = String(valor).trim();
+
+  // ISO: 2026-09-16 00:00:00
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+
+  // BR: 16/09/2026
+  m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]));
+
+  const d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+function formatarDataChave(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function formatarDataExibicao(chave) {
+  const [y, m, d] = chave.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/* ============================================================
+   MAPEAMENTO DE TIPO DE ATIVIDADE
+   ============================================================ */
+function mapearTipoAtividade(tipoBruto) {
+  if (!tipoBruto) return null;
+  const tipoNorm = normalizarNome(tipoBruto).toUpperCase();
+  for (const regra of REGRAS_TIPO) {
+    if (regra.regex.test(tipoNorm)) return regra.tipo;
+  }
+  return null;
+}
+
+/* ============================================================
+   CARREGAMENTO DA PLANILHA
+   ============================================================ */
+async function carregarPlanilha() {
+  try {
+    const resp = await fetch(ARQUIVO_PLANILHA);
+    if (!resp.ok) throw new Error('Falha ao carregar planilha: ' + resp.status);
+    const buffer = await resp.arrayBuffer();
+
+    const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
+
+    // Guia CONCLUIDAS
+    const sheetConcluidas = workbook.Sheets['CONCLUIDAS'];
+    if (!sheetConcluidas) throw new Error('Guia CONCLUIDAS não encontrada.');
+
+    dadosConcluidas = XLSX.utils.sheet_to_json(sheetConcluidas, {
+      header: 1,
+      raw: false,
+      defval: ''
+    });
+
+    // Simulação: usuário logado (substitua por sua função real)
+    usuarioLogado = obterUsuarioLogado();
+
+    montarCaches();
+
+  } catch (err) {
+    console.error(err);
+    alert('Erro ao carregar a planilha.\n\n' + err.message +
+          '\n\nVerifique se o arquivo PREMIO.xlsx está na mesma pasta.');
+    throw err;
+  }
+}
+
+/**
+ * Obtém o usuário logado. Substitua por sua função existente
+ * (que retorna o nome do colaborador após o CPF + termo).
+ */
+function obterUsuarioLogado() {
+  // Exemplo: localStorage, sessionStorage, variável global, etc.
+  return localStorage.getItem('usuarioLogado') || 'ALAN FEITOSA DE SOUTO';
+}
+
+/* ============================================================
+   CÁLCULO DOS CACHES (PRODUÇÃO / RETRABALHO)
+   ============================================================ */
+function montarCaches() {
+  cacheProducao = {};
+  cacheRetrabalho = {};
+
+  for (let i = 1; i < dadosConcluidas.length; i++) {
+    const linha = dadosConcluidas[i];
+    if (!linha || !linha.length) continue;
+
+    const data = parseData(linha[16]); // coluna Q
+    if (!data) continue;
+
+    const chave = formatarDataChave(data);
+
+    // PRODUÇÃO — coluna L (atendente)
+    const atendente = linha[11];
+    if (atendente && nomeCorresponde(atendente, usuarioLogado)) {
+      if (!cacheProducao[chave]) cacheProducao[chave] = [];
+      cacheProducao[chave].push({
+        protocolo: String(linha[0] || ''),
+        cliente: String(linha[1] || '')
+      });
+    }
+
+    // RETRABALHO — coluna Y (tecnico_original)
+    const tecnicoOriginal = linha[24];
+    if (tecnicoOriginal && nomeCorresponde(tecnicoOriginal, usuarioLogado)) {
+      if (!cacheRetrabalho[chave]) cacheRetrabalho[chave] = [];
+      cacheRetrabalho[chave].push({
+        cliente: String(linha[1] || ''),
+        protocoloOriginal: String(linha[25] || '')
+      });
+    }
+  }
+
+  // Ordenar por protocolo (ordem de encerramento)
+  Object.values(cacheProducao).forEach(arr =>
+    arr.sort((a, b) => a.protocolo.localeCompare(b.protocolo))
+  );
+  Object.values(cacheRetrabalho).forEach(arr =>
+    arr.sort((a, b) => a.protocoloOriginal.localeCompare(b.protocoloOriginal))
+  );
+}
+
+/* ============================================================
+   NAVEGAÇÃO DE TELAS
+   ============================================================ */
+function abrirConsultaPremio() {
+  document.getElementById('tela-opcoes').classList.add('hidden');
+  document.getElementById('tela-premio').classList.remove('hidden');
+}
+
+function abrirConsultaProducao() {
+  document.getElementById('tela-opcoes').classList.add('hidden');
+  document.getElementById('tela-producao').classList.remove('hidden');
+  renderizarResumoProducao();
+}
+
+function voltarOpcoes() {
+  document.getElementById('tela-premio').classList.add('hidden');
+  document.getElementById('tela-producao').classList.add('hidden');
+  document.getElementById('tela-opcoes').classList.remove('hidden');
+}
+
+/* ============================================================
+   RESUMO POR TIPO DE ATIVIDADE
+   ============================================================ */
+function renderizarResumoProducao() {
+  const contagem = {};
+  TIPOS_ATIVIDADES_PERMITIDOS.forEach(t => { contagem[t] = 0; });
+
+  for (let i = 1; i < dadosConcluidas.length; i++) {
+    const linha = dadosConcluidas[i];
+    if (!linha || !linha.length) continue;
+
+    const atendente = linha[11];
+    if (!atendente || !nomeCorresponde(atendente, usuarioLogado)) continue;
+
+    const tipo = mapearTipoAtividade(linha[3]);
+    if (tipo && Object.prototype.hasOwnProperty.call(contagem, tipo)) {
+      contagem[tipo]++;
+    }
+  }
+
+  const tbody = document.getElementById('tbody-resumo-producao');
+  tbody.innerHTML = '';
+
+  let totalGeral = 0;
+
+  TIPOS_ATIVIDADES_PERMITIDOS.forEach(tipo => {
+    const qtd = contagem[tipo];
+    totalGeral += qtd;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${tipo}</td><td>${qtd}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const trTotal = document.createElement('tr');
+  trTotal.className = 'total-geral';
+  trTotal.innerHTML = `<td>TOTAL GERAL</td><td>${totalGeral}</td>`;
+  tbody.appendChild(trTotal);
+}
+
+/* ============================================================
+   CALENDÁRIO
+   ============================================================ */
+function abrirCalendario() {
+  document.getElementById('modal-calendario').classList.remove('hidden');
+  renderizarCalendario();
+}
+
+function fecharCalendario() {
+  document.getElementById('modal-calendario').classList.add('hidden');
+}
+
+function setModo(modo) {
+  modoAtual = modo;
+  document.getElementById('btn-modo-producao')
+    .classList.toggle('active', modo === 'producao');
+  document.getElementById('btn-modo-retrabalho')
+    .classList.toggle('active', modo === 'retrabalho');
+  renderizarCalendario();
+}
+
+function mesAnterior() {
+  mesAtual = new Date(mesAtual.getFullYear(), mesAtual.getMonth() - 1, 1);
+  renderizarCalendario();
+}
+
+function proximoMes() {
+  mesAtual = new Date(mesAtual.getFullYear(), mesAtual.getMonth() + 1, 1);
+  renderizarCalendario();
+}
+
+function renderizarCalendario() {
+  const grid = document.getElementById('grid-calendario');
+  grid.innerHTML = '';
+
+  const ano = mesAtual.getFullYear();
+  const mes = mesAtual.getMonth();
+
+  const nomeMes = mesAtual.toLocaleDateString('pt-BR', {
+    month: 'long', year: 'numeric'
+  });
+  document.getElementById('mes-ano-atual').textContent =
+    nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+
+  // Cabeçalho dias da semana (D S T Q Q S S)
+  ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dia-semana';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+  // Células vazias antes do dia 1
+  for (let i = 0; i < primeiroDiaSemana; i++) {
+    const v = document.createElement('div');
+    v.className = 'dia vazio';
+    grid.appendChild(v);
+  }
+
+  const fonte = modoAtual === 'producao' ? cacheProducao : cacheRetrabalho;
+  const classeModo = modoAtual === 'retrabalho' ? 'retrabalho' : '';
+
+  for (let dia = 1; dia <= diasNoMes; dia++) {
+    const data = new Date(ano, mes, dia);
+    const chave = formatarDataChave(data);
+    const qtd = (fonte[chave] || []).length;
+
+    const el = document.createElement('div');
+    el.className = 'dia';
+    if (qtd > 0) {
+      el.classList.add('tem-dados');
+      if (modoAtual === 'retrabalho') el.classList.add('retrabalho');
+      el.onclick = () => abrirDetalheDia(chave);
+    }
+
+    el.innerHTML = `
+      <span class="num">${dia}</span>
+      ${qtd > 0
+        ? `<span class="valor ${classeModo}">${qtd}</span>`
+        : ''}
+    `;
+
+    grid.appendChild(el);
+  }
+}
+
+/* ============================================================
+   DETALHE DO DIA
+   ============================================================ */
+function abrirDetalheDia(chave) {
+  const dataFmt = formatarDataExibicao(chave);
+  const fonte = modoAtual === 'producao' ? cacheProducao : cacheRetrabalho;
+  const itens = fonte[chave] || [];
+
+  const rotulo = modoAtual === 'producao' ? 'Produção' : 'Retrabalhos';
+  document.getElementById('titulo-dia').textContent =
+    `${rotulo} — ${dataFmt} (${itens.length})`;
+
+  const lista = document.getElementById('lista-dia');
+  lista.innerHTML = '';
+
+  if (itens.length === 0) {
+    lista.innerHTML = '<div class="vazio">Nenhum registro neste dia.</div>';
+  } else if (modoAtual === 'producao') {
+    itens.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <div class="protocolo">Protocolo: ${item.protocolo || '—'}</div>
+        <div class="cliente">${item.cliente || '—'}</div>
+      `;
+      lista.appendChild(div);
+    });
+  } else {
+    itens.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'item retrabalho';
+      div.innerHTML = `
+        <div class="protocolo">Protocolo Original: ${item.protocoloOriginal || '—'}</div>
+        <div class="cliente">${item.cliente || '—'}</div>
+      `;
+      lista.appendChild(div);
+    });
+  }
+
+  document.getElementById('modal-dia').classList.remove('hidden');
+}
+
+function fecharModalDia() {
+  document.getElementById('modal-dia').classList.add('hidden');
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+async function init() {
+  try {
+    await carregarPlanilha();
+    document.getElementById('tela-loading').classList.add('hidden');
+    document.getElementById('tela-opcoes').classList.remove('hidden');
+  } catch (e) {
+    document.getElementById('tela-loading').innerHTML =
+      '<div class="loading"><p style="color:#dc2626;">Erro ao carregar. Verifique o arquivo PREMIO.xlsx.</p></div>';
+  }
+}
+
+// Fechar modais com ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    fecharCalendario();
+    fecharModalDia();
+  }
+});
+
+// Fechar modal clicando fora
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'modal-calendario') fecharCalendario();
+  if (e.target.id === 'modal-dia') fecharModalDia();
+});
+
+init();
+</script>
+</body>
+</html>
