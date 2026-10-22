@@ -1,505 +1,575 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acompanhamento de Produção - Equipe Técnica</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
-    body { background: #f0f2f5; color: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-
-    .container { width: 100%; max-width: 1100px; }
-
-    /* LOGIN */
-    #loginScreen { background: #fff; padding: 40px 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 400px; margin: 80px auto; text-align: center; }
-    #loginScreen h1 { font-size: 1.5rem; margin-bottom: 8px; color: #0d47a1; }
-    #loginScreen p { color: #666; margin-bottom: 24px; font-size: 0.9rem; }
-    #cpfInput { width: 100%; padding: 14px 16px; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; margin-bottom: 16px; text-align: center; letter-spacing: 1px; }
-    #cpfInput:focus { outline: none; border-color: #0d47a1; }
-    .btn { background: #0d47a1; color: #fff; border: none; padding: 14px 24px; border-radius: 10px; font-size: 1rem; cursor: pointer; transition: background 0.2s; width: 100%; font-weight: 600; }
-    .btn:hover { background: #0a3a7a; }
-    .error { color: #d32f2f; font-size: 0.85rem; margin-top: 10px; min-height: 18px; }
-
-    /* HEADER */
-    #appScreen { display: none; width: 100%; }
-    .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 24px; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .header .user-info { display: flex; flex-direction: column; }
-    .header .user-info strong { font-size: 1.1rem; color: #0d47a1; }
-    .header .user-info span { font-size: 0.85rem; color: #666; }
-    .logout { background: transparent; border: 2px solid #d32f2f; color: #d32f2f; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-    .logout:hover { background: #d32f2f; color: #fff; }
-
-    /* TOGGLE */
-    .toggle-bar { display: flex; gap: 8px; background: #fff; padding: 6px; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px; width: fit-content; }
-    .toggle-btn { padding: 10px 28px; border: none; border-radius: 8px; background: transparent; cursor: pointer; font-weight: 600; font-size: 0.95rem; color: #555; transition: all 0.2s; }
-    .toggle-btn.active { background: #0d47a1; color: #fff; }
-    .toggle-btn.active-retrab { background: #e65100; color: #fff; }
-
-    /* CALENDAR */
-    .calendar-card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .calendar-header h2 { font-size: 1.2rem; color: #0d47a1; }
-    .nav-btn { background: #f0f2f5; border: none; width: 38px; height: 38px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; color: #0d47a1; font-weight: bold; }
-    .nav-btn:hover { background: #e0e4ea; }
-
-    .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 6px; }
-    .weekdays div { text-align: center; font-weight: 600; font-size: 0.8rem; color: #888; padding: 6px 0; }
-
-    .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .day-cell { min-height: 80px; border-radius: 10px; padding: 6px; background: #f8f9fa; border: 1px solid #eee; display: flex; flex-direction: column; cursor: default; position: relative; transition: transform 0.1s, box-shadow 0.1s; }
-    .day-cell.has-data { cursor: pointer; border-color: #c8e6c9; background: #e8f5e9; }
-    .day-cell.has-data:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .day-cell.has-retrab { border-color: #ffe0b2; background: #fff3e0; }
-    .day-cell.has-retrab:hover { box-shadow: 0 4px 12px rgba(230,81,0,0.15); }
-    .day-cell .day-num { font-weight: 700; font-size: 0.95rem; color: #333; }
-    .day-cell .badge { margin-top: auto; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; align-self: flex-start; }
-    .badge-prod { background: #0d47a1; color: #fff; }
-    .badge-retrab { background: #e65100; color: #fff; }
-    .day-cell.empty { background: transparent; border: none; }
-    .day-cell.today { border: 2px solid #0d47a1; }
-
-    /* MODAL */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 1000; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: #fff; border-radius: 16px; width: 100%; max-width: 900px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
-    .modal-header { padding: 18px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h3 { font-size: 1.1rem; color: #0d47a1; }
-    .modal-header .close-btn { background: #f0f2f5; border: none; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; color: #555; }
-    .modal-body { padding: 16px 24px 24px; overflow-y: auto; }
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    thead th { background: #0d47a1; color: #fff; padding: 10px 12px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
-    tbody td { padding: 9px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
-    tbody tr:nth-child(even) { background: #fafbfc; }
-    tbody tr:hover { background: #e3f2fd; }
-    .empty-msg { text-align: center; color: #888; padding: 30px; }
-
-    .loading { text-align: center; padding: 40px; color: #666; }
-
-    @media (max-width: 640px) {
-      .day-cell { min-height: 60px; }
-      .day-cell .badge { font-size: 0.65rem; padding: 2px 6px; }
-      .header { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acompanhamento de Produção - Equipe Técnica</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif}
+  body{background:#f0f2f5;color:#1a1a2e;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
+  .container{width:100%;max-width:1100px}
+  #loginScreen{background:#fff;padding:40px 30px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);max-width:420px;margin:60px auto;text-align:center}
+  #loginScreen h1{font-size:1.5rem;margin-bottom:8px;color:#0d47a1}
+  #loginScreen p{color:#666;margin-bottom:24px;font-size:.9rem}
+  #cpfInput{width:100%;padding:14px 16px;border:2px solid #ddd;border-radius:10px;font-size:1rem;margin-bottom:16px;text-align:center;letter-spacing:1px}
+  #cpfInput:focus{outline:none;border-color:#0d47a1}
+  .btn{background:#0d47a1;color:#fff;border:none;padding:14px 24px;border-radius:10px;font-size:1rem;cursor:pointer;width:100%;font-weight:600}
+  .btn:hover{background:#0a3a7a}
+  .error{color:#d32f2f;font-size:.85rem;margin-top:10px;min-height:18px}
+  #appScreen{display:none;width:100%}
+  .header{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:16px 24px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:20px;flex-wrap:wrap;gap:10px}
+  .header .user-info strong{font-size:1.1rem;color:#0d47a1;display:block}
+  .header .user-info span{font-size:.85rem;color:#666}
+  .logout{background:transparent;border:2px solid #d32f2f;color:#d32f2f;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600}
+  .logout:hover{background:#d32f2f;color:#fff}
+  .toggle-bar{display:flex;gap:8px;background:#fff;padding:6px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:20px;width:fit-content}
+  .toggle-btn{padding:10px 28px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-weight:600;font-size:.95rem;color:#555}
+  .toggle-btn.active{background:#0d47a1;color:#fff}
+  .toggle-btn.active-retrab{background:#e65100;color:#fff}
+  .calendar-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .calendar-header h2{font-size:1.2rem;color:#0d47a1}
+  .nav-btn{background:#f0f2f5;border:none;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1.1rem;color:#0d47a1;font-weight:bold}
+  .nav-btn:hover{background:#e0e4ea}
+  .weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+  .weekdays div{text-align:center;font-weight:600;font-size:.8rem;color:#888;padding:6px 0}
+  .days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .day-cell{min-height:80px;border-radius:10px;padding:6px;background:#f8f9fa;border:1px solid #eee;display:flex;flex-direction:column;cursor:default;position:relative}
+  .day-cell.has-data{cursor:pointer;border-color:#c8e6c9;background:#e8f5e9}
+  .day-cell.has-data:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+  .day-cell.has-retrab{border-color:#ffe0b2;background:#fff3e0}
+  .day-cell.has-retrab:hover{box-shadow:0 4px 12px rgba(230,81,0,.15)}
+  .day-cell .day-num{font-weight:700;font-size:.95rem;color:#333}
+  .day-cell .badge{margin-top:auto;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:20px;align-self:flex-start}
+  .badge-prod{background:#0d47a1;color:#fff}
+  .badge-retrab{background:#e65100;color:#fff}
+  .day-cell.empty{background:transparent;border:none}
+  .day-cell.today{border:2px solid #0d47a1}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+  .modal-overlay.open{display:flex}
+  .modal{background:#fff;border-radius:16px;width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+  .modal-header{padding:18px 24px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+  .modal-header h3{font-size:1.1rem;color:#0d47a1}
+  .modal-header .close-btn{background:#f0f2f5;border:none;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#555}
+  .modal-body{padding:16px 24px 24px;overflow-y:auto}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  thead th{background:#0d47a1;color:#fff;padding:10px 12px;text-align:left;white-space:nowrap}
+  tbody td{padding:9px 12px;border-bottom:1px solid #eee;vertical-align:top}
+  tbody tr:nth-child(even){background:#fafbfc}
+  tbody tr:hover{background:#e3f2fd}
+  @media(max-width:640px){.day-cell{min-height:60px}.header{flex-direction:column;align-items:flex-start}}
+</style>
 </head>
 <body>
 
-  <!-- LOGIN -->
-  <div id="loginScreen">
-    <h1>🔧 Produção Técnica</h1>
-    <p>Informe seu CPF para acessar</p>
-    <input type="text" id="cpfInput" placeholder="000.000.000-00" maxlength="14" inputmode="numeric">
-    <button class="btn" id="loginBtn">Entrar</button>
-    <div class="error" id="loginError"></div>
+<div id="loginScreen">
+  <h1>🔧 Produção Técnica</h1>
+  <p>Informe seu CPF para acessar</p>
+  <input type="text" id="cpfInput" placeholder="000.000.000-00" maxlength="14" inputmode="numeric">
+  <button class="btn" id="loginBtn">Entrar</button>
+  <div class="error" id="loginError"></div>
+  <div style="margin-top:14px;font-size:.75rem;color:#999">Dica: tente 646.525.643-68</div>
+</div>
+
+<div id="appScreen" class="container">
+  <div class="header">
+    <div class="user-info">
+      <strong id="userName">—</strong>
+      <span id="userSupervisor">Supervisor: —</span>
+    </div>
+    <button class="logout" id="logoutBtn">Sair</button>
   </div>
-
-  <!-- APP -->
-  <div id="appScreen" class="container">
-    <div class="header">
-      <div class="user-info">
-        <strong id="userName">—</strong>
-        <span id="userSupervisor">Supervisor: —</span>
-      </div>
-      <button class="logout" id="logoutBtn">Sair</button>
-    </div>
-
-    <div class="toggle-bar">
-      <button class="toggle-btn active" id="btnProd" data-mode="prod">📈 Produção</button>
-      <button class="toggle-btn" id="btnRetrab" data-mode="retrab">🔁 Retrabalhos</button>
-    </div>
-
-    <div class="calendar-card">
-      <div class="calendar-header">
-        <button class="nav-btn" id="prevMonth">‹</button>
-        <h2 id="monthLabel">—</h2>
-        <button class="nav-btn" id="nextMonth">›</button>
-      </div>
-      <div class="weekdays">
-        <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-      </div>
-      <div class="days-grid" id="daysGrid"></div>
-    </div>
+  <div class="toggle-bar">
+    <button class="toggle-btn active" id="btnProd">📈 Produção</button>
+    <button class="toggle-btn" id="btnRetrab">🔁 Retrabalhos</button>
   </div>
+  <div class="calendar-card">
+    <div class="calendar-header">
+      <button class="nav-btn" id="prevMonth">‹</button>
+      <h2 id="monthLabel">—</h2>
+      <button class="nav-btn" id="nextMonth">›</button>
+    </div>
+    <div class="weekdays">
+      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+    </div>
+    <div class="days-grid" id="daysGrid"></div>
+  </div>
+</div>
 
-  <!-- MODAL -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 id="modalTitle">Detalhes do dia</h3>
-        <button class="close-btn" id="closeModal">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Protocolo</th>
-                <th>Cliente</th>
-                <th>Tipo Atividade</th>
-                <th>Cidade</th>
-                <th>Bairro</th>
-                <th>Reclamação</th>
-                <th>Solução</th>
-              </tr>
-            </thead>
-            <tbody id="modalTbody"></tbody>
-          </table>
-        </div>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Detalhes do dia</h3>
+      <button class="close-btn" id="closeModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Protocolo</th><th>Cliente</th><th>Tipo Atividade</th>
+              <th>Cidade</th><th>Bairro</th><th>Reclamação</th><th>Solução</th>
+            </tr>
+          </thead>
+          <tbody id="modalTbody"></tbody>
+        </table>
       </div>
     </div>
   </div>
+</div>
 
 <script>
 /* ============================================================
-   CONFIGURAÇÃO E DADOS DE EXEMPLO
-   Em produção, substitua pelos fetch das suas planilhas.
+   1) DADOS REAIS DA SUA PLANILHA (aba CPF)
+   Colunas: A=Nome, B=Matrícula, C=Empresa, D=CPF
    ============================================================ */
+const COLABORADORES_RAW = [
+  ['ALAN FEITOSA DE SOUTO','000262','G INFO','646.525.643-68'],
+  ['ANTONIO MARCOS LIMA DA SILVA','','G INFO','009.280.143-98'],
+  ['BRUNO MATIAS DA SILVA','','G INFO','070.863.133-94'],
+  ['CLAUDIANO CICINATO DA SILVA','','G INFO','026.126.893-70'],
+  ['DJONATHA COSTA DA SILVA','','G INFO','112.311.524-94'],
+  ['ELISANGELA BOTELHO DA ROCHA','','G INFO','664.730.393-68'],
+  ['ELISSON PEREIRA COUTINHO NOVAIS','','G INFO','078.114.013-71'],
+  ['FABIO SILVESTRE BRITO','000115','G INFO','002.590.223-73'],
+  ['FRANCISCO CARLOS EUGENIO DO NASCIMENTO','000333','G INFO','045.179.853-85'],
+  ['FRANCISCO DAS CHAGAS E SILVA ROCHA','000216','G INFO','604.677.683-07'],
+  ['FRANCISCO DIEGO ALVES FERREIRA','000295','G INFO','065.966.543-38'],
+  ['FRANCISCO HELIO MARINHO CUNHA NETO','','G INFO','078.519.483-55'],
+  ['FRANCISCO LUCAS SOUSA CUNHA','000305','G INFO','625.648.953-52'],
+  ['GABRIEL MARTINS MUNIZ','000318','G INFO','078.282.793-45'],
+  ['GEILSON DA SILVA MOURA','','G INFO','070.629.143-39'],
+  ['GILVAN ASSUNCAO SILVA','000343','G INFO','019.738.393-93'],
+  ['GLEISON VALENTIM ARAUJO','','G INFO','075.630.503-96'],
+  ['GUTEMBERGUE OLIVEIRA','000271','G INFO','020.305.163-76'],
+  ['HALLEF GUILHERME LIMA CLEMENTE SILVA','','G INFO','077.115.853-06'],
+  ['IRINETO FERREIRA DE AGUIAR','000217','G INFO','033.727.593-97'],
+  ['JOAO PAULO GOUVEIA DA SILVA','','G INFO','891.107.223-00'],
+  ['JOSE AMAURY BORGES FILHO','','G INFO','068.959.103-95'],
+  ['JOSE MARIA DA COSTA LEONARDO','000221','G INFO','734.146.113-68'],
+  ['LUCAS SOUZA SILVA','','G INFO','074.800.793-89'],
+  ['LUCIEUDO BANDEIRA ALVES FILHO','000320','G INFO','074.418.063-56'],
+  ['LUIZ CARLOS MACHADO MACIEL','','G INFO','058.715.743-78'],
+  ['MAILSON FRANCISCO PEREIRA','','G INFO','062.780.033-50'],
+  ['MARCOS PEREIRA CARVALHO FILHO','','G INFO','073.501.783-28'],
+  ['MARCOS VICTOR LOPES MEDEIROS FONSECA','','G INFO','034.029.363-21'],
+  ['PAULO ROBERTO ARAUJO GALVAO','','G INFO','014.069.373-47'],
+  ['PEDRO DA SILVA MAIA','','G INFO','092.106.483-74'],
+  ['ROBSON BEZERRA DA SILVA','','G INFO','619.340.993-92'],
+  ['ROMARIO NOBRE DE MELO','000336','G INFO','051.728.733-17'],
+  ['RONALD MESQUITA DOS SANTOS','','G INFO','107.099.153-81'],
+  ['THIAGO CASTRO DO NASCIMENTO','','G INFO','086.965.763-14'],
+  ['VALDERILO FERREIRA LIMA JUNIOR','000293','G INFO','082.974.113-54'],
+  ['CAIO VICTOR MONTEIRO DE OLIVEIRA','','','047.553.713-09'],
+  ['WILLIAM ADRIANO DANTAS','000116','G INFO','070.038.853-28'],
+  ['YVINA CHAGAS ALENCAR','','G INFO','080.135.683-00'],
+  ['ALEFF PEREIRA SOARES','','IFT','068.984.563-42'],
+  ['ALEXANDRE SANTOS GOMES','','IFT','769.663.563-87'],
+  ['ALLYSSON DA SILVA MARINHO','','IFT','088.824.123-26'],
+  ['ANDRE SILVA LOIOLA','','IFT','066.675.003-38'],
+  ['ANTONIO CARLOS FERREIRA DA SILVA','','IFT','880.346.903-68'],
+  ['ANTONIO EDUARDO TEIXEIRA CAMELO','','IFT','017.467.413-92'],
+  ['ANTONIO FELIPE CASTRO DE OLIVEIRA','000614','IFT','071.005.963-94'],
+  ['ANTONIO FELIPE SOARES SILVA TAVARES','','IFT','076.287.933-55'],
+  ['ANTONIO RAFAEL ALEXANDRE DE SOUSA','','IFT','072.535.953-60'],
+  ['ARLISON DA SILVA PEREIRA','000475','IFT','622.847.103-10'],
+  ['BRENDHOWN CESAR VIANA SILVA FALCAO','','IFT','072.308.153-04'],
+  ['CARLOS HENRIQUE LINO SILVA','','IFT','076.597.513-01'],
+  ['CLAYLSON MORAES DOS SANTOS','','IFT','075.965.843-90'],
+  ['DAVI MEDINA DE ARAUJO','','IFT','014.259.203-06'],
+  ['DAVID DE SOUSA SILVA','','IFT','076.250.123-52'],
+  ['ELIZEU DA SILVA FERREIRA','','','614.694.923-00'],
+  ['EMYLLIE CRISTINE ANDRADE CRUZ','','IFT','051.352.823-78'],
+  ['EVERLAN DA PENHA TOME','','IFT','008.385.843-14'],
+  ['FRANCISCO FELIPE DE LIMA ALVES','000059','IFT','058.411.523-78'],
+  ['FRANCISCO MATHEUS PEREIRA MENDES','','IFT','082.775.843-00'],
+  ['FRANCISCO TIAGO PINHEIRO','','IFT','041.037.803-80'],
+  ['ISMAEL JULIAO SOARES','','IFT','633.338.113-67'],
+  ['ISRAEL OLIVEIRA MORAIS','','IFT','095.190.783-20'],
+  ['ISRAEL ROBERTH SANTIAGO DE MENEZES','','IFT','078.961.853-26'],
+  ['ITALO EMANOEL DA SILVA MARQUES','','IFT','109.862.873-00'],
+  ['ITALO XAVIER DA SILVA','','IFT','070.058.973-23'],
+  ['JOAO PAULO DA SILVA LIMA','','IFT','001.058.623-71'],
+  ['JOSE EDNARDO DA SILVA DE LIMA','','IFT','615.171.623-00'],
+  ['JOSE HENRIQUE PEREIRA SOUSA','','IFT','620.856.313-55'],
+  ['JOSE ILDEVAM SOUSA DO NASCIMENTO','000038','IFT','071.778.423-14'],
+  ['JOSE WELLITON VIEIRA FELINTO','','IFT','067.905.283-69'],
+  ['LUIZ CARLOS ALVES LOPES','','IFT','080.989.923-06'],
+  ['MAISSON FERREIRA DA SILVA','','IFT','096.369.633-55'],
+  ['MARCOS AURELIO DE SOUSA OLIVEIRA','','IFT','062.256.953-89'],
+  ['MATEUS GABRIEL ROCHA','','IFT','087.975.463-05'],
+  ['RIAN KELVIN ARAUJO MOURAO','','IFT','625.271.283-35'],
+  ['SAMUEL RIBEIRO FELISMINO','','IFT','092.783.123-63'],
+  ['VANIZIO PEREIRA AZEVEDO DO NASCIMENTO','','IFT','048.983.603-86'],
+  ['VICTOR FRANCISCO DE OLIVEIRA GOMES','','IFT','097.395.243-11'],
+  ['VINICIUS SILVA LEARTE','','IFT','603.334.943-18'],
+  ['WELLISON FERREIRA LIMA','','IFT','079.951.163-30'],
+  ['ITALO RIBEIRO DA SILVA','000602','INFOLINK','100.473.673-85'],
+  ['PAULO ITALO JORGE DE MORAES','000609','INFOLINK','071.346.433-01'],
+  ['WESLEY LUCAS BRITO DA SILVA','','INFOLINK','628.843.383-73'],
+  ['FELIPE MARTINS DAMASCENO','','TFE','040.337.373-59'],
+  ['JONATHAN BRENO NOBRE DA SILVA','','TFE','604.548.913-69'],
+  ['KELTON CLEMENTE DOS SANTOS','','TWE','013.487.253-38'],
+  ['LUIZ OCTAVIO ALMEIDA DA SILVA','','TWE','087.399.743-32']
+];
 
-// Tipos de atividade que NÃO contam como produção
+/* Supervisor por colaborador — preencha conforme sua realidade.
+   Se você tiver uma coluna de supervisor na planilha, adicione aqui. */
+const SUPERVISORES = {
+  'ALAN FEITOSA DE SOUTO':'MAILSON FRANCISCO PEREIRA',
+  'ANTONIO TIAGO AMANCIO DA SILVA':'MAILSON FRANCISCO PEREIRA',
+  'FRANCISCO LAERTE PEREIRA RODRIGUES':'MAILSON FRANCISCO PEREIRA',
+  'JOAO PAULO DA SILVA LIMA':'MAILSON FRANCISCO PEREIRA',
+  'JOSE MARIA DA COSTA LEONARDO':'MAILSON FRANCISCO PEREIRA',
+  'KELTON CLEMENTE DOS SANTOS':'MAILSON FRANCISCO PEREIRA',
+  'LUIZ OCTAVIO ALMEIDA DA SILVA':'MAILSON FRANCISCO PEREIRA',
+  'MAILSON FRANCISCO PEREIRA':'—',
+  'MARCOS VICTOR LOPES MEDEIROS FONSECA':'WILLIAM ADRIANO DANTAS',
+  'WILLIAM ADRIANO DANTAS':'—',
+  'ALEFF PEREIRA SOARES':'WILLIAM ADRIANO DANTAS',
+  'ANTONIO CARLOS FERREIRA DA SILVA':'WILLIAM ADRIANO DANTAS',
+  'ANTONIO EDUARDO TEIXEIRA CAMELO':'WILLIAM ADRIANO DANTAS',
+  'BRUNO MATIAS DA SILVA':'WILLIAM ADRIANO DANTAS',
+  'CLAUDIANO CICINATO DA SILVA':'WILLIAM ADRIANO DANTAS',
+  'DAVI MEDINA DE ARAUJO':'WILLIAM ADRIANO DANTAS',
+  'GEILSON DA SILVA MOURA':'WILLIAM ADRIANO DANTAS',
+  'ITALO XAVIER DA SILVA':'WILLIAM ADRIANO DANTAS',
+  'JOSE HENRIQUE PEREIRA SOUSA':'WILLIAM ADRIANO DANTAS',
+  'JOSE ILDEVAM SOUSA DO NASCIMENTO':'WILLIAM ADRIANO DANTAS',
+  'JOSE WELLITON VIEIRA FELINTO':'WILLIAM ADRIANO DANTAS',
+  'MAISSON FERREIRA DA SILVA':'WILLIAM ADRIANO DANTAS',
+  'VANIZIO PEREIRA AZEVEDO DO NASCIMENTO':'WILLIAM ADRIANO DANTAS',
+  'VINICIUS SILVA LEARTE':'WILLIAM ADRIANO DANTAS',
+  'WELLISON FERREIRA LIMA':'WILLIAM ADRIANO DANTAS',
+  'WESLLEY ALVES UCHOA':'WILLIAM ADRIANO DANTAS',
+  'ALLYSSON DA SILVA MARINHO':'JOSE LEONARDO',
+  'ANDRE SILVA LOIOLA':'MARCOS VICTOR',
+  'ANTONIO FELIPE CASTRO DE OLIVEIRA':'MARCOS VICTOR',
+  'ARLISON DA SILVA PEREIRA':'MARCOS VICTOR',
+  'BRENDHOWN CESAR VIANA SILVA FALCAO':'MARCOS VICTOR',
+  'CAIO VICTOR MONTEIRO DE OLIVEIRA':'MARCOS VICTOR',
+  'CARLOS HENRIQUE LINO SILVA':'MARCOS VICTOR',
+  'DANILO OLIVEIRA DE SOUSA':'MARCOS VICTOR',
+  'DIEGO DA SILVA ASSUNCAO':'MARCOS VICTOR',
+  'ELISSON PEREIRA COUTINHO NOVAIS':'MARCOS VICTOR',
+  'ELIZEU DA SILVA FERREIRA':'MARCOS VICTOR',
+  'EVERLAN DA PENHA TOME':'MARCOS VICTOR',
+  'FELIPE MARTINS DAMASCENO':'MARCOS VICTOR',
+  'FRANCISCO DAS CHAGAS E SILVA ROCHA':'MARCOS VICTOR',
+  'FRANCISCO DIEGO ALVES FERREIRA':'MARCOS VICTOR',
+  'FRANCISCO JHONATA DA COSTA':'MARCOS VICTOR',
+  'FRANCISCO TIAGO PINHEIRO':'JOSE LEONARDO',
+  'GABRIEL MARTINS MUNIZ':'JOSE LEONARDO',
+  'GILVAN ASSUNCAO SILVA':'JOSE LEONARDO',
+  'GLEISON VALENTIM ARAUJO':'JOSE LEONARDO',
+  'GUTEMBERGUE OLIVEIRA':'JOSE LEONARDO',
+  'HALLEF GUILHERME LIMA CLEMENTE SILVA':'JOSE LEONARDO',
+  'ISRAEL OLIVEIRA MORAIS':'JOSE LEONARDO',
+  'ISRAEL ROBERTH SANTIAGO DE MENEZES':'JOSE LEONARDO',
+  'JOAO PAULO GOUVEIA DA SILVA':'JOSE LEONARDO',
+  'LUCAS SOUZA SILVA':'JOSE LEONARDO',
+  'LUIZ CARLOS ALVES LOPES':'JOSE LEONARDO',
+  'MARCOS PEREIRA CARVALHO FILHO':'JOSE LEONARDO',
+  'ROMARIO NOBRE DE MELO':'JOSE LEONARDO',
+  'THIAGO CASTRO DO NASCIMENTO':'JOSE LEONARDO',
+  'FRANCISCO HELIO MARINHO CUNHA NETO':'JOSE LEONARDO',
+  'FRANCISCO MATHEUS PEREIRA MENDES':'JOSE LEONARDO',
+  'FRANCISCO CARLOS EUGENIO DO NASCIMENTO':'JOSE LEONARDO'
+};
+
+/* ============================================================
+   2) PRODUÇÃO — colunas da aba RELATORIO CONTROLADORIA
+   Mapeamento (0-indexado):
+     A=0 Protocolo | B=1 Colaborador | C=2 Equipe | D=3 Ret.ComDesc
+     E=4 Ind4% | F=5 Ret | G=6 Retirada | H=7 Instalação | I=8 Manutenção
+     J=9 AT | K=10 P.V | L=11 D.A. | M=12 Atestado | N=13 D.U | O=14 D.C.
+     P=15 Med | Q=16 Valor | R=17 Resultado
+   ATENÇÃO: No arquivo enviado a coluna Q (data de encerramento) NÃO existe
+   como data — Q é "valor" e R é "resultado". A data de encerramento precisa
+   estar em outra coluna da planilha real. Ajuste COL_DATA abaixo.
+   ============================================================ */
+const COL = {
+  protocolo: 0,
+  cliente: 1,          // na sua planilha B é "COLABORADOR" (nome do técnico); se cliente estiver em outra coluna, ajuste
+  tipoAtividade: 3,    // D
+  cidade: 7,           // H — na sua planilha H é "INSTALAÇÃO"; ajuste se cidade estiver em outra coluna
+  bairro: 8,           // I
+  dataEncerramento: 16,// Q — ATENÇÃO: no arquivo enviado Q é "valor". Troque pelo índice correto.
+  cat4: 21,            // V — renomeada para "reclamação"
+  solucao: 23,         // X
+  tecnicoOriginal: 24  // Y
+};
+
+// Registros de produção (amostra da sua planilha)
+// Como a coluna Q do arquivo enviado não tem data, usei datas fictícias 2026-10-xx
+// para demonstrar o funcionamento. Substitua pelos dados reais.
+const PRODUCAO_RAW = [
+  // [protocolo, colaborador, equipe, retDesc, ind4, ret, retirada, instalacao, manutencao, at, pv, da, atestado, du, dc, med, valor, resultado, dataEnc, cat4, solucao, tecnicoOriginal]
+  ['OS-001','ALEFF PEREIRA SOARES','INSTALAÇÃO',1.8,4.16,6,'',42,57,104,102.2,'','',24,21,4.86,372.64,'Premio','2026-10-05','','Instalação concluída','ALEFF PEREIRA SOARES'],
+  ['OS-002','ALLYSSON DA SILVA MARINHO','MISTO',0,3.96,4,'',20,76,99,99,'','',24,23,4.3,0,'Premio não atingido','2026-10-05','','Manutenção realizada','ALLYSSON DA SILVA MARINHO'],
+  ['OS-003','ANDRE SILVA LOIOLA','MISTO',0.5,3.48,4,1,5,76,87,86.5,'','',24,22,3.93,0,'Premio não atingido','2026-10-06','Sinal fraco','Ajuste de sinal','ANDRE SILVA LOIOLA'],
+  ['OS-004','ANTONIO CARLOS FERREIRA DA SILVA','INSTALAÇÃO',3.1,3.88,7,2,24,67,97,93.9,'','',24,20,4.69,355.52,'Premio','2026-10-07','','Instalação concluída','ANTONIO CARLOS FERREIRA DA SILVA'],
+  ['OS-005','ANTONIO FELIPE CASTRO DE OLIVEIRA','MISTO COND.',0,4.12,4,1,31,66,103,103,'','',24,23,4.48,690,'Premio','2026-10-08','','Manutenção','ANTONIO FELIPE CASTRO DE OLIVEIRA'],
+  ['OS-006','BRENDHOWN CESAR VIANA SILVA FALCAO','MISTO COND.',3.4,3.6,7,'',26,60,90,86.6,'','',24,21,4.12,652.4,'Premio','2026-10-09','','Instalação','BRENDHOWN CESAR VIANA SILVA FALCAO'],
+  ['OS-007','CARLOS HENRIQUE LINO SILVA','MISTO COND.',5.8,4.2,10,'',20,78,105,99.2,'','',24,19,5.22,982.2,'Premio','2026-10-10','','Manutenção','CARLOS HENRIQUE LINO SILVA'],
+  ['OS-008','CLAUDIANO CICINATO DA SILVA','INSTALAÇÃO',1.4,2.64,4,'',2,60,66,64.6,'','',24,15,4.31,318.56,'Premio','2026-10-12','','Instalação','CLAUDIANO CICINATO DA SILVA'],
+  ['OS-009','DAVI MEDINA DE ARAUJO','INSTALAÇÃO',0,3.92,3,'',15,77,98,98,'','',24,20,4.9,372,'Premio','2026-10-13','','Instalação','DAVI MEDINA DE ARAUJO'],
+  ['OS-010','ELISSON PEREIRA COUTINHO NOVAIS','MISTO COND.',0.1,3.88,4,'',23,73,97,96.9,'','',24,24,4.04,651.52,'Premio','2026-10-14','','Manutenção','ELISSON PEREIRA COUTINHO NOVAIS'],
+  ['OS-011','GABRIEL MARTINS MUNIZ','INSTALAÇÃO',0,5.52,2,4,63,68,138,138,'','',24,18,7.67,1320,'Premio','2026-10-15','','Instalação','GABRIEL MARTINS MUNIZ'],
+  ['OS-012','GEILSON DA SILVA MOURA','MISTO COND.',0,5.44,2,9,35,91,136,136,'','',24,24,5.67,1232,'Premio','2026-10-16','','Manutenção','GEILSON DA SILVA MOURA'],
+  ['OS-013','GILVAN ASSUNCAO SILVA','MISTO',0,5.36,3,'',14,117,134,134,'','',24,16,8.38,1260,'Premio','2026-10-17','','Manutenção','GILVAN ASSUNCAO SILVA'],
+  ['OS-014','HALLEF GUILHERME LIMA CLEMENTE SILVA','MISTO COND.',0,5.16,5,3,39,83,129,129,'','',24,23,5.61,1220,'Premio','2026-10-18','','Manutenção','HALLEF GUILHERME LIMA CLEMENTE SILVA'],
+  ['OS-015','ISRAEL OLIVEIRA MORAIS','MISTO',2.2,4.76,7,'',7,108,119,116.8,'','',24,20,5.84,367.04,'Premio','2026-10-19','','Manutenção','ISRAEL OLIVEIRA MORAIS'],
+  ['OS-016','ITALO XAVIER DA SILVA','MISTO',0,6.48,4,'',12,143,162,162,'','',24,21,7.71,1020,'Premio','2026-10-20','','Manutenção','ITALO XAVIER DA SILVA'],
+  ['OS-017','JOAO PAULO DA SILVA LIMA','INSTALAÇÃO',1.6,4.36,6,'',28,74,109,107.4,'','',24,23,4.67,361.44,'Premio','2026-10-21','','Instalação','JOAO PAULO DA SILVA LIMA'],
+  ['OS-018','JOSE EDNARDO DA SILVA DE LIMA','INSTALAÇÃO',1.9,4.08,6,'',18,79,102,100.1,'','',24,23,4.35,332.32,'Premio','2026-10-22','','Instalação','JOSE EDNARDO DA SILVA DE LIMA'],
+  ['OS-019','LUCAS SOUZA SILVA','INSTALAÇÃO',6.4,4.64,11,'',12,97,116,109.6,'','',24,23,4.77,370.56,'Premio','2026-10-23','','Instalação','LUCAS SOUZA SILVA'],
+  ['OS-020','LUCIEUDO BANDEIRA ALVES FILHO','INSTALAÇÃO',0,4.16,4,'',26,75,104,104,'','',24,22,4.73,364,'Premio','2026-10-24','','Instalação','LUCIEUDO BANDEIRA ALVES FILHO'],
+  // Retrabalhos (tecnicoOriginal diferente do técnico que executou)
+  ['OS-R01','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-05','Retorno','Reconfiguração','ALAN FEITOSA DE SOUTO'],
+  ['OS-R02','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-10','Sinal','Ajuste','alan feitosa de souto'],
+  ['OS-R03','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-15','Sem conexão','Troca','ALAN FEITOSA DE SOUTO'],
+  ['OS-R04','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-20','Lentidão','Reset','ALEFF PEREIRA SOARES']
+];
+
+/* ============================================================
+   3) UTILITÁRIOS
+   ============================================================ */
 const TIPOS_EXCLUIDOS = [
-  'LIBERAÇÃO DE COMBUSTÍVEL EXTERNO',
-  'TAREFAS ADMINISTRATIVAS TREINAMENTO GESTÃO DE O.S',
-  'VALIDAÇÃO - PRESTAÇÃO DE CONTAS'
+  'LIBERACAO DE COMBUSTIVEL EXTERNO',
+  'TAREFAS ADMINISTRATIVAS TREINAMENTO GESTAO DE O.S',
+  'VALIDACAO - PRESTACAO DE CONTAS'
 ];
 
-// ---------- DADOS DE EXEMPLO: PRODUÇÃO ----------
-// Cada registro: { protocolo, cliente, tipoAtividade, cidade, bairro, cat4, solucao, dataEncerramento, tecnicoOriginal }
-const PRODUCAO_EXEMPLO = [
-  { protocolo:'OS-1001', cliente:'João Silva', tipoAtividade:'INSTALAÇÃO', cidade:'Recife', bairro:'Boa Viagem', cat4:'', solucao:'Instalação concluída', dataEncerramento:'2026-10-05', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1002', cliente:'Maria Souza', tipoAtividade:'MANUTENÇÃO', cidade:'Recife', bairro:'Pina', cat4:'Sinal oscilando', solucao:'Ajuste de sinal', dataEncerramento:'2026-10-05', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1003', cliente:'Pedro Costa', tipoAtividade:'INSTALAÇÃO', cidade:'Olinda', bairro:'Casa Caiada', cat4:'', solucao:'Instalação concluída', dataEncerramento:'2026-10-06', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1004', cliente:'Ana Lima', tipoAtividade:'TAREFAS ADMINISTRATIVAS TREINAMENTO GESTÃO DE O.S', cidade:'Recife', bairro:'Centro', cat4:'', solucao:'Treinamento', dataEncerramento:'2026-10-06', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1005', cliente:'Carlos Pereira', tipoAtividade:'MANUTENÇÃO', cidade:'Jaboatão', bairro:'Piedade', cat4:'Sem conexão', solucao:'Troca de equipamento', dataEncerramento:'2026-10-07', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1006', cliente:'Fernanda Alves', tipoAtividade:'INSTALAÇÃO', cidade:'Recife', bairro:'Madalena', cat4:'', solucao:'Instalação concluída', dataEncerramento:'2026-10-08', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1007', cliente:'Rafael Gomes', tipoAtividade:'LIBERAÇÃO DE COMBUSTÍVEL EXTERNO', cidade:'Recife', bairro:'Centro', cat4:'', solucao:'Liberação', dataEncerramento:'2026-10-08', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1008', cliente:'Juliana Rocha', tipoAtividade:'MANUTENÇÃO', cidade:'Olinda', bairro:'Rio Doce', cat4:'Lentidão', solucao:'Reinício de equipamento', dataEncerramento:'2026-10-09', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-1009', cliente:'Bruno Martins', tipoAtividade:'INSTALAÇÃO', cidade:'Recife', bairro:'Imbiribeira', cat4:'', solucao:'Instalação concluída', dataEncerramento:'2026-10-09', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  // Retrabalhos (tecnicoOriginal diferente do colaborador logado)
-  { protocolo:'OS-2001', cliente:'Lucas Ferreira', tipoAtividade:'MANUTENÇÃO', cidade:'Recife', bairro:'Boa Vista', cat4:'Retorno de sinal', solucao:'Reconfiguração', dataEncerramento:'2026-10-05', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-  { protocolo:'OS-2002', cliente:'Camila Nunes', tipoAtividade:'INSTALAÇÃO', cidade:'Olinda', bairro:'Bairro Novo', cat4:'Instalação incompleta', solucao:'Finalização', dataEncerramento:'2026-10-06', tecnicoOriginal:'alan feitosa de souto' },
-  { protocolo:'OS-2003', cliente:'Thiago Barbosa', tipoAtividade:'MANUTENÇÃO', cidade:'Jaboatão', bairro:'Cavaleiro', cat4:'Sem sinal', solucao:'Troca de cabo', dataEncerramento:'2026-10-08', tecnicoOriginal:'ALAN FEITOSA DE SOUTO' },
-];
+function normalizarCPF(cpf){ return (cpf||'').replace(/\D/g,''); }
 
-// ---------- DADOS DE EXEMPLO: COLABORADORES ----------
-const COLABORADORES_EXEMPLO = [
-  { nome:'ALAN FEITOSA DE SOUTO', cpf:'646.525.643-68', supervisor:'MAILSON FRANCISCO PEREIRA', empresa:'G INFO' },
-  { nome:'ANTONIO TIAGO AMANCIO DA SILVA', cpf:'111.222.333-44', supervisor:'MAILSON FRANCISCO PEREIRA', empresa:'G INFO' },
-  { nome:'JOSE MARIA DA COSTA LEONARDO', cpf:'734.146.113-68', supervisor:'MAILSON FRANCISCO PEREIRA', empresa:'G INFO' },
-  { nome:'MARCOS VICTOR LOPES MEDEIROS FONSECA', cpf:'034.029.363-21', supervisor:'WILLIAM ADRIANO DANTAS', empresa:'G INFO' },
-  { nome:'WILLIAM ADRIANO DANTAS', cpf:'070.038.853-28', supervisor:'—', empresa:'G INFO' },
-];
-
-/* ============================================================
-   ESTADO DA APLICAÇÃO
-   ============================================================ */
-let colaboradorAtual = null;
-let modoAtual = 'prod'; // 'prod' ou 'retrab'
-let mesAtual = new Date().getMonth();
-let anoAtual = new Date().getFullYear();
-let producao = [];
-let colaboradores = [];
-
-/* ============================================================
-   UTILITÁRIOS
-   ============================================================ */
-function normalizarCPF(cpf) {
-  return (cpf || '').replace(/\D/g, '');
+function normalizarNome(nome){
+  return (nome||'').toUpperCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^A-Z0-9 ]/g,'')
+    .replace(/\s+/g,' ').trim();
 }
 
-function normalizarNome(nome) {
-  return (nome || '')
-    .toUpperCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-// Comparação tolerante de nomes (pequenas diferenças de digitação)
-function nomesParecidos(a, b) {
-  const na = normalizarNome(a);
-  const nb = normalizarNome(b);
-  if (na === nb) return true;
-  // Se um contém o outro e a diferença de tamanho é pequena
-  if (na.includes(nb) || nb.includes(na)) {
-    const diff = Math.abs(na.length - nb.length);
-    if (diff <= 5) return true;
-  }
-  // Distância de Levenshtein para pequenas diferenças
-  return levenshtein(na, nb) <= 3;
-}
-
-function levenshtein(a, b) {
-  const m = a.length, n = b.length;
-  if (m === 0) return n;
-  if (n === 0) return m;
-  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      dp[i][j] = a[i-1] === b[j-1]
-        ? dp[i-1][j-1]
-        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
-    }
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  if(m===0)return n; if(n===0)return m;
+  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++)dp[i][0]=i;
+  for(let j=0;j<=n;j++)dp[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++){
+    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
   }
   return dp[m][n];
 }
 
-function formatarCPFInput(valor) {
-  const v = valor.replace(/\D/g, '').slice(0, 11);
-  if (v.length <= 3) return v;
-  if (v.length <= 6) return v.replace(/(\d{3})(\d+)/, '$1.$2');
-  if (v.length <= 9) return v.replace(/(\d{3})(\d{3})(\d+)/, '$1.$2.$3');
-  return v.replace(/(\d{3})(\d{3})(\d{3})(\d+)/, '$1.$2.$3-$4');
-}
-
-function isTipoExcluido(tipo) {
-  const t = normalizarNome(tipo);
-  return TIPOS_EXCLUIDOS.some(ex => normalizarNome(ex) === t);
-}
-
-function diasNoMes(mes, ano) {
-  return new Date(ano, mes + 1, 0).getDate();
-}
-
-function primeiroDiaSemana(mes, ano) {
-  return new Date(ano, mes, 1).getDay();
-}
-
-function formatarData(iso) {
-  if (!iso) return '';
-  const [ano, mes, dia] = iso.split('-');
-  return `${dia}/${mes}/${ano}`;
-}
-
-/* ============================================================
-   CARREGAMENTO DE DADOS
-   ============================================================ */
-async function carregarDados() {
-  // Em produção, substitua por:
-  // const prod = await fetch('producao.json').then(r => r.json());
-  // const colab = await fetch('colaboradores.json').then(r => r.json());
-  producao = PRODUCAO_EXEMPLO;
-  colaboradores = COLABORADORES_EXEMPLO;
-}
-
-/* ============================================================
-   LOGIN
-   ============================================================ */
-function tentarLogin() {
-  const cpfDigitado = normalizarCPF(document.getElementById('cpfInput').value);
-  const erroEl = document.getElementById('loginError');
-  erroEl.textContent = '';
-
-  if (cpfDigitado.length !== 11) {
-    erroEl.textContent = 'CPF inválido. Digite os 11 dígitos.';
-    return;
+function nomesParecidos(a,b){
+  const na=normalizarNome(a), nb=normalizarNome(b);
+  if(!na||!nb)return false;
+  if(na===nb)return true;
+  if(na.includes(nb)||nb.includes(na)){
+    if(Math.abs(na.length-nb.length)<=6)return true;
   }
-
-  const encontrado = colaboradores.find(c => normalizarCPF(c.cpf) === cpfDigitado);
-  if (!encontrado) {
-    erroEl.textContent = 'CPF não encontrado na base de colaboradores.';
-    return;
-  }
-
-  colaboradorAtual = encontrado;
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appScreen').style.display = 'block';
-  document.getElementById('userName').textContent = encontrado.nome;
-  document.getElementById('userSupervisor').textContent = 'Supervisor: ' + (encontrado.supervisor || '—');
-
-  mesAtual = new Date().getMonth();
-  anoAtual = new Date().getFullYear();
-  modoAtual = 'prod';
-  atualizarToggle();
-  renderizarCalendario();
+  return levenshtein(na,nb)<=4;
 }
 
-function logout() {
-  colaboradorAtual = null;
-  document.getElementById('appScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'block';
-  document.getElementById('cpfInput').value = '';
-  document.getElementById('loginError').textContent = '';
+function isTipoExcluido(tipo){
+  const t=normalizarNome(tipo);
+  return TIPOS_EXCLUIDOS.some(ex=>normalizarNome(ex)===t);
+}
+
+function formatarCPFInput(v){
+  v=v.replace(/\D/g,'').slice(0,11);
+  if(v.length<=3)return v;
+  if(v.length<=6)return v.replace(/(\d{3})(\d+)/,'$1.$2');
+  if(v.length<=9)return v.replace(/(\d{3})(\d{3})(\d+)/,'$1.$2.$3');
+  return v.replace(/(\d{3})(\d{3})(\d{3})(\d+)/,'$1.$2.$3-$4');
+}
+
+function diasNoMes(m,a){return new Date(a,m+1,0).getDate();}
+function primeiroDiaSemana(m,a){return new Date(a,m,1).getDay();}
+function formatarDataBR(iso){
+  if(!iso)return '';
+  const p=iso.split('-');
+  if(p.length!==3)return iso;
+  return `${p[2]}/${p[1]}/${p[0]}`;
 }
 
 /* ============================================================
-   FILTRO DE REGISTROS POR MODO
+   4) ESTADO
    ============================================================ */
-function registrosDoColaborador() {
-  if (!colaboradorAtual) return [];
-  const nomeColab = colaboradorAtual.nome;
+let colaboradorAtual=null;
+let modoAtual='prod';
+let mesAtual=new Date().getMonth();
+let anoAtual=new Date().getFullYear();
+let colaboradores=[];
+let producao=[];
 
-  return producao.filter(reg => {
-    if (modoAtual === 'prod') {
-      // Produção: técnico original é o próprio colaborador E tipo não excluído
-      if (!nomesParecidos(reg.tecnicoOriginal, nomeColab)) return false;
-      if (isTipoExcluido(reg.tipoAtividade)) return false;
-      return true;
-    } else {
-      // Retrabalho: técnico_original (coluna Y) é o colaborador
-      // (o registro é um retrabalho onde o técnico original é o responsável)
-      return nomesParecidos(reg.tecnicoOriginal, nomeColab);
+function carregarDados(){
+  colaboradores = COLABORADORES_RAW.map(r=>({
+    nome:r[0], matricula:r[1], empresa:r[2], cpf:r[3],
+    supervisor: SUPERVISORES[r[0]] || '—'
+  }));
+  producao = PRODUCAO_RAW.map(r=>({
+    protocolo: r[0],
+    cliente: r[1],          // na sua planilha B é o nome do técnico; ajuste se necessário
+    tipoAtividade: r[3],    // D — na sua planilha D é "RET. COM DESCONTO"; ajuste
+    cidade: r[7],           // H — na sua planilha H é "INSTALAÇÃO"; ajuste
+    bairro: r[8],           // I
+    dataEncerramento: r[18],// data fictícia — troque pelo índice real
+    cat4: r[19],            // V
+    solucao: r[20],         // X
+    tecnicoOriginal: r[21]  // Y
+  }));
+}
+
+/* ============================================================
+   5) LOGIN
+   ============================================================ */
+function tentarLogin(){
+  const erro=document.getElementById('loginError');
+  erro.textContent='';
+  const cpfDigitado=normalizarCPF(document.getElementById('cpfInput').value);
+  if(cpfDigitado.length!==11){erro.textContent='CPF inválido. Digite os 11 dígitos.';return;}
+  const enc=colaboradores.find(c=>normalizarCPF(c.cpf)===cpfDigitado);
+  if(!enc){erro.textContent='CPF não encontrado na base.';return;}
+  colaboradorAtual=enc;
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('userName').textContent=enc.nome;
+  document.getElementById('userSupervisor').textContent='Supervisor: '+enc.supervisor;
+  mesAtual=new Date().getMonth(); anoAtual=new Date().getFullYear();
+  modoAtual='prod'; atualizarToggle(); renderizarCalendario();
+}
+
+function logout(){
+  colaboradorAtual=null;
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('loginScreen').style.display='block';
+  document.getElementById('cpfInput').value='';
+  document.getElementById('loginError').textContent='';
+}
+
+/* ============================================================
+   6) FILTRO
+   ============================================================ */
+function registrosDoColaborador(){
+  if(!colaboradorAtual)return [];
+  const nome=colaboradorAtual.nome;
+  return producao.filter(reg=>{
+    if(modoAtual==='prod'){
+      if(isTipoExcluido(reg.tipoAtividade))return false;
+      return nomesParecidos(reg.tecnicoOriginal,nome);
+    }else{
+      return nomesParecidos(reg.tecnicoOriginal,nome);
     }
   });
 }
 
 /* ============================================================
-   RENDERIZAÇÃO DO CALENDÁRIO
+   7) CALENDÁRIO
    ============================================================ */
-function renderizarCalendario() {
-  const grid = document.getElementById('daysGrid');
-  const label = document.getElementById('monthLabel');
-  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  label.textContent = `${meses[mesAtual]} ${anoAtual}`;
+function renderizarCalendario(){
+  const grid=document.getElementById('daysGrid');
+  const label=document.getElementById('monthLabel');
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  label.textContent=`${meses[mesAtual]} ${anoAtual}`;
+  grid.innerHTML='';
 
-  grid.innerHTML = '';
-
-  const registros = registrosDoColaborador();
-  // Agrupa por data de encerramento
-  const porDia = {};
-  registros.forEach(r => {
-    const d = r.dataEncerramento;
-    if (!d) return;
-    if (!porDia[d]) porDia[d] = [];
-    porDia[d].push(r);
+  const porDia={};
+  registrosDoColaborador().forEach(r=>{
+    if(!r.dataEncerramento)return;
+    if(!porDia[r.dataEncerramento])porDia[r.dataEncerramento]=[];
+    porDia[r.dataEncerramento].push(r);
   });
 
-  const totalDias = diasNoMes(mesAtual, anoAtual);
-  const offset = primeiroDiaSemana(mesAtual, anoAtual);
-
-  // Células vazias antes do dia 1
-  for (let i = 0; i < offset; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'day-cell empty';
-    grid.appendChild(cell);
+  const total=diasNoMes(mesAtual,anoAtual);
+  const off=primeiroDiaSemana(mesAtual,anoAtual);
+  for(let i=0;i<off;i++){
+    const c=document.createElement('div');c.className='day-cell empty';grid.appendChild(c);
   }
+  const hoje=new Date();
+  const hojeStr=`${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
 
-  const hoje = new Date();
-  const hojeStr = `${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
-
-  for (let dia = 1; dia <= totalDias; dia++) {
-    const dataStr = `${anoAtual}-${String(mesAtual+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
-    const cell = document.createElement('div');
-    cell.className = 'day-cell';
-    if (dataStr === hojeStr) cell.classList.add('today');
-
-    const num = document.createElement('div');
-    num.className = 'day-num';
-    num.textContent = dia;
-    cell.appendChild(num);
-
-    const regs = porDia[dataStr] || [];
-    if (regs.length > 0) {
-      if (modoAtual === 'prod') cell.classList.add('has-data');
-      else cell.classList.add('has-retrab');
-
-      const badge = document.createElement('div');
-      badge.className = 'badge ' + (modoAtual === 'prod' ? 'badge-prod' : 'badge-retrab');
-      badge.textContent = regs.length + (regs.length === 1 ? ' item' : ' itens');
-      cell.appendChild(badge);
-
-      cell.addEventListener('click', () => abrirModal(dataStr, regs));
+  for(let d=1;d<=total;d++){
+    const ds=`${anoAtual}-${String(mesAtual+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const cell=document.createElement('div');
+    cell.className='day-cell';
+    if(ds===hojeStr)cell.classList.add('today');
+    const num=document.createElement('div');num.className='day-num';num.textContent=d;cell.appendChild(num);
+    const regs=porDia[ds]||[];
+    if(regs.length>0){
+      cell.classList.add(modoAtual==='prod'?'has-data':'has-retrab');
+      const b=document.createElement('div');
+      b.className='badge '+(modoAtual==='prod'?'badge-prod':'badge-retrab');
+      b.textContent=regs.length+(regs.length===1?' item':' itens');
+      cell.appendChild(b);
+      cell.addEventListener('click',()=>abrirModal(ds,regs));
     }
-
     grid.appendChild(cell);
   }
 }
 
 /* ============================================================
-   MODAL
+   8) MODAL
    ============================================================ */
-function abrirModal(dataStr, registros) {
-  const overlay = document.getElementById('modalOverlay');
-  const title = document.getElementById('modalTitle');
-  const tbody = document.getElementById('modalTbody');
-
-  const modoLabel = modoAtual === 'prod' ? 'Produção' : 'Retrabalhos';
-  title.textContent = `${modoLabel} — ${formatarData(dataStr)} (${registros.length} item(ns))`;
-
-  tbody.innerHTML = '';
-  registros.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${r.protocolo || '—'}</td>
-      <td>${r.cliente || '—'}</td>
-      <td>${r.tipoAtividade || '—'}</td>
-      <td>${r.cidade || '—'}</td>
-      <td>${r.bairro || '—'}</td>
-      <td>${r.cat4 || '—'}</td>
-      <td>${r.solucao || '—'}</td>
+function abrirModal(dataStr,regs){
+  const overlay=document.getElementById('modalOverlay');
+  const title=document.getElementById('modalTitle');
+  const tbody=document.getElementById('modalTbody');
+  const modoLabel=modoAtual==='prod'?'Produção':'Retrabalhos';
+  title.textContent=`${modoLabel} — ${formatarDataBR(dataStr)} (${regs.length} item(ns))`;
+  tbody.innerHTML='';
+  regs.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${r.protocolo||'—'}</td>
+      <td>${r.cliente||'—'}</td>
+      <td>${r.tipoAtividade||'—'}</td>
+      <td>${r.cidade||'—'}</td>
+      <td>${r.bairro||'—'}</td>
+      <td>${r.cat4||'—'}</td>
+      <td>${r.solucao||'—'}</td>
     `;
     tbody.appendChild(tr);
   });
-
   overlay.classList.add('open');
 }
+function fecharModal(){document.getElementById('modalOverlay').classList.remove('open');}
 
-function fecharModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
+/* ============================================================
+   9) TOGGLE
+   ============================================================ */
+function atualizarToggle(){
+  const bp=document.getElementById('btnProd');
+  const br=document.getElementById('btnRetrab');
+  if(modoAtual==='prod'){bp.classList.add('active');br.classList.remove('active','active-retrab');}
+  else{br.classList.add('active-retrab');br.classList.remove('active');bp.classList.remove('active');}
 }
 
 /* ============================================================
-   TOGGLE PRODUÇÃO / RETRABALHO
+   10) EVENTOS
    ============================================================ */
-function atualizarToggle() {
-  const btnProd = document.getElementById('btnProd');
-  const btnRetrab = document.getElementById('btnRetrab');
-  if (modoAtual === 'prod') {
-    btnProd.classList.add('active');
-    btnProd.classList.remove('active-retrab');
-    btnRetrab.classList.remove('active', 'active-retrab');
-  } else {
-    btnRetrab.classList.add('active-retrab');
-    btnRetrab.classList.remove('active');
-    btnProd.classList.remove('active');
-  }
-}
+document.addEventListener('DOMContentLoaded',()=>{
+  carregarDados();
 
-/* ============================================================
-   EVENTOS
-   ============================================================ */
-document.addEventListener('DOMContentLoaded', async () => {
-  await carregarDados();
+  const inp=document.getElementById('cpfInput');
+  inp.addEventListener('input',e=>{e.target.value=formatarCPFInput(e.target.value);});
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')tentarLogin();});
 
-  const cpfInput = document.getElementById('cpfInput');
-  cpfInput.addEventListener('input', e => {
-    e.target.value = formatarCPFInput(e.target.value);
-  });
-  cpfInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') tentarLogin();
-  });
+  document.getElementById('loginBtn').addEventListener('click',tentarLogin);
+  document.getElementById('logoutBtn').addEventListener('click',logout);
 
-  document.getElementById('loginBtn').addEventListener('click', tentarLogin);
-  document.getElementById('logoutBtn').addEventListener('click', logout);
-
-  document.getElementById('prevMonth').addEventListener('click', () => {
-    mesAtual--;
-    if (mesAtual < 0) { mesAtual = 11; anoAtual--; }
-    renderizarCalendario();
+  document.getElementById('prevMonth').addEventListener('click',()=>{
+    mesAtual--;if(mesAtual<0){mesAtual=11;anoAtual--;}renderizarCalendario();
   });
-  document.getElementById('nextMonth').addEventListener('click', () => {
-    mesAtual++;
-    if (mesAtual > 11) { mesAtual = 0; anoAtual++; }
-    renderizarCalendario();
+  document.getElementById('nextMonth').addEventListener('click',()=>{
+    mesAtual++;if(mesAtual>11){mesAtual=0;anoAtual++;}renderizarCalendario();
   });
-
-  document.getElementById('btnProd').addEventListener('click', () => {
-    modoAtual = 'prod';
-    atualizarToggle();
-    renderizarCalendario();
-  });
-  document.getElementById('btnRetrab').addEventListener('click', () => {
-    modoAtual = 'retrab';
-    atualizarToggle();
-    renderizarCalendario();
-  });
-
-  document.getElementById('closeModal').addEventListener('click', fecharModal);
-  document.getElementById('modalOverlay').addEventListener('click', e => {
-    if (e.target.id === 'modalOverlay') fecharModal();
-  });
+  document.getElementById('btnProd').addEventListener('click',()=>{modoAtual='prod';atualizarToggle();renderizarCalendario();});
+  document.getElementById('btnRetrab').addEventListener('click',()=>{modoAtual='retrab';atualizarToggle();renderizarCalendario();});
+  document.getElementById('closeModal').addEventListener('click',fecharModal);
+  document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target.id==='modalOverlay')fecharModal();});
 });
 </script>
 </body>
