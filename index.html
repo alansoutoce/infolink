@@ -4,573 +4,634 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Acompanhamento de Produção - Equipe Técnica</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Roboto,Arial,sans-serif}
-  body{background:#f0f2f5;color:#1a1a2e;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
-  .container{width:100%;max-width:1100px}
-  #loginScreen{background:#fff;padding:40px 30px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.08);max-width:420px;margin:60px auto;text-align:center}
-  #loginScreen h1{font-size:1.5rem;margin-bottom:8px;color:#0d47a1}
-  #loginScreen p{color:#666;margin-bottom:24px;font-size:.9rem}
-  #cpfInput{width:100%;padding:14px 16px;border:2px solid #ddd;border-radius:10px;font-size:1rem;margin-bottom:16px;text-align:center;letter-spacing:1px}
-  #cpfInput:focus{outline:none;border-color:#0d47a1}
-  .btn{background:#0d47a1;color:#fff;border:none;padding:14px 24px;border-radius:10px;font-size:1rem;cursor:pointer;width:100%;font-weight:600}
-  .btn:hover{background:#0a3a7a}
-  .error{color:#d32f2f;font-size:.85rem;margin-top:10px;min-height:18px}
-  #appScreen{display:none;width:100%}
-  .header{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:16px 24px;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:20px;flex-wrap:wrap;gap:10px}
-  .header .user-info strong{font-size:1.1rem;color:#0d47a1;display:block}
-  .header .user-info span{font-size:.85rem;color:#666}
-  .logout{background:transparent;border:2px solid #d32f2f;color:#d32f2f;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600}
-  .logout:hover{background:#d32f2f;color:#fff}
-  .toggle-bar{display:flex;gap:8px;background:#fff;padding:6px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:20px;width:fit-content}
-  .toggle-btn{padding:10px 28px;border:none;border-radius:8px;background:transparent;cursor:pointer;font-weight:600;font-size:.95rem;color:#555}
-  .toggle-btn.active{background:#0d47a1;color:#fff}
-  .toggle-btn.active-retrab{background:#e65100;color:#fff}
-  .calendar-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-  .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-  .calendar-header h2{font-size:1.2rem;color:#0d47a1}
-  .nav-btn{background:#f0f2f5;border:none;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1.1rem;color:#0d47a1;font-weight:bold}
-  .nav-btn:hover{background:#e0e4ea}
-  .weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
-  .weekdays div{text-align:center;font-weight:600;font-size:.8rem;color:#888;padding:6px 0}
-  .days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-  .day-cell{min-height:80px;border-radius:10px;padding:6px;background:#f8f9fa;border:1px solid #eee;display:flex;flex-direction:column;cursor:default;position:relative}
-  .day-cell.has-data{cursor:pointer;border-color:#c8e6c9;background:#e8f5e9}
-  .day-cell.has-data:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
-  .day-cell.has-retrab{border-color:#ffe0b2;background:#fff3e0}
-  .day-cell.has-retrab:hover{box-shadow:0 4px 12px rgba(230,81,0,.15)}
-  .day-cell .day-num{font-weight:700;font-size:.95rem;color:#333}
-  .day-cell .badge{margin-top:auto;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:20px;align-self:flex-start}
-  .badge-prod{background:#0d47a1;color:#fff}
-  .badge-retrab{background:#e65100;color:#fff}
-  .day-cell.empty{background:transparent;border:none}
-  .day-cell.today{border:2px solid #0d47a1}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
-  .modal-overlay.open{display:flex}
-  .modal{background:#fff;border-radius:16px;width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.2)}
-  .modal-header{padding:18px 24px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
-  .modal-header h3{font-size:1.1rem;color:#0d47a1}
-  .modal-header .close-btn{background:#f0f2f5;border:none;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#555}
-  .modal-body{padding:16px 24px 24px;overflow-y:auto}
-  .table-wrap{overflow-x:auto}
-  table{width:100%;border-collapse:collapse;font-size:.85rem}
-  thead th{background:#0d47a1;color:#fff;padding:10px 12px;text-align:left;white-space:nowrap}
-  tbody td{padding:9px 12px;border-bottom:1px solid #eee;vertical-align:top}
-  tbody tr:nth-child(even){background:#fafbfc}
-  tbody tr:hover{background:#e3f2fd}
-  @media(max-width:640px){.day-cell{min-height:60px}.header{flex-direction:column;align-items:flex-start}}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  /* LOGIN */
+  #loginBox {
+    max-width: 420px;
+    margin: 80px auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  #loginBox h1 { color: #1e3c72; font-size: 22px; margin-bottom: 8px; }
+  #loginBox p { color: #777; font-size: 14px; margin-bottom: 25px; }
+  #loginBox input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    letter-spacing: 1px;
+    transition: border .2s;
+  }
+  #loginBox input:focus { outline: none; border-color: #2a5298; }
+  #loginBox button {
+    width: 100%;
+    margin-top: 18px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .15s;
+  }
+  #loginBox button:hover { transform: translateY(-2px); }
+  #loginMsg { margin-top: 15px; font-size: 14px; color: #d32f2f; min-height: 20px; }
+
+  /* HEADER */
+  #appArea { display: none; }
+  header {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+  }
+  header .user-info h2 { color: #1e3c72; font-size: 18px; }
+  header .user-info span { color: #666; font-size: 13px; }
+  header button {
+    padding: 10px 20px;
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  /* CALENDÁRIO */
+  .calendar-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .cal-header h3 { color: #1e3c72; font-size: 20px; text-transform: capitalize; }
+  .cal-nav button {
+    background: #2a5298;
+    color: #fff;
+    border: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: 6px;
+  }
+  .cal-nav button:hover { background: #1e3c72; }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .cal-grid .dow {
+    text-align: center;
+    font-weight: bold;
+    color: #777;
+    font-size: 12px;
+    padding: 8px 0;
+    text-transform: uppercase;
+  }
+  .day {
+    aspect-ratio: 1/1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .15s;
+    position: relative;
+    background: #f5f7fb;
+  }
+  .day:hover { background: #e3eaf7; border-color: #2a5298; }
+  .day.empty { background: transparent; cursor: default; }
+  .day.empty:hover { border-color: transparent; }
+  .day .num { font-weight: 600; }
+  .day .count {
+    font-size: 10px;
+    background: #2a5298;
+    color: #fff;
+    border-radius: 10px;
+    padding: 1px 7px;
+    margin-top: 3px;
+    font-weight: bold;
+  }
+  .day.has-prod { background: #e8f5e9; border-color: #4caf50; }
+  .day.has-prod:hover { background: #c8e6c9; }
+  .day.today { box-shadow: inset 0 0 0 2px #ff9800; }
+
+  /* MODAL */
+  #modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 999;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  #modal .modal-content {
+    background: #fff;
+    max-width: 1100px;
+    margin: 40px auto;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  #modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 12px;
+  }
+  #modal .modal-header h3 { color: #1e3c72; }
+  #modal .close-btn {
+    background: #d32f2f;
+    color: #fff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: #1e3c72;
+    color: #fff;
+    padding: 10px 8px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  td { padding: 9px 8px; border-bottom: 1px solid #eee; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+  tr:hover td { background: #eef3fb; }
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    background: #e3eaf7;
+    color: #1e3c72;
+  }
+  .empty-msg { text-align: center; color: #999; padding: 30px; }
+
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    font-size: 18px;
+    color: #1e3c72;
+  }
+  .spinner {
+    width: 50px; height: 50px;
+    border: 5px solid #ddd;
+    border-top-color: #2a5298;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 15px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 600px) {
+    .day { font-size: 13px; }
+    header { flex-direction: column; align-items: flex-start; }
+  }
 </style>
 </head>
 <body>
 
-<div id="loginScreen">
-  <h1>🔧 Produção Técnica</h1>
-  <p>Informe seu CPF para acessar</p>
-  <input type="text" id="cpfInput" placeholder="000.000.000-00" maxlength="14" inputmode="numeric">
-  <button class="btn" id="loginBtn">Entrar</button>
-  <div class="error" id="loginError"></div>
-  <div style="margin-top:14px;font-size:.75rem;color:#999">Dica: tente 646.525.643-68</div>
-</div>
+<div id="loading"><div class="spinner"></div>Carregando planilhas...</div>
 
-<div id="appScreen" class="container">
-  <div class="header">
-    <div class="user-info">
-      <strong id="userName">—</strong>
-      <span id="userSupervisor">Supervisor: —</span>
-    </div>
-    <button class="logout" id="logoutBtn">Sair</button>
-  </div>
-  <div class="toggle-bar">
-    <button class="toggle-btn active" id="btnProd">📈 Produção</button>
-    <button class="toggle-btn" id="btnRetrab">🔁 Retrabalhos</button>
-  </div>
-  <div class="calendar-card">
-    <div class="calendar-header">
-      <button class="nav-btn" id="prevMonth">‹</button>
-      <h2 id="monthLabel">—</h2>
-      <button class="nav-btn" id="nextMonth">›</button>
-    </div>
-    <div class="weekdays">
-      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-    </div>
-    <div class="days-grid" id="daysGrid"></div>
-  </div>
-</div>
+<div class="container">
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="modalTitle">Detalhes do dia</h3>
-      <button class="close-btn" id="closeModal">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Protocolo</th><th>Cliente</th><th>Tipo Atividade</th>
-              <th>Cidade</th><th>Bairro</th><th>Reclamação</th><th>Solução</th>
-            </tr>
-          </thead>
-          <tbody id="modalTbody"></tbody>
-        </table>
+  <!-- LOGIN -->
+  <div id="loginBox">
+    <h1>🔧 Acompanhamento de Produção</h1>
+    <p>Digite seu CPF para acessar</p>
+    <input type="text" id="cpfInput" placeholder="000.000.000-00" maxlength="14" autocomplete="off">
+    <button onclick="fazerLogin()">Entrar</button>
+    <div id="loginMsg"></div>
+  </div>
+
+  <!-- APP -->
+  <div id="appArea">
+    <header>
+      <div class="user-info">
+        <h2 id="userName">—</h2>
+        <span id="userInfo">—</span>
       </div>
+      <button onclick="sair()">Sair</button>
+    </header>
+
+    <div class="calendar-card">
+      <div class="cal-header">
+        <h3 id="monthLabel">—</h3>
+        <div class="cal-nav">
+          <button onclick="mudarMes(-1)">‹</button>
+          <button onclick="mudarMes(1)">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
     </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Produção do dia</h3>
+      <button class="close-btn" onclick="fecharModal()">×</button>
+    </div>
+    <div class="table-wrap" id="modalBody"></div>
   </div>
 </div>
 
 <script>
 /* ============================================================
-   1) DADOS REAIS DA SUA PLANILHA (aba CPF)
-   Colunas: A=Nome, B=Matrícula, C=Empresa, D=CPF
+   DADOS GLOBAIS
    ============================================================ */
-const COLABORADORES_RAW = [
-  ['ALAN FEITOSA DE SOUTO','000262','G INFO','646.525.643-68'],
-  ['ANTONIO MARCOS LIMA DA SILVA','','G INFO','009.280.143-98'],
-  ['BRUNO MATIAS DA SILVA','','G INFO','070.863.133-94'],
-  ['CLAUDIANO CICINATO DA SILVA','','G INFO','026.126.893-70'],
-  ['DJONATHA COSTA DA SILVA','','G INFO','112.311.524-94'],
-  ['ELISANGELA BOTELHO DA ROCHA','','G INFO','664.730.393-68'],
-  ['ELISSON PEREIRA COUTINHO NOVAIS','','G INFO','078.114.013-71'],
-  ['FABIO SILVESTRE BRITO','000115','G INFO','002.590.223-73'],
-  ['FRANCISCO CARLOS EUGENIO DO NASCIMENTO','000333','G INFO','045.179.853-85'],
-  ['FRANCISCO DAS CHAGAS E SILVA ROCHA','000216','G INFO','604.677.683-07'],
-  ['FRANCISCO DIEGO ALVES FERREIRA','000295','G INFO','065.966.543-38'],
-  ['FRANCISCO HELIO MARINHO CUNHA NETO','','G INFO','078.519.483-55'],
-  ['FRANCISCO LUCAS SOUSA CUNHA','000305','G INFO','625.648.953-52'],
-  ['GABRIEL MARTINS MUNIZ','000318','G INFO','078.282.793-45'],
-  ['GEILSON DA SILVA MOURA','','G INFO','070.629.143-39'],
-  ['GILVAN ASSUNCAO SILVA','000343','G INFO','019.738.393-93'],
-  ['GLEISON VALENTIM ARAUJO','','G INFO','075.630.503-96'],
-  ['GUTEMBERGUE OLIVEIRA','000271','G INFO','020.305.163-76'],
-  ['HALLEF GUILHERME LIMA CLEMENTE SILVA','','G INFO','077.115.853-06'],
-  ['IRINETO FERREIRA DE AGUIAR','000217','G INFO','033.727.593-97'],
-  ['JOAO PAULO GOUVEIA DA SILVA','','G INFO','891.107.223-00'],
-  ['JOSE AMAURY BORGES FILHO','','G INFO','068.959.103-95'],
-  ['JOSE MARIA DA COSTA LEONARDO','000221','G INFO','734.146.113-68'],
-  ['LUCAS SOUZA SILVA','','G INFO','074.800.793-89'],
-  ['LUCIEUDO BANDEIRA ALVES FILHO','000320','G INFO','074.418.063-56'],
-  ['LUIZ CARLOS MACHADO MACIEL','','G INFO','058.715.743-78'],
-  ['MAILSON FRANCISCO PEREIRA','','G INFO','062.780.033-50'],
-  ['MARCOS PEREIRA CARVALHO FILHO','','G INFO','073.501.783-28'],
-  ['MARCOS VICTOR LOPES MEDEIROS FONSECA','','G INFO','034.029.363-21'],
-  ['PAULO ROBERTO ARAUJO GALVAO','','G INFO','014.069.373-47'],
-  ['PEDRO DA SILVA MAIA','','G INFO','092.106.483-74'],
-  ['ROBSON BEZERRA DA SILVA','','G INFO','619.340.993-92'],
-  ['ROMARIO NOBRE DE MELO','000336','G INFO','051.728.733-17'],
-  ['RONALD MESQUITA DOS SANTOS','','G INFO','107.099.153-81'],
-  ['THIAGO CASTRO DO NASCIMENTO','','G INFO','086.965.763-14'],
-  ['VALDERILO FERREIRA LIMA JUNIOR','000293','G INFO','082.974.113-54'],
-  ['CAIO VICTOR MONTEIRO DE OLIVEIRA','','','047.553.713-09'],
-  ['WILLIAM ADRIANO DANTAS','000116','G INFO','070.038.853-28'],
-  ['YVINA CHAGAS ALENCAR','','G INFO','080.135.683-00'],
-  ['ALEFF PEREIRA SOARES','','IFT','068.984.563-42'],
-  ['ALEXANDRE SANTOS GOMES','','IFT','769.663.563-87'],
-  ['ALLYSSON DA SILVA MARINHO','','IFT','088.824.123-26'],
-  ['ANDRE SILVA LOIOLA','','IFT','066.675.003-38'],
-  ['ANTONIO CARLOS FERREIRA DA SILVA','','IFT','880.346.903-68'],
-  ['ANTONIO EDUARDO TEIXEIRA CAMELO','','IFT','017.467.413-92'],
-  ['ANTONIO FELIPE CASTRO DE OLIVEIRA','000614','IFT','071.005.963-94'],
-  ['ANTONIO FELIPE SOARES SILVA TAVARES','','IFT','076.287.933-55'],
-  ['ANTONIO RAFAEL ALEXANDRE DE SOUSA','','IFT','072.535.953-60'],
-  ['ARLISON DA SILVA PEREIRA','000475','IFT','622.847.103-10'],
-  ['BRENDHOWN CESAR VIANA SILVA FALCAO','','IFT','072.308.153-04'],
-  ['CARLOS HENRIQUE LINO SILVA','','IFT','076.597.513-01'],
-  ['CLAYLSON MORAES DOS SANTOS','','IFT','075.965.843-90'],
-  ['DAVI MEDINA DE ARAUJO','','IFT','014.259.203-06'],
-  ['DAVID DE SOUSA SILVA','','IFT','076.250.123-52'],
-  ['ELIZEU DA SILVA FERREIRA','','','614.694.923-00'],
-  ['EMYLLIE CRISTINE ANDRADE CRUZ','','IFT','051.352.823-78'],
-  ['EVERLAN DA PENHA TOME','','IFT','008.385.843-14'],
-  ['FRANCISCO FELIPE DE LIMA ALVES','000059','IFT','058.411.523-78'],
-  ['FRANCISCO MATHEUS PEREIRA MENDES','','IFT','082.775.843-00'],
-  ['FRANCISCO TIAGO PINHEIRO','','IFT','041.037.803-80'],
-  ['ISMAEL JULIAO SOARES','','IFT','633.338.113-67'],
-  ['ISRAEL OLIVEIRA MORAIS','','IFT','095.190.783-20'],
-  ['ISRAEL ROBERTH SANTIAGO DE MENEZES','','IFT','078.961.853-26'],
-  ['ITALO EMANOEL DA SILVA MARQUES','','IFT','109.862.873-00'],
-  ['ITALO XAVIER DA SILVA','','IFT','070.058.973-23'],
-  ['JOAO PAULO DA SILVA LIMA','','IFT','001.058.623-71'],
-  ['JOSE EDNARDO DA SILVA DE LIMA','','IFT','615.171.623-00'],
-  ['JOSE HENRIQUE PEREIRA SOUSA','','IFT','620.856.313-55'],
-  ['JOSE ILDEVAM SOUSA DO NASCIMENTO','000038','IFT','071.778.423-14'],
-  ['JOSE WELLITON VIEIRA FELINTO','','IFT','067.905.283-69'],
-  ['LUIZ CARLOS ALVES LOPES','','IFT','080.989.923-06'],
-  ['MAISSON FERREIRA DA SILVA','','IFT','096.369.633-55'],
-  ['MARCOS AURELIO DE SOUSA OLIVEIRA','','IFT','062.256.953-89'],
-  ['MATEUS GABRIEL ROCHA','','IFT','087.975.463-05'],
-  ['RIAN KELVIN ARAUJO MOURAO','','IFT','625.271.283-35'],
-  ['SAMUEL RIBEIRO FELISMINO','','IFT','092.783.123-63'],
-  ['VANIZIO PEREIRA AZEVEDO DO NASCIMENTO','','IFT','048.983.603-86'],
-  ['VICTOR FRANCISCO DE OLIVEIRA GOMES','','IFT','097.395.243-11'],
-  ['VINICIUS SILVA LEARTE','','IFT','603.334.943-18'],
-  ['WELLISON FERREIRA LIMA','','IFT','079.951.163-30'],
-  ['ITALO RIBEIRO DA SILVA','000602','INFOLINK','100.473.673-85'],
-  ['PAULO ITALO JORGE DE MORAES','000609','INFOLINK','071.346.433-01'],
-  ['WESLEY LUCAS BRITO DA SILVA','','INFOLINK','628.843.383-73'],
-  ['FELIPE MARTINS DAMASCENO','','TFE','040.337.373-59'],
-  ['JONATHAN BRENO NOBRE DA SILVA','','TFE','604.548.913-69'],
-  ['KELTON CLEMENTE DOS SANTOS','','TWE','013.487.253-38'],
-  ['LUIZ OCTAVIO ALMEIDA DA SILVA','','TWE','087.399.743-32']
-];
+let CPF_DATA = [];          // { nome, cpf, empresa, matricula }
+let PRODUCAO = [];          // registros de encerradasgestao
+let USUARIO = null;         // colaborador logado
+let MES_ATUAL = new Date(); // mês exibido no calendário
 
-/* Supervisor por colaborador — preencha conforme sua realidade.
-   Se você tiver uma coluna de supervisor na planilha, adicione aqui. */
-const SUPERVISORES = {
-  'ALAN FEITOSA DE SOUTO':'MAILSON FRANCISCO PEREIRA',
-  'ANTONIO TIAGO AMANCIO DA SILVA':'MAILSON FRANCISCO PEREIRA',
-  'FRANCISCO LAERTE PEREIRA RODRIGUES':'MAILSON FRANCISCO PEREIRA',
-  'JOAO PAULO DA SILVA LIMA':'MAILSON FRANCISCO PEREIRA',
-  'JOSE MARIA DA COSTA LEONARDO':'MAILSON FRANCISCO PEREIRA',
-  'KELTON CLEMENTE DOS SANTOS':'MAILSON FRANCISCO PEREIRA',
-  'LUIZ OCTAVIO ALMEIDA DA SILVA':'MAILSON FRANCISCO PEREIRA',
-  'MAILSON FRANCISCO PEREIRA':'—',
-  'MARCOS VICTOR LOPES MEDEIROS FONSECA':'WILLIAM ADRIANO DANTAS',
-  'WILLIAM ADRIANO DANTAS':'—',
-  'ALEFF PEREIRA SOARES':'WILLIAM ADRIANO DANTAS',
-  'ANTONIO CARLOS FERREIRA DA SILVA':'WILLIAM ADRIANO DANTAS',
-  'ANTONIO EDUARDO TEIXEIRA CAMELO':'WILLIAM ADRIANO DANTAS',
-  'BRUNO MATIAS DA SILVA':'WILLIAM ADRIANO DANTAS',
-  'CLAUDIANO CICINATO DA SILVA':'WILLIAM ADRIANO DANTAS',
-  'DAVI MEDINA DE ARAUJO':'WILLIAM ADRIANO DANTAS',
-  'GEILSON DA SILVA MOURA':'WILLIAM ADRIANO DANTAS',
-  'ITALO XAVIER DA SILVA':'WILLIAM ADRIANO DANTAS',
-  'JOSE HENRIQUE PEREIRA SOUSA':'WILLIAM ADRIANO DANTAS',
-  'JOSE ILDEVAM SOUSA DO NASCIMENTO':'WILLIAM ADRIANO DANTAS',
-  'JOSE WELLITON VIEIRA FELINTO':'WILLIAM ADRIANO DANTAS',
-  'MAISSON FERREIRA DA SILVA':'WILLIAM ADRIANO DANTAS',
-  'VANIZIO PEREIRA AZEVEDO DO NASCIMENTO':'WILLIAM ADRIANO DANTAS',
-  'VINICIUS SILVA LEARTE':'WILLIAM ADRIANO DANTAS',
-  'WELLISON FERREIRA LIMA':'WILLIAM ADRIANO DANTAS',
-  'WESLLEY ALVES UCHOA':'WILLIAM ADRIANO DANTAS',
-  'ALLYSSON DA SILVA MARINHO':'JOSE LEONARDO',
-  'ANDRE SILVA LOIOLA':'MARCOS VICTOR',
-  'ANTONIO FELIPE CASTRO DE OLIVEIRA':'MARCOS VICTOR',
-  'ARLISON DA SILVA PEREIRA':'MARCOS VICTOR',
-  'BRENDHOWN CESAR VIANA SILVA FALCAO':'MARCOS VICTOR',
-  'CAIO VICTOR MONTEIRO DE OLIVEIRA':'MARCOS VICTOR',
-  'CARLOS HENRIQUE LINO SILVA':'MARCOS VICTOR',
-  'DANILO OLIVEIRA DE SOUSA':'MARCOS VICTOR',
-  'DIEGO DA SILVA ASSUNCAO':'MARCOS VICTOR',
-  'ELISSON PEREIRA COUTINHO NOVAIS':'MARCOS VICTOR',
-  'ELIZEU DA SILVA FERREIRA':'MARCOS VICTOR',
-  'EVERLAN DA PENHA TOME':'MARCOS VICTOR',
-  'FELIPE MARTINS DAMASCENO':'MARCOS VICTOR',
-  'FRANCISCO DAS CHAGAS E SILVA ROCHA':'MARCOS VICTOR',
-  'FRANCISCO DIEGO ALVES FERREIRA':'MARCOS VICTOR',
-  'FRANCISCO JHONATA DA COSTA':'MARCOS VICTOR',
-  'FRANCISCO TIAGO PINHEIRO':'JOSE LEONARDO',
-  'GABRIEL MARTINS MUNIZ':'JOSE LEONARDO',
-  'GILVAN ASSUNCAO SILVA':'JOSE LEONARDO',
-  'GLEISON VALENTIM ARAUJO':'JOSE LEONARDO',
-  'GUTEMBERGUE OLIVEIRA':'JOSE LEONARDO',
-  'HALLEF GUILHERME LIMA CLEMENTE SILVA':'JOSE LEONARDO',
-  'ISRAEL OLIVEIRA MORAIS':'JOSE LEONARDO',
-  'ISRAEL ROBERTH SANTIAGO DE MENEZES':'JOSE LEONARDO',
-  'JOAO PAULO GOUVEIA DA SILVA':'JOSE LEONARDO',
-  'LUCAS SOUZA SILVA':'JOSE LEONARDO',
-  'LUIZ CARLOS ALVES LOPES':'JOSE LEONARDO',
-  'MARCOS PEREIRA CARVALHO FILHO':'JOSE LEONARDO',
-  'ROMARIO NOBRE DE MELO':'JOSE LEONARDO',
-  'THIAGO CASTRO DO NASCIMENTO':'JOSE LEONARDO',
-  'FRANCISCO HELIO MARINHO CUNHA NETO':'JOSE LEONARDO',
-  'FRANCISCO MATHEUS PEREIRA MENDES':'JOSE LEONARDO',
-  'FRANCISCO CARLOS EUGENIO DO NASCIMENTO':'JOSE LEONARDO'
-};
-
-/* ============================================================
-   2) PRODUÇÃO — colunas da aba RELATORIO CONTROLADORIA
-   Mapeamento (0-indexado):
-     A=0 Protocolo | B=1 Colaborador | C=2 Equipe | D=3 Ret.ComDesc
-     E=4 Ind4% | F=5 Ret | G=6 Retirada | H=7 Instalação | I=8 Manutenção
-     J=9 AT | K=10 P.V | L=11 D.A. | M=12 Atestado | N=13 D.U | O=14 D.C.
-     P=15 Med | Q=16 Valor | R=17 Resultado
-   ATENÇÃO: No arquivo enviado a coluna Q (data de encerramento) NÃO existe
-   como data — Q é "valor" e R é "resultado". A data de encerramento precisa
-   estar em outra coluna da planilha real. Ajuste COL_DATA abaixo.
-   ============================================================ */
-const COL = {
-  protocolo: 0,
-  cliente: 1,          // na sua planilha B é "COLABORADOR" (nome do técnico); se cliente estiver em outra coluna, ajuste
-  tipoAtividade: 3,    // D
-  cidade: 7,           // H — na sua planilha H é "INSTALAÇÃO"; ajuste se cidade estiver em outra coluna
-  bairro: 8,           // I
-  dataEncerramento: 16,// Q — ATENÇÃO: no arquivo enviado Q é "valor". Troque pelo índice correto.
-  cat4: 21,            // V — renomeada para "reclamação"
-  solucao: 23,         // X
-  tecnicoOriginal: 24  // Y
-};
-
-// Registros de produção (amostra da sua planilha)
-// Como a coluna Q do arquivo enviado não tem data, usei datas fictícias 2026-10-xx
-// para demonstrar o funcionamento. Substitua pelos dados reais.
-const PRODUCAO_RAW = [
-  // [protocolo, colaborador, equipe, retDesc, ind4, ret, retirada, instalacao, manutencao, at, pv, da, atestado, du, dc, med, valor, resultado, dataEnc, cat4, solucao, tecnicoOriginal]
-  ['OS-001','ALEFF PEREIRA SOARES','INSTALAÇÃO',1.8,4.16,6,'',42,57,104,102.2,'','',24,21,4.86,372.64,'Premio','2026-10-05','','Instalação concluída','ALEFF PEREIRA SOARES'],
-  ['OS-002','ALLYSSON DA SILVA MARINHO','MISTO',0,3.96,4,'',20,76,99,99,'','',24,23,4.3,0,'Premio não atingido','2026-10-05','','Manutenção realizada','ALLYSSON DA SILVA MARINHO'],
-  ['OS-003','ANDRE SILVA LOIOLA','MISTO',0.5,3.48,4,1,5,76,87,86.5,'','',24,22,3.93,0,'Premio não atingido','2026-10-06','Sinal fraco','Ajuste de sinal','ANDRE SILVA LOIOLA'],
-  ['OS-004','ANTONIO CARLOS FERREIRA DA SILVA','INSTALAÇÃO',3.1,3.88,7,2,24,67,97,93.9,'','',24,20,4.69,355.52,'Premio','2026-10-07','','Instalação concluída','ANTONIO CARLOS FERREIRA DA SILVA'],
-  ['OS-005','ANTONIO FELIPE CASTRO DE OLIVEIRA','MISTO COND.',0,4.12,4,1,31,66,103,103,'','',24,23,4.48,690,'Premio','2026-10-08','','Manutenção','ANTONIO FELIPE CASTRO DE OLIVEIRA'],
-  ['OS-006','BRENDHOWN CESAR VIANA SILVA FALCAO','MISTO COND.',3.4,3.6,7,'',26,60,90,86.6,'','',24,21,4.12,652.4,'Premio','2026-10-09','','Instalação','BRENDHOWN CESAR VIANA SILVA FALCAO'],
-  ['OS-007','CARLOS HENRIQUE LINO SILVA','MISTO COND.',5.8,4.2,10,'',20,78,105,99.2,'','',24,19,5.22,982.2,'Premio','2026-10-10','','Manutenção','CARLOS HENRIQUE LINO SILVA'],
-  ['OS-008','CLAUDIANO CICINATO DA SILVA','INSTALAÇÃO',1.4,2.64,4,'',2,60,66,64.6,'','',24,15,4.31,318.56,'Premio','2026-10-12','','Instalação','CLAUDIANO CICINATO DA SILVA'],
-  ['OS-009','DAVI MEDINA DE ARAUJO','INSTALAÇÃO',0,3.92,3,'',15,77,98,98,'','',24,20,4.9,372,'Premio','2026-10-13','','Instalação','DAVI MEDINA DE ARAUJO'],
-  ['OS-010','ELISSON PEREIRA COUTINHO NOVAIS','MISTO COND.',0.1,3.88,4,'',23,73,97,96.9,'','',24,24,4.04,651.52,'Premio','2026-10-14','','Manutenção','ELISSON PEREIRA COUTINHO NOVAIS'],
-  ['OS-011','GABRIEL MARTINS MUNIZ','INSTALAÇÃO',0,5.52,2,4,63,68,138,138,'','',24,18,7.67,1320,'Premio','2026-10-15','','Instalação','GABRIEL MARTINS MUNIZ'],
-  ['OS-012','GEILSON DA SILVA MOURA','MISTO COND.',0,5.44,2,9,35,91,136,136,'','',24,24,5.67,1232,'Premio','2026-10-16','','Manutenção','GEILSON DA SILVA MOURA'],
-  ['OS-013','GILVAN ASSUNCAO SILVA','MISTO',0,5.36,3,'',14,117,134,134,'','',24,16,8.38,1260,'Premio','2026-10-17','','Manutenção','GILVAN ASSUNCAO SILVA'],
-  ['OS-014','HALLEF GUILHERME LIMA CLEMENTE SILVA','MISTO COND.',0,5.16,5,3,39,83,129,129,'','',24,23,5.61,1220,'Premio','2026-10-18','','Manutenção','HALLEF GUILHERME LIMA CLEMENTE SILVA'],
-  ['OS-015','ISRAEL OLIVEIRA MORAIS','MISTO',2.2,4.76,7,'',7,108,119,116.8,'','',24,20,5.84,367.04,'Premio','2026-10-19','','Manutenção','ISRAEL OLIVEIRA MORAIS'],
-  ['OS-016','ITALO XAVIER DA SILVA','MISTO',0,6.48,4,'',12,143,162,162,'','',24,21,7.71,1020,'Premio','2026-10-20','','Manutenção','ITALO XAVIER DA SILVA'],
-  ['OS-017','JOAO PAULO DA SILVA LIMA','INSTALAÇÃO',1.6,4.36,6,'',28,74,109,107.4,'','',24,23,4.67,361.44,'Premio','2026-10-21','','Instalação','JOAO PAULO DA SILVA LIMA'],
-  ['OS-018','JOSE EDNARDO DA SILVA DE LIMA','INSTALAÇÃO',1.9,4.08,6,'',18,79,102,100.1,'','',24,23,4.35,332.32,'Premio','2026-10-22','','Instalação','JOSE EDNARDO DA SILVA DE LIMA'],
-  ['OS-019','LUCAS SOUZA SILVA','INSTALAÇÃO',6.4,4.64,11,'',12,97,116,109.6,'','',24,23,4.77,370.56,'Premio','2026-10-23','','Instalação','LUCAS SOUZA SILVA'],
-  ['OS-020','LUCIEUDO BANDEIRA ALVES FILHO','INSTALAÇÃO',0,4.16,4,'',26,75,104,104,'','',24,22,4.73,364,'Premio','2026-10-24','','Instalação','LUCIEUDO BANDEIRA ALVES FILHO'],
-  // Retrabalhos (tecnicoOriginal diferente do técnico que executou)
-  ['OS-R01','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-05','Retorno','Reconfiguração','ALAN FEITOSA DE SOUTO'],
-  ['OS-R02','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-10','Sinal','Ajuste','alan feitosa de souto'],
-  ['OS-R03','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-15','Sem conexão','Troca','ALAN FEITOSA DE SOUTO'],
-  ['OS-R04','OUTRO TECNICO','MISTO',0,3,'1','',5,20,25,25,'','',24,20,2,'0','Premio não atingido','2026-10-20','Lentidão','Reset','ALEFF PEREIRA SOARES']
-];
-
-/* ============================================================
-   3) UTILITÁRIOS
-   ============================================================ */
-const TIPOS_EXCLUIDOS = [
-  'LIBERACAO DE COMBUSTIVEL EXTERNO',
-  'TAREFAS ADMINISTRATIVAS TREINAMENTO GESTAO DE O.S',
-  'VALIDACAO - PRESTACAO DE CONTAS'
-];
-
-function normalizarCPF(cpf){ return (cpf||'').replace(/\D/g,''); }
-
-function normalizarNome(nome){
-  return (nome||'').toUpperCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/[^A-Z0-9 ]/g,'')
-    .replace(/\s+/g,' ').trim();
+/* Normaliza CPF: só dígitos */
+function soDigitos(v) {
+  return String(v || '').replace(/\D/g, '');
 }
 
-function levenshtein(a,b){
-  const m=a.length,n=b.length;
-  if(m===0)return n; if(n===0)return m;
-  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
-  for(let i=0;i<=m;i++)dp[i][0]=i;
-  for(let j=0;j<=n;j++)dp[0][j]=j;
-  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++){
-    dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
-  }
-  return dp[m][n];
-}
-
-function nomesParecidos(a,b){
-  const na=normalizarNome(a), nb=normalizarNome(b);
-  if(!na||!nb)return false;
-  if(na===nb)return true;
-  if(na.includes(nb)||nb.includes(na)){
-    if(Math.abs(na.length-nb.length)<=6)return true;
-  }
-  return levenshtein(na,nb)<=4;
-}
-
-function isTipoExcluido(tipo){
-  const t=normalizarNome(tipo);
-  return TIPOS_EXCLUIDOS.some(ex=>normalizarNome(ex)===t);
-}
-
-function formatarCPFInput(v){
-  v=v.replace(/\D/g,'').slice(0,11);
-  if(v.length<=3)return v;
-  if(v.length<=6)return v.replace(/(\d{3})(\d+)/,'$1.$2');
-  if(v.length<=9)return v.replace(/(\d{3})(\d{3})(\d+)/,'$1.$2.$3');
-  return v.replace(/(\d{3})(\d{3})(\d{3})(\d+)/,'$1.$2.$3-$4');
-}
-
-function diasNoMes(m,a){return new Date(a,m+1,0).getDate();}
-function primeiroDiaSemana(m,a){return new Date(a,m,1).getDay();}
-function formatarDataBR(iso){
-  if(!iso)return '';
-  const p=iso.split('-');
-  if(p.length!==3)return iso;
-  return `${p[2]}/${p[1]}/${p[0]}`;
+/* Formata CPF para exibição */
+function formatCPF(v) {
+  const d = soDigitos(v);
+  if (d.length !== 11) return v;
+  return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 }
 
 /* ============================================================
-   4) ESTADO
+   CARREGAMENTO DAS PLANILHAS
    ============================================================ */
-let colaboradorAtual=null;
-let modoAtual='prod';
-let mesAtual=new Date().getMonth();
-let anoAtual=new Date().getFullYear();
-let colaboradores=[];
-let producao=[];
+async function carregarPlanilhas() {
+  try {
+    /* ---------- GESTAO.xlsx (CPF) ---------- */
+    const respGestao = await fetch('GESTAO.xlsx');
+    if (!respGestao.ok) throw new Error('GESTAO.xlsx não encontrada na pasta.');
+    const bufGestao = await respGestao.arrayBuffer();
+    const wbGestao = XLSX.read(bufGestao, { type: 'array' });
 
-function carregarDados(){
-  colaboradores = COLABORADORES_RAW.map(r=>({
-    nome:r[0], matricula:r[1], empresa:r[2], cpf:r[3],
-    supervisor: SUPERVISORES[r[0]] || '—'
-  }));
-  producao = PRODUCAO_RAW.map(r=>({
-    protocolo: r[0],
-    cliente: r[1],          // na sua planilha B é o nome do técnico; ajuste se necessário
-    tipoAtividade: r[3],    // D — na sua planilha D é "RET. COM DESCONTO"; ajuste
-    cidade: r[7],           // H — na sua planilha H é "INSTALAÇÃO"; ajuste
-    bairro: r[8],           // I
-    dataEncerramento: r[18],// data fictícia — troque pelo índice real
-    cat4: r[19],            // V
-    solucao: r[20],         // X
-    tecnicoOriginal: r[21]  // Y
-  }));
-}
-
-/* ============================================================
-   5) LOGIN
-   ============================================================ */
-function tentarLogin(){
-  const erro=document.getElementById('loginError');
-  erro.textContent='';
-  const cpfDigitado=normalizarCPF(document.getElementById('cpfInput').value);
-  if(cpfDigitado.length!==11){erro.textContent='CPF inválido. Digite os 11 dígitos.';return;}
-  const enc=colaboradores.find(c=>normalizarCPF(c.cpf)===cpfDigitado);
-  if(!enc){erro.textContent='CPF não encontrado na base.';return;}
-  colaboradorAtual=enc;
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('appScreen').style.display='block';
-  document.getElementById('userName').textContent=enc.nome;
-  document.getElementById('userSupervisor').textContent='Supervisor: '+enc.supervisor;
-  mesAtual=new Date().getMonth(); anoAtual=new Date().getFullYear();
-  modoAtual='prod'; atualizarToggle(); renderizarCalendario();
-}
-
-function logout(){
-  colaboradorAtual=null;
-  document.getElementById('appScreen').style.display='none';
-  document.getElementById('loginScreen').style.display='block';
-  document.getElementById('cpfInput').value='';
-  document.getElementById('loginError').textContent='';
-}
-
-/* ============================================================
-   6) FILTRO
-   ============================================================ */
-function registrosDoColaborador(){
-  if(!colaboradorAtual)return [];
-  const nome=colaboradorAtual.nome;
-  return producao.filter(reg=>{
-    if(modoAtual==='prod'){
-      if(isTipoExcluido(reg.tipoAtividade))return false;
-      return nomesParecidos(reg.tecnicoOriginal,nome);
-    }else{
-      return nomesParecidos(reg.tecnicoOriginal,nome);
+    // Aba CPF (índice 4)
+    const wsCPF = wbGestao.Sheets['CPF'] || wbGestao.Sheets[wbGestao.SheetNames[4]];
+    const rowsCPF = XLSX.utils.sheet_to_json(wsCPF, { header: 1, defval: '' });
+    CPF_DATA = [];
+    // Linha 0 vazia, linha 1 cabeçalho (Nome, Matrícula, Empresa, Cpf)
+    for (let i = 2; i < rowsCPF.length; i++) {
+      const r = rowsCPF[i];
+      const nome = String(r[0] || '').trim();
+      const cpf  = soDigitos(r[3]);
+      if (nome && cpf.length === 11) {
+        CPF_DATA.push({
+          nome,
+          matricula: String(r[1] || '').trim(),
+          empresa:   String(r[2] || '').trim(),
+          cpf
+        });
+      }
     }
-  });
-}
+    console.log('CPFs carregados:', CPF_DATA.length);
 
-/* ============================================================
-   7) CALENDÁRIO
-   ============================================================ */
-function renderizarCalendario(){
-  const grid=document.getElementById('daysGrid');
-  const label=document.getElementById('monthLabel');
-  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  label.textContent=`${meses[mesAtual]} ${anoAtual}`;
-  grid.innerHTML='';
+    /* ---------- encerradasgestao.xlsx (PRODUÇÃO) ---------- */
+    const respProd = await fetch('encerradasgestao.xlsx');
+    if (!respProd.ok) throw new Error('encerradasgestao.xlsx não encontrada na pasta.');
+    const bufProd = await respProd.arrayBuffer();
+    const wbProd = XLSX.read(bufProd, { type: 'array' });
+    const wsProd = wbProd.Sheets[wbProd.SheetNames[0]];
+    const rowsProd = XLSX.utils.sheet_to_json(wsProd, { header: 1, defval: '' });
 
-  const porDia={};
-  registrosDoColaborador().forEach(r=>{
-    if(!r.dataEncerramento)return;
-    if(!porDia[r.dataEncerramento])porDia[r.dataEncerramento]=[];
-    porDia[r.dataEncerramento].push(r);
-  });
+    // Cabeçalho na linha 0 — mapear índices das colunas
+    const header = rowsProd[0].map(h => String(h || '').trim().toUpperCase());
+    const idx = {
+      A: header.findIndex(h => h === 'A' || h.includes('PROTOCOLO')),
+      B: header.findIndex(h => h === 'B' || h.includes('CLIENTE') || h.includes('NOME')),
+      D: header.findIndex(h => h === 'D' || h.includes('TIPO') || h.includes('ATIVIDADE')),
+      H: header.findIndex(h => h === 'H' || h.includes('CIDADE')),
+      I: header.findIndex(h => h === 'I' || h.includes('BAIRRO')),
+      Q: header.findIndex(h => h === 'Q' || h.includes('ENCERRAMENTO') || h.includes('DATA')),
+      V: header.findIndex(h => h === 'V' || h.includes('CAT_4') || h.includes('RECLAMA')),
+      X: header.findIndex(h => h === 'X' || h.includes('SOLU'))
+    };
+    console.log('Índices mapeados:', idx);
 
-  const total=diasNoMes(mesAtual,anoAtual);
-  const off=primeiroDiaSemana(mesAtual,anoAtual);
-  for(let i=0;i<off;i++){
-    const c=document.createElement('div');c.className='day-cell empty';grid.appendChild(c);
-  }
-  const hoje=new Date();
-  const hojeStr=`${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,'0')}-${String(hoje.getDate()).padStart(2,'0')}`;
+    PRODUCAO = [];
+    for (let i = 1; i < rowsProd.length; i++) {
+      const r = rowsProd[i];
+      if (!r || r.length === 0) continue;
 
-  for(let d=1;d<=total;d++){
-    const ds=`${anoAtual}-${String(mesAtual+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const cell=document.createElement('div');
-    cell.className='day-cell';
-    if(ds===hojeStr)cell.classList.add('today');
-    const num=document.createElement('div');num.className='day-num';num.textContent=d;cell.appendChild(num);
-    const regs=porDia[ds]||[];
-    if(regs.length>0){
-      cell.classList.add(modoAtual==='prod'?'has-data':'has-retrab');
-      const b=document.createElement('div');
-      b.className='badge '+(modoAtual==='prod'?'badge-prod':'badge-retrab');
-      b.textContent=regs.length+(regs.length===1?' item':' itens');
-      cell.appendChild(b);
-      cell.addEventListener('click',()=>abrirModal(ds,regs));
+      // Data de encerramento (coluna Q) — pode vir como serial Excel ou string
+      const rawData = r[idx.Q];
+      const data = parseDataExcel(rawData);
+      if (!data) continue;
+
+      PRODUCAO.push({
+        protocolo:  String(r[idx.A] ?? '').trim(),
+        cliente:    String(r[idx.B] ?? '').trim(),
+        tipo:       String(r[idx.D] ?? '').trim(),
+        cidade:     String(r[idx.H] ?? '').trim(),
+        bairro:     String(r[idx.I] ?? '').trim(),
+        dataEncerr: data, // Date normalizada (sem hora)
+        reclamacao: String(r[idx.V] ?? '').trim(),
+        solucao:    String(r[idx.X] ?? '').trim()
+      });
     }
-    grid.appendChild(cell);
+    console.log('Produções carregadas:', PRODUCAO.length);
+
+    document.getElementById('loading').style.display = 'none';
+
+  } catch (err) {
+    document.getElementById('loading').innerHTML =
+      `<div style="color:#d32f2f;text-align:center;padding:20px;font-size:16px;">
+        ❌ Erro ao carregar planilhas<br><br>
+        <small>${err.message}</small><br><br>
+        <small>Certifique-se de que <b>GESTAO.xlsx</b> e <b>encerradasgestao.xlsx</b> estão na mesma pasta deste HTML.</small>
+      </div>`;
+    console.error(err);
   }
 }
 
-/* ============================================================
-   8) MODAL
-   ============================================================ */
-function abrirModal(dataStr,regs){
-  const overlay=document.getElementById('modalOverlay');
-  const title=document.getElementById('modalTitle');
-  const tbody=document.getElementById('modalTbody');
-  const modoLabel=modoAtual==='prod'?'Produção':'Retrabalhos';
-  title.textContent=`${modoLabel} — ${formatarDataBR(dataStr)} (${regs.length} item(ns))`;
-  tbody.innerHTML='';
-  regs.forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${r.protocolo||'—'}</td>
-      <td>${r.cliente||'—'}</td>
-      <td>${r.tipoAtividade||'—'}</td>
-      <td>${r.cidade||'—'}</td>
-      <td>${r.bairro||'—'}</td>
-      <td>${r.cat4||'—'}</td>
-      <td>${r.solucao||'—'}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-  overlay.classList.add('open');
-}
-function fecharModal(){document.getElementById('modalOverlay').classList.remove('open');}
-
-/* ============================================================
-   9) TOGGLE
-   ============================================================ */
-function atualizarToggle(){
-  const bp=document.getElementById('btnProd');
-  const br=document.getElementById('btnRetrab');
-  if(modoAtual==='prod'){bp.classList.add('active');br.classList.remove('active','active-retrab');}
-  else{br.classList.add('active-retrab');br.classList.remove('active');bp.classList.remove('active');}
+/* Converte serial Excel ou string em Date (somente data) */
+function parseDataExcel(v) {
+  if (v === null || v === undefined || v === '') return null;
+  // Serial Excel
+  if (typeof v === 'number' && v > 20000 && v < 60000) {
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  }
+  // String
+  const s = String(v).trim();
+  // dd/mm/yyyy
+  let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (m) {
+    let ano = parseInt(m[3]);
+    if (ano < 100) ano += 2000;
+    return new Date(ano, parseInt(m[2]) - 1, parseInt(m[1]));
+  }
+  // yyyy-mm-dd
+  m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+  if (m) return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+  // Tenta Date
+  const d = new Date(s);
+  if (!isNaN(d)) return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  return null;
 }
 
 /* ============================================================
-   10) EVENTOS
+   LOGIN
    ============================================================ */
-document.addEventListener('DOMContentLoaded',()=>{
-  carregarDados();
+function fazerLogin() {
+  const input = document.getElementById('cpfInput');
+  const msg = document.getElementById('loginMsg');
+  const cpf = soDigitos(input.value);
 
-  const inp=document.getElementById('cpfInput');
-  inp.addEventListener('input',e=>{e.target.value=formatarCPFInput(e.target.value);});
-  inp.addEventListener('keydown',e=>{if(e.key==='Enter')tentarLogin();});
+  if (cpf.length !== 11) {
+    msg.textContent = 'Digite um CPF válido com 11 dígitos.';
+    return;
+  }
 
-  document.getElementById('loginBtn').addEventListener('click',tentarLogin);
-  document.getElementById('logoutBtn').addEventListener('click',logout);
+  const encontrado = CPF_DATA.find(c => c.cpf === cpf);
+  if (!encontrado) {
+    msg.textContent = 'CPF não encontrado na base de colaboradores.';
+    return;
+  }
 
-  document.getElementById('prevMonth').addEventListener('click',()=>{
-    mesAtual--;if(mesAtual<0){mesAtual=11;anoAtual--;}renderizarCalendario();
+  USUARIO = encontrado;
+  msg.textContent = '';
+
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('appArea').style.display = 'block';
+  document.getElementById('userName').textContent = encontrado.nome;
+  document.getElementById('userInfo').textContent =
+    `${encontrado.empresa || '—'} ${encontrado.matricula ? '• Matrícula ' + encontrado.matricula : ''}`;
+
+  MES_ATUAL = new Date();
+  // Se o mês atual não tem produção, vai para o mês com produção mais recente
+  const producoesUsuario = producoesDoUsuario();
+  if (producoesUsuario.length > 0) {
+    const ultima = producoesUsuario.reduce((a, b) => a.dataEncerr > b.dataEncerr ? a : b);
+    MES_ATUAL = new Date(ultima.dataEncerr.getFullYear(), ultima.dataEncerr.getMonth(), 1);
+  }
+  renderizarCalendario();
+}
+
+function sair() {
+  USUARIO = null;
+  document.getElementById('appArea').style.display = 'none';
+  document.getElementById('loginBox').style.display = 'block';
+  document.getElementById('cpfInput').value = '';
+  document.getElementById('loginMsg').textContent = '';
+  fecharModal();
+}
+
+/* ============================================================
+   PRODUÇÃO DO USUÁRIO
+   ============================================================ */
+function producoesDoUsuario() {
+  if (!USUARIO) return [];
+  // Compara pelo nome (a produção não traz CPF diretamente)
+  const nomeUsuario = normalizarNome(USUARIO.nome);
+  return PRODUCAO.filter(p => normalizarNome(p.cliente) === nomeUsuario);
+}
+
+/* Normalização de nome para comparação (remove acentos, espaços extras) */
+function normalizarNome(n) {
+  return String(n || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/* Agrupa produção por dia (yyyy-mm-dd) */
+function producaoPorDia() {
+  const mapa = {};
+  producoesDoUsuario().forEach(p => {
+    const key = dateKey(p.dataEncerr);
+    if (!mapa[key]) mapa[key] = [];
+    mapa[key].push(p);
   });
-  document.getElementById('nextMonth').addEventListener('click',()=>{
-    mesAtual++;if(mesAtual>11){mesAtual=0;anoAtual++;}renderizarCalendario();
+  return mapa;
+}
+
+function dateKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dia}`;
+}
+
+/* ============================================================
+   CALENDÁRIO
+   ============================================================ */
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+               'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function mudarMes(delta) {
+  MES_ATUAL = new Date(MES_ATUAL.getFullYear(), MES_ATUAL.getMonth() + delta, 1);
+  renderizarCalendario();
+}
+
+function renderizarCalendario() {
+  const grid = document.getElementById('calGrid');
+  const label = document.getElementById('monthLabel');
+  const ano = MES_ATUAL.getFullYear();
+  const mes = MES_ATUAL.getMonth();
+
+  label.textContent = `${MESES[mes]} ${ano}`;
+
+  const primeiroDia = new Date(ano, mes, 1);
+  const ultimoDia   = new Date(ano, mes + 1, 0);
+  const diasNoMes   = ultimoDia.getDate();
+  const diaSemanaInicio = primeiroDia.getDay(); // 0=Dom
+
+  const porDia = producaoPorDia();
+  const hojeKey = dateKey(new Date());
+
+  let html = '';
+  ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d => {
+    html += `<div class="dow">${d}</div>`;
   });
-  document.getElementById('btnProd').addEventListener('click',()=>{modoAtual='prod';atualizarToggle();renderizarCalendario();});
-  document.getElementById('btnRetrab').addEventListener('click',()=>{modoAtual='retrab';atualizarToggle();renderizarCalendario();});
-  document.getElementById('closeModal').addEventListener('click',fecharModal);
-  document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target.id==='modalOverlay')fecharModal();});
+
+  // espaços vazios antes do dia 1
+  for (let i = 0; i < diaSemanaInicio; i++) {
+    html += `<div class="day empty"></div>`;
+  }
+
+  for (let dia = 1; dia <= diasNoMes; dia++) {
+    const key = `${ano}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+    const qtd = porDia[key] ? porDia[key].length : 0;
+    const classes = ['day'];
+    if (qtd > 0) classes.push('has-prod');
+    if (key === hojeKey) classes.push('today');
+    html += `<div class="${classes.join(' ')}" onclick="abrirDia('${key}')">
+        <span class="num">${dia}</span>
+        ${qtd > 0 ? `<span class="count">${qtd}</span>` : ''}
+      </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function abrirDia(key) {
+  if (!key) return;
+  const porDia = producaoPorDia();
+  const lista = porDia[key] || [];
+
+  const [y, m, d] = key.split('-').map(Number);
+  document.getElementById('modalTitle').textContent =
+    `Produção de ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y} (${lista.length} registro${lista.length!==1?'s':''})`;
+
+  const body = document.getElementById('modalBody');
+  if (lista.length === 0) {
+    body.innerHTML = `<div class="empty-msg">Nenhuma produção registrada neste dia.</div>`;
+  } else {
+    let html = `<table>
+      <thead><tr>
+        <th>Protocolo</th>
+        <th>Cliente</th>
+        <th>Tipo de Atividade</th>
+        <th>Cidade</th>
+        <th>Bairro</th>
+        <th>Reclamação</th>
+        <th>Solução</th>
+      </tr></thead><tbody>`;
+    lista.forEach(p => {
+      html += `<tr>
+        <td><span class="badge">${p.protocolo || '—'}</span></td>
+        <td>${p.cliente || '—'}</td>
+        <td>${p.tipo || '—'}</td>
+        <td>${p.cidade || '—'}</td>
+        <td>${p.bairro || '—'}</td>
+        <td>${p.reclamacao || '—'}</td>
+        <td>${p.solucao || '—'}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    body.innerHTML = html;
+  }
+
+  document.getElementById('modal').style.display = 'block';
+}
+
+function fecharModal() {
+  document.getElementById('modal').style.display = 'none';
+}
+
+/* Fecha modal com ESC / clique no fundo */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') fecharModal();
 });
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') fecharModal();
+});
+
+/* Máscara de CPF no input */
+document.getElementById('cpfInput').addEventListener('input', e => {
+  let v = soDigitos(e.target.value).slice(0, 11);
+  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2}).*/, '$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3}).*/, '$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3}).*/, '$1.$2');
+  e.target.value = v;
+});
+document.getElementById('cpfInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fazerLogin();
+});
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', carregarPlanilhas);
 </script>
 </body>
 </html>
