@@ -81,6 +81,23 @@
     font-weight: bold;
   }
 
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    border-left: 5px solid #2a5298;
+  }
+  .stat-card .label { font-size: 12px; color: #777; text-transform: uppercase; letter-spacing: .5px; }
+  .stat-card .value { font-size: 26px; font-weight: bold; color: #1e3c72; margin-top: 4px; }
+
   /* CALENDÁRIO */
   .calendar-card {
     background: #fff;
@@ -214,7 +231,7 @@
   #loading {
     position: fixed;
     inset: 0;
-    background: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.95);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -222,6 +239,8 @@
     z-index: 2000;
     font-size: 18px;
     color: #1e3c72;
+    text-align: center;
+    padding: 20px;
   }
   .spinner {
     width: 50px; height: 50px;
@@ -264,6 +283,21 @@
       <button onclick="sair()">Sair</button>
     </header>
 
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">Total no mês</div>
+        <div class="value" id="statMes">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Dias com produção</div>
+        <div class="value" id="statDias">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Total geral</div>
+        <div class="value" id="statTotal">0</div>
+      </div>
+    </div>
+
     <div class="calendar-card">
       <div class="cal-header">
         <h3 id="monthLabel">—</h3>
@@ -290,138 +324,243 @@
 
 <script>
 /* ============================================================
-   DADOS GLOBAIS
+   ESTADO GLOBAL
    ============================================================ */
-let CPF_DATA = [];          // { nome, cpf, empresa, matricula }
-let PRODUCAO = [];          // registros de encerradasgestao
-let USUARIO = null;         // colaborador logado
-let MES_ATUAL = new Date(); // mês exibido no calendário
-
-/* Normaliza CPF: só dígitos */
-function soDigitos(v) {
-  return String(v || '').replace(/\D/g, '');
-}
-
-/* Formata CPF para exibição */
-function formatCPF(v) {
-  const d = soDigitos(v);
-  if (d.length !== 11) return v;
-  return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-}
+let CPF_DATA    = [];   // [{nome, cpf, empresa, matricula}]
+let PRODUCAO    = [];   // [{protocolo, cliente, tecnico, tipo, cidade, bairro, dataEncerr, reclamacao, solucao}]
+let USUARIO     = null;
+let MES_ATUAL   = new Date();
+let MAPA_COLUNAS = {};  // guarda o mapeamento detectado
 
 /* ============================================================
-   CARREGAMENTO DAS PLANILHAS
+   UTILITÁRIOS
    ============================================================ */
-async function carregarPlanilhas() {
-  try {
-    /* ---------- GESTAO.xlsx (CPF) ---------- */
-    const respGestao = await fetch('GESTAO.xlsx');
-    if (!respGestao.ok) throw new Error('GESTAO.xlsx não encontrada na pasta.');
-    const bufGestao = await respGestao.arrayBuffer();
-    const wbGestao = XLSX.read(bufGestao, { type: 'array' });
+function soDigitos(v) { return String(v ?? '').replace(/\D/g, ''); }
 
-    // Aba CPF (índice 4)
-    const wsCPF = wbGestao.Sheets['CPF'] || wbGestao.Sheets[wbGestao.SheetNames[4]];
-    const rowsCPF = XLSX.utils.sheet_to_json(wsCPF, { header: 1, defval: '' });
-    CPF_DATA = [];
-    // Linha 0 vazia, linha 1 cabeçalho (Nome, Matrícula, Empresa, Cpf)
-    for (let i = 2; i < rowsCPF.length; i++) {
-      const r = rowsCPF[i];
-      const nome = String(r[0] || '').trim();
-      const cpf  = soDigitos(r[3]);
-      if (nome && cpf.length === 11) {
-        CPF_DATA.push({
-          nome,
-          matricula: String(r[1] || '').trim(),
-          empresa:   String(r[2] || '').trim(),
-          cpf
-        });
-      }
-    }
-    console.log('CPFs carregados:', CPF_DATA.length);
-
-    /* ---------- encerradasgestao.xlsx (PRODUÇÃO) ---------- */
-    const respProd = await fetch('encerradasgestao.xlsx');
-    if (!respProd.ok) throw new Error('encerradasgestao.xlsx não encontrada na pasta.');
-    const bufProd = await respProd.arrayBuffer();
-    const wbProd = XLSX.read(bufProd, { type: 'array' });
-    const wsProd = wbProd.Sheets[wbProd.SheetNames[0]];
-    const rowsProd = XLSX.utils.sheet_to_json(wsProd, { header: 1, defval: '' });
-
-    // Cabeçalho na linha 0 — mapear índices das colunas
-    const header = rowsProd[0].map(h => String(h || '').trim().toUpperCase());
-    const idx = {
-      A: header.findIndex(h => h === 'A' || h.includes('PROTOCOLO')),
-      B: header.findIndex(h => h === 'B' || h.includes('CLIENTE') || h.includes('NOME')),
-      D: header.findIndex(h => h === 'D' || h.includes('TIPO') || h.includes('ATIVIDADE')),
-      H: header.findIndex(h => h === 'H' || h.includes('CIDADE')),
-      I: header.findIndex(h => h === 'I' || h.includes('BAIRRO')),
-      Q: header.findIndex(h => h === 'Q' || h.includes('ENCERRAMENTO') || h.includes('DATA')),
-      V: header.findIndex(h => h === 'V' || h.includes('CAT_4') || h.includes('RECLAMA')),
-      X: header.findIndex(h => h === 'X' || h.includes('SOLU'))
-    };
-    console.log('Índices mapeados:', idx);
-
-    PRODUCAO = [];
-    for (let i = 1; i < rowsProd.length; i++) {
-      const r = rowsProd[i];
-      if (!r || r.length === 0) continue;
-
-      // Data de encerramento (coluna Q) — pode vir como serial Excel ou string
-      const rawData = r[idx.Q];
-      const data = parseDataExcel(rawData);
-      if (!data) continue;
-
-      PRODUCAO.push({
-        protocolo:  String(r[idx.A] ?? '').trim(),
-        cliente:    String(r[idx.B] ?? '').trim(),
-        tipo:       String(r[idx.D] ?? '').trim(),
-        cidade:     String(r[idx.H] ?? '').trim(),
-        bairro:     String(r[idx.I] ?? '').trim(),
-        dataEncerr: data, // Date normalizada (sem hora)
-        reclamacao: String(r[idx.V] ?? '').trim(),
-        solucao:    String(r[idx.X] ?? '').trim()
-      });
-    }
-    console.log('Produções carregadas:', PRODUCAO.length);
-
-    document.getElementById('loading').style.display = 'none';
-
-  } catch (err) {
-    document.getElementById('loading').innerHTML =
-      `<div style="color:#d32f2f;text-align:center;padding:20px;font-size:16px;">
-        ❌ Erro ao carregar planilhas<br><br>
-        <small>${err.message}</small><br><br>
-        <small>Certifique-se de que <b>GESTAO.xlsx</b> e <b>encerradasgestao.xlsx</b> estão na mesma pasta deste HTML.</small>
-      </div>`;
-    console.error(err);
-  }
+function normalizarNome(n) {
+  return String(n ?? '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[^A-Z0-9 ]/g, '')
+    .trim();
 }
 
-/* Converte serial Excel ou string em Date (somente data) */
+function dateKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dia}`;
+}
+
 function parseDataExcel(v) {
   if (v === null || v === undefined || v === '') return null;
   // Serial Excel
-  if (typeof v === 'number' && v > 20000 && v < 60000) {
+  if (typeof v === 'number' && v > 20000 && v < 80000) {
     const d = new Date(Math.round((v - 25569) * 86400 * 1000));
     return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
   }
-  // String
   const s = String(v).trim();
-  // dd/mm/yyyy
+  if (!s) return null;
+  // dd/mm/yyyy ou dd-mm-yyyy (com hora opcional)
   let m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
   if (m) {
     let ano = parseInt(m[3]);
     if (ano < 100) ano += 2000;
-    return new Date(ano, parseInt(m[2]) - 1, parseInt(m[1]));
+    const d = new Date(ano, parseInt(m[2]) - 1, parseInt(m[1]));
+    if (!isNaN(d)) return d;
   }
-  // yyyy-mm-dd
+  // yyyy-mm-dd (com hora opcional)
   m = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-  if (m) return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
-  // Tenta Date
+  if (m) {
+    const d = new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+    if (!isNaN(d)) return d;
+  }
   const d = new Date(s);
-  if (!isNaN(d)) return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  if (!isNaN(d) && d.getFullYear() > 2000) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
   return null;
+}
+
+/* ============================================================
+   CARREGAMENTO
+   ============================================================ */
+async function carregarPlanilhas() {
+  try {
+    /* ---------- GESTAO.xlsx -> aba CPF ---------- */
+    const respG = await fetch('GESTAO.xlsx');
+    if (!respG.ok) throw new Error('Não foi possível abrir GESTAO.xlsx. Coloque o arquivo na mesma pasta do HTML.');
+    const bufG = await respG.arrayBuffer();
+    const wbG  = XLSX.read(bufG, { type: 'array' });
+
+    let wsCPF = wbG.Sheets['CPF'];
+    if (!wsCPF) {
+      // procura por aba que contenha coluna CPF
+      for (const name of wbG.SheetNames) {
+        const test = XLSX.utils.sheet_to_json(wbG.Sheets[name], { header: 1, defval: '' });
+        if (test.some(r => r.some(c => /cpf/i.test(String(c))))) { wsCPF = wbG.Sheets[name]; break; }
+      }
+    }
+    if (!wsCPF) throw new Error('Aba CPF não encontrada em GESTAO.xlsx.');
+
+    const rowsCPF = XLSX.utils.sheet_to_json(wsCPF, { header: 1, defval: '' });
+    // acha linha do cabeçalho
+    let hdrCPF = -1;
+    for (let i = 0; i < Math.min(rowsCPF.length, 10); i++) {
+      const r = rowsCPF[i].map(c => String(c).toUpperCase());
+      if (r.some(c => c.includes('NOME')) && r.some(c => c.includes('CPF'))) { hdrCPF = i; break; }
+    }
+    if (hdrCPF < 0) hdrCPF = 1;
+
+    const hCPF = rowsCPF[hdrCPF].map(c => String(c).toUpperCase().trim());
+    const iNome = hCPF.findIndex(c => c.includes('NOME'));
+    const iCpf  = hCPF.findIndex(c => c.includes('CPF'));
+    const iMat  = hCPF.findIndex(c => c.includes('MATRIC'));
+    const iEmp  = hCPF.findIndex(c => c.includes('EMPRESA'));
+
+    CPF_DATA = [];
+    for (let i = hdrCPF + 1; i < rowsCPF.length; i++) {
+      const r = rowsCPF[i];
+      const nome = String(r[iNome] ?? '').trim();
+      const cpf  = soDigitos(r[iCpf]);
+      if (!nome || cpf.length !== 11) continue;
+      CPF_DATA.push({
+        nome,
+        cpf,
+        matricula: iMat >= 0 ? String(r[iMat] ?? '').trim() : '',
+        empresa:   iEmp >= 0 ? String(r[iEmp] ?? '').trim() : ''
+      });
+    }
+    console.log(`✅ ${CPF_DATA.length} colaboradores carregados da GESTAO.xlsx`);
+
+    /* ---------- encerradasgestao.xlsx -> PRODUÇÃO ---------- */
+    const respP = await fetch('encerradasgestao.xlsx');
+    if (!respP.ok) throw new Error('Não foi possível abrir encerradasgestao.xlsx. Coloque o arquivo na mesma pasta do HTML.');
+    const bufP = await respP.arrayBuffer();
+    const wbP  = XLSX.read(bufP, { type: 'array', cellDates: true });
+    const wsP  = wbP.Sheets[wbP.SheetNames[0]];
+
+    // "raw:false" mantém o texto formatado (melhor para datas como dd/mm/aaaa)
+    const rowsP = XLSX.utils.sheet_to_json(wsP, { header: 1, defval: '', raw: false });
+    console.log(`📄 encerradasgestao.xlsx: ${rowsP.length} linhas`);
+
+    // 1) Detecta linha do cabeçalho (a que tiver mais palavras-chave conhecidas)
+    const PALAVRAS = [
+      'PROTOCOLO','CLIENTE','TECNICO','TÉCNICO','COLABORADOR','FUNCIONARIO','FUNCIONÁRIO',
+      'ATIVIDADE','TIPO','SERVICO','SERVIÇO','CIDADE','MUNICIPIO','MUNICÍPIO',
+      'BAIRRO','ENCERRAMENTO','DATA','RECLAMA','SOLUC','CAT_4'
+    ];
+    let hdrP = 0, melhorScore = -1;
+    for (let i = 0; i < Math.min(rowsP.length, 15); i++) {
+      const texto = rowsP[i].map(c => String(c).toUpperCase()).join(' ');
+      const score = PALAVRAS.filter(p => texto.includes(p)).length;
+      if (score > melhorScore) { melhorScore = score; hdrP = i; }
+    }
+    console.log(`📌 Cabeçalho detectado na linha ${hdrP + 1}:`, rowsP[hdrP]);
+
+    const H = rowsP[hdrP].map(c => String(c).toUpperCase().trim());
+    console.log('📋 Cabeçalhos:', H);
+
+    // 2) Mapeia colunas por palavra-chave
+    const findCol = (...chaves) => {
+      for (const k of chaves) {
+        const i = H.findIndex(h => h.includes(k));
+        if (i >= 0) return i;
+      }
+      return -1;
+    };
+
+    const col = {
+      protocolo: findCol('PROTOCOLO'),
+      tipo:      findCol('ATIVIDADE','TIPO','SERVICO','SERVIÇO'),
+      cidade:    findCol('CIDADE','MUNICIPIO','MUNICÍPIO'),
+      bairro:    findCol('BAIRRO'),
+      reclamacao:findCol('CAT_4','RECLAMA'),
+      solucao:   findCol('SOLUC'),
+      dataEnc:   findCol('ENCERRAMENTO','DATA DE ENCERR','DATA_ENCl'),
+      cliente:   findCol('CLIENTE','NOME DO CLIENTE')
+    };
+
+    // 3) Detecta coluna do TÉCNICO comparando com a lista de nomes de colaboradores
+    const nomesColaboradores = new Set(CPF_DATA.map(c => normalizarNome(c.nome)));
+    let colTecnico = findCol('TECNICO','TÉCNICO','COLABORADOR','FUNCIONARIO','FUNCIONÁRIO');
+
+    // Se não achou por palavra-chave, procura a coluna cujo conteúdo mais "casa" com nomes de colaboradores
+    if (colTecnico < 0) {
+      let melhorCol = -1, melhorAcertos = 0;
+      const amostra = rowsP.slice(hdrP + 1, hdrP + 200); // amostra até 200 linhas
+      for (let c = 0; c < H.length; c++) {
+        let acertos = 0;
+        for (const r of amostra) {
+          const val = normalizarNome(r[c]);
+          if (val && nomesColaboradores.has(val)) acertos++;
+        }
+        if (acertos > melhorAcertos) { melhorAcertos = acertos; melhorCol = c; }
+      }
+      if (melhorAcertos >= 3) colTecnico = melhorCol;
+      console.log(`🔎 Coluna técnico detectada por conteúdo: índice ${colTecnico} (${melhorAcertos} matches)`);
+    }
+
+    // 4) Se ainda não temos data de encerramento, procura a coluna com mais datas válidas
+    if (col.dataEnc < 0) {
+      let melhorCol = -1, melhorCont = 0;
+      const amostra = rowsP.slice(hdrP + 1, hdrP + 200);
+      for (let c = 0; c < H.length; c++) {
+        let cont = 0;
+        for (const r of amostra) if (parseDataExcel(r[c])) cont++;
+        if (cont > melhorCont) { melhorCont = cont; melhorCol = c; }
+      }
+      if (melhorCont > 5) col.dataEnc = melhorCol;
+      console.log(`🔎 Coluna de data detectada por conteúdo: índice ${col.dataEnc} (${melhorCont} datas válidas)`);
+    }
+
+    MAPA_COLUNAS = { ...col, tecnico: colTecnico };
+    console.log('🗺️ Mapeamento final:', MAPA_COLUNAS);
+
+    if (colTecnico < 0) {
+      throw new Error('Não foi possível identificar a coluna do TÉCNICO na planilha encerradasgestao.xlsx. Verifique os cabeçalhos.');
+    }
+    if (col.dataEnc < 0) {
+      throw new Error('Não foi possível identificar a coluna de DATA DE ENCERRAMENTO na planilha encerradasgestao.xlsx.');
+    }
+
+    // 5) Monta os registros
+    PRODUCAO = [];
+    let semTecnico = 0, semData = 0;
+    for (let i = hdrP + 1; i < rowsP.length; i++) {
+      const r = rowsP[i];
+      if (!r || r.length === 0) continue;
+      const tecnicoRaw = String(r[colTecnico] ?? '').trim();
+      if (!tecnicoRaw) { semTecnico++; continue; }
+
+      const data = parseDataExcel(r[col.dataEnc]);
+      if (!data) { semData++; continue; }
+
+      PRODUCAO.push({
+        protocolo:  col.protocolo >= 0 ? String(r[col.protocolo] ?? '').trim() : '',
+        cliente:    col.cliente   >= 0 ? String(r[col.cliente]   ?? '').trim() : '',
+        tecnico:    tecnicoRaw,
+        tipo:       col.tipo      >= 0 ? String(r[col.tipo]      ?? '').trim() : '',
+        cidade:     col.cidade    >= 0 ? String(r[col.cidade]    ?? '').trim() : '',
+        bairro:     col.bairro    >= 0 ? String(r[col.bairro]    ?? '').trim() : '',
+        reclamacao: col.reclamacao>= 0 ? String(r[col.reclamacao]?? '').trim() : '',
+        solucao:    col.solucao   >= 0 ? String(r[col.solucao]   ?? '').trim() : '',
+        dataEncerr: data
+      });
+    }
+
+    console.log(`✅ ${PRODUCAO.length} produções carregadas (${semTecnico} sem técnico, ${semData} sem data)`);
+    document.getElementById('loading').style.display = 'none';
+  } catch (err) {
+    console.error(err);
+    document.getElementById('loading').innerHTML =
+      `<div style="color:#d32f2f;text-align:center;padding:20px;font-size:16px;max-width:500px;">
+        ❌ Erro ao carregar planilhas<br><br>
+        <b>${err.message}</b><br><br>
+        <small>Verifique se <b>GESTAO.xlsx</b> e <b>encerradasgestao.xlsx</b> estão na mesma pasta deste HTML e se o navegador está rodando em um servidor local (ex.: <code>python -m http.server</code>).</small>
+      </div>`;
+  }
 }
 
 /* ============================================================
@@ -429,36 +568,37 @@ function parseDataExcel(v) {
    ============================================================ */
 function fazerLogin() {
   const input = document.getElementById('cpfInput');
-  const msg = document.getElementById('loginMsg');
-  const cpf = soDigitos(input.value);
+  const msg   = document.getElementById('loginMsg');
+  const cpf   = soDigitos(input.value);
 
   if (cpf.length !== 11) {
     msg.textContent = 'Digite um CPF válido com 11 dígitos.';
     return;
   }
-
-  const encontrado = CPF_DATA.find(c => c.cpf === cpf);
-  if (!encontrado) {
+  const enc = CPF_DATA.find(c => c.cpf === cpf);
+  if (!enc) {
     msg.textContent = 'CPF não encontrado na base de colaboradores.';
     return;
   }
 
-  USUARIO = encontrado;
+  USUARIO = enc;
   msg.textContent = '';
-
   document.getElementById('loginBox').style.display = 'none';
   document.getElementById('appArea').style.display = 'block';
-  document.getElementById('userName').textContent = encontrado.nome;
+  document.getElementById('userName').textContent = enc.nome;
   document.getElementById('userInfo').textContent =
-    `${encontrado.empresa || '—'} ${encontrado.matricula ? '• Matrícula ' + encontrado.matricula : ''}`;
+    `${enc.empresa || '—'}${enc.matricula ? ' • Matrícula ' + enc.matricula : ''}`;
 
-  MES_ATUAL = new Date();
-  // Se o mês atual não tem produção, vai para o mês com produção mais recente
-  const producoesUsuario = producoesDoUsuario();
-  if (producoesUsuario.length > 0) {
-    const ultima = producoesUsuario.reduce((a, b) => a.dataEncerr > b.dataEncerr ? a : b);
+  // Se houver produção, posiciona no mês da produção mais recente
+  const lista = producoesDoUsuario();
+  if (lista.length > 0) {
+    const ultima = lista.reduce((a, b) => a.dataEncerr > b.dataEncerr ? a : b);
     MES_ATUAL = new Date(ultima.dataEncerr.getFullYear(), ultima.dataEncerr.getMonth(), 1);
+  } else {
+    MES_ATUAL = new Date();
   }
+
+  atualizarStats();
   renderizarCalendario();
 }
 
@@ -472,40 +612,22 @@ function sair() {
 }
 
 /* ============================================================
-   PRODUÇÃO DO USUÁRIO
+   PRODUÇÃO DO USUÁRIO LOGADO
    ============================================================ */
 function producoesDoUsuario() {
   if (!USUARIO) return [];
-  // Compara pelo nome (a produção não traz CPF diretamente)
-  const nomeUsuario = normalizarNome(USUARIO.nome);
-  return PRODUCAO.filter(p => normalizarNome(p.cliente) === nomeUsuario);
+  const alvo = normalizarNome(USUARIO.nome);
+  // compara o nome do técnico registrado na produção
+  return PRODUCAO.filter(p => normalizarNome(p.tecnico) === alvo);
 }
 
-/* Normalização de nome para comparação (remove acentos, espaços extras) */
-function normalizarNome(n) {
-  return String(n || '')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .toUpperCase()
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-/* Agrupa produção por dia (yyyy-mm-dd) */
 function producaoPorDia() {
   const mapa = {};
   producoesDoUsuario().forEach(p => {
-    const key = dateKey(p.dataEncerr);
-    if (!mapa[key]) mapa[key] = [];
-    mapa[key].push(p);
+    const k = dateKey(p.dataEncerr);
+    (mapa[k] ||= []).push(p);
   });
   return mapa;
-}
-
-function dateKey(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const dia = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${dia}`;
 }
 
 /* ============================================================
@@ -517,10 +639,11 @@ const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
 function mudarMes(delta) {
   MES_ATUAL = new Date(MES_ATUAL.getFullYear(), MES_ATUAL.getMonth() + delta, 1);
   renderizarCalendario();
+  atualizarStats();
 }
 
 function renderizarCalendario() {
-  const grid = document.getElementById('calGrid');
+  const grid  = document.getElementById('calGrid');
   const label = document.getElementById('monthLabel');
   const ano = MES_ATUAL.getFullYear();
   const mes = MES_ATUAL.getMonth();
@@ -528,9 +651,8 @@ function renderizarCalendario() {
   label.textContent = `${MESES[mes]} ${ano}`;
 
   const primeiroDia = new Date(ano, mes, 1);
-  const ultimoDia   = new Date(ano, mes + 1, 0);
-  const diasNoMes   = ultimoDia.getDate();
-  const diaSemanaInicio = primeiroDia.getDay(); // 0=Dom
+  const diasNoMes   = new Date(ano, mes + 1, 0).getDate();
+  const inicioSemana = primeiroDia.getDay();
 
   const porDia = producaoPorDia();
   const hojeKey = dateKey(new Date());
@@ -539,25 +661,36 @@ function renderizarCalendario() {
   ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d => {
     html += `<div class="dow">${d}</div>`;
   });
-
-  // espaços vazios antes do dia 1
-  for (let i = 0; i < diaSemanaInicio; i++) {
-    html += `<div class="day empty"></div>`;
-  }
+  for (let i = 0; i < inicioSemana; i++) html += `<div class="day empty"></div>`;
 
   for (let dia = 1; dia <= diasNoMes; dia++) {
     const key = `${ano}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
-    const qtd = porDia[key] ? porDia[key].length : 0;
-    const classes = ['day'];
-    if (qtd > 0) classes.push('has-prod');
-    if (key === hojeKey) classes.push('today');
-    html += `<div class="${classes.join(' ')}" onclick="abrirDia('${key}')">
-        <span class="num">${dia}</span>
-        ${qtd > 0 ? `<span class="count">${qtd}</span>` : ''}
-      </div>`;
+    const qtd = porDia[key]?.length || 0;
+    const cls = ['day'];
+    if (qtd > 0) cls.push('has-prod');
+    if (key === hojeKey) cls.push('today');
+    html += `<div class="${cls.join(' ')}" onclick="abrirDia('${key}')">
+      <span class="num">${dia}</span>
+      ${qtd > 0 ? `<span class="count">${qtd}</span>` : ''}
+    </div>`;
   }
 
   grid.innerHTML = html;
+}
+
+function atualizarStats() {
+  const lista = producoesDoUsuario();
+  const ano = MES_ATUAL.getFullYear();
+  const mes = MES_ATUAL.getMonth();
+
+  const doMes = lista.filter(p =>
+    p.dataEncerr.getFullYear() === ano && p.dataEncerr.getMonth() === mes);
+
+  const diasSet = new Set(doMes.map(p => dateKey(p.dataEncerr)));
+
+  document.getElementById('statMes').textContent   = doMes.length;
+  document.getElementById('statDias').textContent  = diasSet.size;
+  document.getElementById('statTotal').textContent = lista.length;
 }
 
 /* ============================================================
@@ -565,12 +698,11 @@ function renderizarCalendario() {
    ============================================================ */
 function abrirDia(key) {
   if (!key) return;
-  const porDia = producaoPorDia();
-  const lista = porDia[key] || [];
-
+  const lista = producaoPorDia()[key] || [];
   const [y, m, d] = key.split('-').map(Number);
+
   document.getElementById('modalTitle').textContent =
-    `Produção de ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y} (${lista.length} registro${lista.length!==1?'s':''})`;
+    `Produção de ${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y} • ${lista.length} registro${lista.length !== 1 ? 's' : ''}`;
 
   const body = document.getElementById('modalBody');
   if (lista.length === 0) {
@@ -608,29 +740,25 @@ function fecharModal() {
   document.getElementById('modal').style.display = 'none';
 }
 
-/* Fecha modal com ESC / clique no fundo */
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') fecharModal();
-});
+/* ============================================================
+   EVENTOS
+   ============================================================ */
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharModal(); });
 document.getElementById('modal').addEventListener('click', e => {
   if (e.target.id === 'modal') fecharModal();
 });
 
-/* Máscara de CPF no input */
 document.getElementById('cpfInput').addEventListener('input', e => {
   let v = soDigitos(e.target.value).slice(0, 11);
-  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2}).*/, '$1.$2.$3-$4');
-  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3}).*/, '$1.$2.$3');
-  else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3}).*/, '$1.$2');
+  if (v.length > 9)      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2}).*/, '$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3}).*/,          '$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3}).*/,                 '$1.$2');
   e.target.value = v;
 });
 document.getElementById('cpfInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') fazerLogin();
 });
 
-/* ============================================================
-   INICIALIZAÇÃO
-   ============================================================ */
 window.addEventListener('DOMContentLoaded', carregarPlanilhas);
 </script>
 </body>
