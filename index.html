@@ -15,7 +15,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
         .container {
@@ -77,6 +81,10 @@
             font-weight: 600;
             color: #1a237e;
             transition: all 0.2s;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
         .cpf-input:focus {
             outline: none;
@@ -137,19 +145,6 @@
         }
         .btn-whatsapp:hover { transform: translateY(-2px); }
 
-        .btn-aceite {
-            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.35);
-        }
-
-        .btn-aceite:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
         .error-msg {
             background: #ffebee;
             color: #c62828;
@@ -172,73 +167,6 @@
             margin-top: 20px;
             border-left: 4px solid #1976d2;
             text-align: left;
-        }
-
-        /* ===== MENU ESCOLHA ===== */
-        .menu-escolha {
-            max-width: 480px;
-            margin: 0 auto;
-            text-align: center;
-        }
-        .menu-escolha h2 {
-            color: #1a237e;
-            font-size: 1.3rem;
-            margin-bottom: 6px;
-        }
-        .menu-escolha > p {
-            color: #64748b;
-            font-size: 0.85rem;
-            margin-bottom: 25px;
-        }
-        .menu-btn {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            width: 100%;
-            background: white;
-            border: 2px solid #e0e7ff;
-            border-radius: 14px;
-            padding: 20px 22px;
-            margin-bottom: 14px;
-            cursor: pointer;
-            transition: all 0.25s;
-            text-align: left;
-            font-family: inherit;
-        }
-        .menu-btn:hover {
-            border-color: #1a237e;
-            box-shadow: 0 8px 22px rgba(26, 35, 126, 0.15);
-            transform: translateY(-2px);
-        }
-        .menu-btn-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            flex-shrink: 0;
-        }
-        .menu-btn-icon.premio { background: linear-gradient(135deg, #fff8e1, #ffecb3); }
-        .menu-btn-icon.producao { background: linear-gradient(135deg, #e8eaf6, #c5cae9); }
-        .menu-btn-text { flex: 1; }
-        .menu-btn-text h3 {
-            color: #1a237e;
-            font-size: 1.05rem;
-            font-weight: 700;
-            margin-bottom: 3px;
-        }
-        .menu-btn-text p {
-            color: #64748b;
-            font-size: 0.78rem;
-            line-height: 1.35;
-        }
-        .menu-btn-arrow {
-            color: #1a237e;
-            font-size: 1.4rem;
-            font-weight: 700;
-            opacity: 0.5;
         }
 
         /* ===== RELATÓRIO ===== */
@@ -513,404 +441,7 @@
         }
 
         /* ============================================================
-           PRODUÇÃO — Totais e Calendário
-           ============================================================ */
-        .prod-totais {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .prod-total-item {
-            background: white;
-            border: 1px solid #e0e7ff;
-            border-radius: 10px;
-            padding: 12px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 6px rgba(26, 35, 126, 0.05);
-            transition: all 0.2s;
-        }
-        .prod-total-item:hover {
-            border-color: #1a237e;
-            box-shadow: 0 6px 14px rgba(26, 35, 126, 0.12);
-        }
-        .prod-total-label {
-            font-size: 0.78rem;
-            color: #1a237e;
-            font-weight: 600;
-            line-height: 1.25;
-        }
-        .prod-total-value {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #283593;
-            background: #e8eaf6;
-            padding: 2px 12px;
-            border-radius: 20px;
-            min-width: 48px;
-            text-align: center;
-        }
-        .prod-total-geral {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
-            color: white;
-            padding: 14px 18px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            box-shadow: 0 6px 18px rgba(26, 35, 126, 0.25);
-        }
-        .prod-total-geral span:first-child {
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        .prod-total-geral span:last-child {
-            font-size: 1.4rem;
-            font-weight: 800;
-        }
-
-        /* Toggle Produção/Retrabalho */
-        .toggle-wrapper {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .toggle-group {
-            display: inline-flex;
-            background: #f0f3ff;
-            border-radius: 30px;
-            padding: 5px;
-            border: 1px solid #e0e7ff;
-        }
-        .toggle-btn {
-            padding: 10px 22px;
-            border: none;
-            background: transparent;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            color: #64748b;
-            transition: all 0.25s;
-            font-family: inherit;
-            letter-spacing: 0.3px;
-        }
-        .toggle-btn.ativo-prod {
-            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
-            color: white;
-            box-shadow: 0 3px 10px rgba(46, 125, 50, 0.35);
-        }
-        .toggle-btn.ativo-retrab {
-            background: linear-gradient(135deg, #c62828 0%, #8e0000 100%);
-            color: white;
-            box-shadow: 0 3px 10px rgba(198, 40, 40, 0.35);
-        }
-
-        /* Navegação do calendário */
-        .cal-nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 12px;
-        }
-        .cal-nav-btn {
-            background: white;
-            border: 2px solid #e0e7ff;
-            color: #1a237e;
-            border-radius: 10px;
-            width: 42px;
-            height: 42px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: inherit;
-        }
-        .cal-nav-btn:hover {
-            border-color: #1a237e;
-            background: #f8faff;
-        }
-        .cal-nav-titulo {
-            color: #1a237e;
-            font-size: 1.05rem;
-            font-weight: 700;
-            min-width: 180px;
-            text-align: center;
-            text-transform: capitalize;
-        }
-
-        /* Calendário */
-        .cal-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-bottom: 18px;
-        }
-        .cal-dia-semana {
-            text-align: center;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: #1a237e;
-            padding: 6px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .cal-cell {
-            min-height: 56px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-            cursor: default;
-            user-select: none;
-        }
-        .cal-cell.vazio {
-            background: transparent;
-        }
-        .cal-cell.sem-dados {
-            color: #cbd5e1;
-            background: #fafbff;
-        }
-        .cal-cell.com-dados {
-            cursor: pointer;
-            color: white;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-        }
-        .cal-cell.com-dados.prod {
-            background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
-        }
-        .cal-cell.com-dados.prod:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(46, 125, 50, 0.4);
-        }
-        .cal-cell.com-dados.retrab {
-            background: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
-        }
-        .cal-cell.com-dados.retrab:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 18px rgba(198, 40, 40, 0.4);
-        }
-        .cal-cell-numero {
-            font-size: 0.9rem;
-            line-height: 1;
-            margin-bottom: 3px;
-        }
-        .cal-cell-qtd {
-            font-size: 0.78rem;
-            font-weight: 800;
-            background: rgba(255, 255, 255, 0.28);
-            padding: 1px 8px;
-            border-radius: 10px;
-            letter-spacing: 0.3px;
-        }
-
-        /* Modal de detalhes do dia */
-        #diaModal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(5, 5, 20, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 50000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.25s ease;
-        }
-        #diaModal.ativo {
-            display: flex;
-            opacity: 1;
-        }
-        .dia-box {
-            max-width: 560px;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            padding: 24px 22px;
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
-            max-height: 85vh;
-            overflow-y: auto;
-            animation: aceiteSlide 0.3s ease;
-        }
-        .dia-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #f0f3ff;
-        }
-        .dia-header-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-        .dia-header-icon.prod { background: linear-gradient(135deg, #c8e6c9, #81c784); }
-        .dia-header-icon.retrab { background: linear-gradient(135deg, #ffcdd2, #e57373); }
-        .dia-header-text h3 {
-            color: #1a237e;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 3px;
-        }
-        .dia-header-text p {
-            color: #64748b;
-            font-size: 0.8rem;
-        }
-        .dia-lista {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .dia-item {
-            background: #f8faff;
-            border-left: 4px solid #1a237e;
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 0.83rem;
-        }
-        .dia-item.protocolo {
-            font-weight: 700;
-            color: #1a237e;
-            margin-bottom: 3px;
-            font-size: 0.88rem;
-        }
-        .dia-item.cliente {
-            color: #475569;
-            font-size: 0.8rem;
-        }
-        .dia-item-num {
-            display: inline-block;
-            background: #1a237e;
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            margin-right: 8px;
-        }
-        .dia-vazio {
-            text-align: center;
-            color: #64748b;
-            padding: 20px;
-            font-size: 0.9rem;
-        }
-        .dia-rodape {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 18px;
-            padding-top: 12px;
-            border-top: 1px solid #e0e7ff;
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .aviso-prod {
-            background: #fff8e1;
-            border-left: 4px solid #f9a825;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 0.78rem;
-            color: #5d4037;
-            line-height: 1.5;
-            margin-top: 22px;
-            text-align: left;
-        }
-        .aviso-prod strong { color: #e65100; }
-
-        /* ============================================================
-           BLUR FINANCEIRO
-           ============================================================ */
-        .card-financeiro,
-        .bloco-financeiro {
-            position: relative;
-            transition: filter 0.15s ease, box-shadow 0.15s ease;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .card-financeiro.blur-suave,
-        .bloco-financeiro.blur-suave {
-            filter: blur(7px);
-        }
-
-        .card-financeiro.blur-suave::before,
-        .bloco-financeiro.blur-suave::before {
-            content: '👁 Pressione para revelar';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #1a237e;
-            background: rgba(255, 255, 255, 0.96);
-            padding: 6px 14px;
-            border-radius: 20px;
-            white-space: nowrap;
-            pointer-events: none;
-            filter: blur(0);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
-            z-index: 5;
-            border: 1px solid rgba(26, 35, 126, 0.15);
-        }
-
-        .card-financeiro.em-foco,
-        .bloco-financeiro.em-foco {
-            filter: blur(0);
-            box-shadow: 0 10px 26px rgba(26, 35, 126, 0.18);
-            z-index: 10;
-            -webkit-user-select: text;
-            -moz-user-select: text;
-            -ms-user-select: text;
-            user-select: text;
-        }
-
-        @media (max-width: 700px) {
-            .card-financeiro.blur-suave,
-            .bloco-financeiro.blur-suave {
-                filter: blur(5px);
-            }
-            .card-financeiro.blur-suave::before,
-            .bloco-financeiro.blur-suave::before {
-                font-size: 0.65rem;
-                padding: 5px 10px;
-            }
-        }
-
-        /* ============================================================
-           OVERLAY DE PROIBIÇÃO DE PRINT
+           OVERLAY DE BLOQUEIO DE CAPTURA
            ============================================================ */
         #printOverlay {
             display: none;
@@ -919,7 +450,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(10, 10, 30, 0.96);
+            background: rgba(10, 10, 30, 0.95);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             z-index: 999999;
@@ -927,11 +458,7 @@
             justify-content: center;
             opacity: 0;
             transition: opacity 0.15s ease;
-        }
-
-        #printOverlay.ativo {
-            display: flex;
-            opacity: 1;
+            pointer-events: all;
         }
 
         .print-overlay-content {
@@ -956,186 +483,117 @@
             font-size: 1.6rem;
             font-weight: 700;
             margin-bottom: 12px;
-            color: #ffcccc;
+            letter-spacing: 0.5px;
         }
 
         .print-overlay-content p {
             font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.5;
         }
 
-        .print-overlay-content p strong {
-            color: #ffab91;
+        body.screen-blurred .container,
+        body.screen-blurred .header,
+        body.screen-blurred .body-area,
+        body.screen-blurred .footer {
+            filter: blur(30px) brightness(0.3) !important;
+            transition: filter 0ms !important;
+            visibility: hidden !important;
         }
 
-        /* ============================================================
-           MODAL DE ACEITE
-           ============================================================ */
-        #aceiteModal {
-            display: none;
+        body.screen-blurred::before {
+            content: '';
             position: fixed;
             inset: 0;
-            background: rgba(5, 5, 20, 0.92);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            z-index: 100000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            background: #050510;
+            z-index: 999990;
+            pointer-events: all;
         }
 
-        #aceiteModal.ativo {
-            display: flex;
-            opacity: 1;
-        }
-
-        .aceite-box {
-            max-width: 560px;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            padding: 32px 28px;
-            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
-            animation: aceiteSlide 0.35s ease;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @keyframes aceiteSlide {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .aceite-topo {
-            text-align: center;
-            margin-bottom: 22px;
-        }
-
-        .aceite-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 14px;
-            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-        }
-
-        .aceite-topo h2 {
-            color: #1a237e;
-            font-size: 1.25rem;
+        body.screen-blurred::after {
+            content: '🔒 CONTEÚDO PROTEGIDO';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #e0e0e0;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .aceite-topo .aceite-intro {
-            color: #64748b;
-            font-size: 0.85rem;
-            line-height: 1.5;
-            max-width: 420px;
-            margin: 0 auto;
-        }
-
-        .aceite-lista {
-            list-style: none;
-            background: #f8faff;
-            border-radius: 12px;
-            padding: 16px 18px;
-            margin: 0 0 18px 0;
-            border-left: 4px solid #1a237e;
-        }
-
-        .aceite-lista li {
-            font-size: 0.83rem;
-            color: #334155;
-            padding: 6px 0 6px 22px;
-            position: relative;
-            line-height: 1.5;
-            text-align: left;
-        }
-
-        .aceite-lista li::before {
-            content: '✓';
-            color: #2e7d32;
-            font-weight: 700;
-            position: absolute;
-            left: 0;
-            top: 6px;
-        }
-
-        .aceite-lista li strong {
-            color: #1a237e;
-        }
-
-        .aceite-aviso {
-            background: #fff3e0;
-            color: #e65100;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            margin-bottom: 18px;
-            border-left: 4px solid #ff9800;
-            text-align: left;
-            line-height: 1.5;
-        }
-
-        .aceite-check {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            text-align: left;
-            margin-bottom: 20px;
-            padding: 14px;
-            border: 2px solid #e0e7ff;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-        }
-
-        .aceite-check:hover {
-            border-color: #1a237e;
-            background: #f8faff;
-        }
-
-        .aceite-check input {
-            margin-top: 2px;
-            width: 18px;
-            height: 18px;
-            accent-color: #1a237e;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .aceite-check span {
-            font-size: 0.83rem;
-            color: #334155;
-            line-height: 1.5;
-        }
-
-        .aceite-botoes {
-            display: flex;
-            gap: 12px;
-        }
-
-        .aceite-botoes .btn {
-            margin-top: 0;
-            flex: 1;
-        }
-
-        .hash-rodape {
-            font-family: 'Courier New', monospace;
-            font-size: 0.65rem;
-            color: #94a3b8;
-            margin-top: 16px;
+            letter-spacing: 3px;
+            z-index: 999991;
             text-align: center;
-            letter-spacing: 0.5px;
-            word-break: break-all;
+            padding: 30px 40px;
+            background: rgba(26, 35, 126, 0.9);
+            border-radius: 16px;
+            pointer-events: none;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body.screen-blurred-hard .container,
+        body.screen-blurred-hard .header,
+        body.screen-blurred-hard .body-area,
+        body.screen-blurred-hard .footer {
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+
+        body.screen-blurred-hard::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 999992;
+        }
+
+        body.screen-blurred-hard::after {
+            content: '🔒';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #333;
+            font-size: 4rem;
+            z-index: 999993;
+        }
+
+        input, textarea {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+
+        @media print {
+            html, body {
+                display: none !important;
+                visibility: hidden !important;
+                width: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+            body::after {
+                content: '🔒 Impressão não permitida - Documento confidencial';
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                color: #c62828;
+                text-align: center;
+                margin-top: 40vh;
+                font-family: sans-serif;
+                width: 100vw;
+                height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+                background: white;
+            }
         }
 
         /* ============================================================
@@ -1179,20 +637,7 @@
         }
 
         @media print {
-            html, body {
-                display: none !important;
-                visibility: hidden !important;
-            }
-            body::after {
-                content: '🔒 Impressão bloqueada. Use o botão "Baixar PDF".';
-                display: block !important;
-                visibility: visible !important;
-                font-size: 24px;
-                color: #c62828;
-                text-align: center;
-                margin-top: 40vh;
-                font-family: sans-serif;
-            }
+            #watermarkLayer { display: block !important; opacity: 0.15; }
         }
     </style>
 </head>
@@ -1210,7 +655,7 @@
                 <div class="login-box">
                     <div class="login-icon">🔐</div>
                     <h2>Acesso Restrito</h2>
-                    <p>Informe seu CPF para visualizar seu relatório</p>
+                    <p>Informe seu CPF para visualizar seu relatório de prêmios</p>
 
                     <input
                         type="text"
@@ -1223,15 +668,15 @@
                     >
                     <div class="mask-hint">Digite apenas os números</div>
 
-                    <button class="btn btn-primary" id="btnLogin">
-                        Acessar
+                    <button class="btn btn-primary" onclick="autenticar()">
+                        Consultar Meus Prêmios
                     </button>
 
                     <div id="loginError" class="error-msg"></div>
 
                     <div class="info-msg">
                         <strong>ℹ️ Sobre a consulta:</strong><br>
-                        Você verá apenas as suas informações de desempenho. Todos os acessos são registrados e rastreáveis.
+                        Você verá apenas as suas informações de desempenho. Os dados são atualizados periodicamente.
                     </div>
                 </div>
             </div>
@@ -1250,47 +695,13 @@
                     <div class="login-icon" style="background:linear-gradient(135deg,#ffcdd2,#ef9a9a);">⚠️</div>
                     <h2 id="erroTitulo">Erro</h2>
                     <p id="erroMsg">Mensagem de erro</p>
-                    <button class="btn btn-secondary" id="btnVoltarErro">
+                    <button class="btn btn-secondary" onclick="voltarLogin()">
                         Tentar novamente
                     </button>
                 </div>
             </div>
 
-            <!-- ===== TELA DE MENU (ESCOLHA) ===== -->
-            <div id="telaMenu" class="hidden">
-                <div class="menu-escolha">
-                    <div class="login-icon" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">✅</div>
-                    <h2 id="menuNome">Bem-vindo(a)</h2>
-                    <p id="menuSupervisor">Supervisor: —</p>
-                    <p style="margin-bottom:20px;">Escolha o tipo de consulta que deseja visualizar</p>
-
-                    <button class="menu-btn" id="btnIrPremio">
-                        <div class="menu-btn-icon premio">🏆</div>
-                        <div class="menu-btn-text">
-                            <h3>Consulta Prêmio</h3>
-                            <p>Veja seu resultado, nível alcançado e valor da premiação</p>
-                        </div>
-                        <div class="menu-btn-arrow">›</div>
-                    </button>
-
-                    <button class="menu-btn" id="btnIrProducao">
-                        <div class="menu-btn-icon producao">📊</div>
-                        <div class="menu-btn-text">
-                            <h3>Consulta Produção</h3>
-                            <p>Totais por tipo de atividade e calendário de produção/retrabalho</p>
-                        </div>
-                        <div class="menu-btn-arrow">›</div>
-                    </button>
-
-                    <div class="actions" style="margin-top:22px;">
-                        <button class="btn btn-secondary" id="btnSairMenu">
-                            ← Sair
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TELA DE RELATÓRIO (PRÊMIO) ===== -->
+            <!-- ===== TELA DE RELATÓRIO ===== -->
             <div id="telaRelatorio" class="hidden">
                 <div class="user-header">
                     <div class="user-info">
@@ -1303,55 +714,14 @@
                 <div id="relatorioConteudo"></div>
 
                 <div class="actions">
-                    <button class="btn btn-secondary" id="btnVoltarMenu">
-                        ← Voltar ao Menu
+                    <button class="btn btn-secondary" onclick="voltarLogin()">
+                        ← Sair
                     </button>
-                    <button class="btn btn-success" id="btnPDF">
+                    <button class="btn btn-success" onclick="baixarPDF()" id="btnPDF">
                         📄 Baixar PDF
                     </button>
-                    <button class="btn btn-whatsapp" id="btnWhats" style="display:none;">
+                    <button class="btn btn-whatsapp" onclick="enviarWhatsApp()" id="btnWhats" style="display:none;">
                         💬 Receber no WhatsApp
-                    </button>
-                </div>
-            </div>
-
-            <!-- ===== TELA DE PRODUÇÃO ===== -->
-            <div id="telaProducao" class="hidden">
-                <div class="user-header">
-                    <div class="user-info">
-                        <h2 id="prodNome">Nome</h2>
-                        <p id="prodSupervisor">Supervisor: —</p>
-                    </div>
-                    <span class="badge-result badge-premio">📊 Produção</span>
-                </div>
-
-                <h3 style="color:#1a237e;font-size:1rem;margin-bottom:12px;">🧾 Totais por Tipo de Atividade</h3>
-                <div id="prodTotais" class="prod-totais"></div>
-
-                <h3 style="color:#1a237e;font-size:1rem;margin:22px 0 10px;">📅 Calendário</h3>
-
-                <div class="toggle-wrapper">
-                    <div class="toggle-group">
-                        <button class="toggle-btn ativo-prod" id="toggleProd">🟢 Produção</button>
-                        <button class="toggle-btn" id="toggleRetrab">🔴 Retrabalhos</button>
-                    </div>
-                </div>
-
-                <div class="cal-nav">
-                    <button class="cal-nav-btn" id="calPrev">‹</button>
-                    <div class="cal-nav-titulo" id="calTitulo">—</div>
-                    <button class="cal-nav-btn" id="calNext">›</button>
-                </div>
-
-                <div id="calGrid" class="cal-grid"></div>
-
-                <div class="aviso-prod">
-                    <strong>⚠️ Observação:</strong> Os dados podem sofrer alterações no fechamento e devem ser considerados apenas como referência aproximada para acompanhamento de produção.
-                </div>
-
-                <div class="actions">
-                    <button class="btn btn-secondary" id="btnVoltarMenuProd">
-                        ← Voltar ao Menu
                     </button>
                 </div>
             </div>
@@ -1359,84 +729,12 @@
         </div>
 
         <div class="footer">
-            Sistema de Gestão de Prêmios - Dados confidenciais e rastreáveis
+            Sistema de Gestão de Prêmios - Dados atualizados periodicamente
         </div>
     </div>
 
     <!-- Camada do watermark dinâmico -->
     <div id="watermarkLayer"></div>
-
-    <!-- ===== OVERLAY DE PROIBIÇÃO DE PRINT ===== -->
-    <div id="printOverlay">
-        <div class="print-overlay-content">
-            <div class="print-overlay-icon">🚫</div>
-            <h2>Captura de tela proibida</h2>
-            <p>
-                <strong>Esta ação é expressamente proibida.</strong><br>
-                O conteúdo deste relatório é confidencial e sua captura foi registrada com data, hora e identificação.
-            </p>
-        </div>
-    </div>
-
-    <!-- ===== MODAL DE ACEITE ===== -->
-    <div id="aceiteModal">
-        <div class="aceite-box">
-            <div class="aceite-topo">
-                <div class="aceite-icon">📋</div>
-                <h2>Termo de Confidencialidade</h2>
-                <p class="aceite-intro">
-                    Antes de visualizar seu relatório, leia e aceite os termos abaixo.
-                </p>
-            </div>
-
-            <ul class="aceite-lista">
-                <li>Este relatório contém <strong>dados confidenciais</strong> de desempenho e premiação.</li>
-                <li>Cada acesso é <strong>registrado</strong> com CPF, data, hora e identificação da sessão.</li>
-                <li>Valores financeiros estão <strong>protegidos por blur</strong> — pressione o card para revelar.</li>
-                <li>É <strong>expressamente proibido</strong> capturar, fotografar ou imprimir a tela.</li>
-                <li>O conteúdo possui <strong>marca d'água digital</strong> — vazamentos são rastreáveis.</li>
-                <li>O descumprimento pode gerar <strong>responsabilização administrativa e legal</strong>.</li>
-            </ul>
-
-            <div class="aceite-aviso">
-                ⚠️ Ao aceitar, você concorda que é o único responsável pelo uso das informações aqui exibidas e está ciente de que tentativas de captura são registradas.
-            </div>
-
-            <label class="aceite-check">
-                <input type="checkbox" id="aceiteCheckbox" onchange="toggleAceite(this)">
-                <span>Li, entendi e aceito os termos de confidencialidade. Estou ciente de que este acesso é registrado e rastreável.</span>
-            </label>
-
-            <div class="aceite-botoes">
-                <button class="btn btn-secondary" onclick="cancelarAceite()">
-                    Cancelar
-                </button>
-                <button class="btn btn-aceite" id="btnAceitar" onclick="confirmarAceite()" disabled>
-                    Aceitar e Visualizar
-                </button>
-            </div>
-
-            <div class="hash-rodape" id="hashRodape">—</div>
-        </div>
-    </div>
-
-    <!-- ===== MODAL DE DETALHES DO DIA (PRODUÇÃO) ===== -->
-    <div id="diaModal">
-        <div class="dia-box">
-            <div class="dia-header">
-                <div class="dia-header-icon prod" id="diaIcone">🟢</div>
-                <div class="dia-header-text">
-                    <h3 id="diaTitulo">Detalhes</h3>
-                    <p id="diaSubtitulo">—</p>
-                </div>
-            </div>
-            <div class="dia-lista" id="diaLista"></div>
-            <div class="dia-rodape">
-                <span id="diaTotal">Total: 0</span>
-                <button class="btn btn-secondary" style="width:auto;padding:8px 18px;margin:0;font-size:0.82rem;" onclick="fecharDiaModal()">Fechar</button>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1447,17 +745,28 @@
            ============================================================ */
         const ARQUIVO_PLANILHA = 'PREMIO.xlsx';
 
-        // ÍNDICES DAS COLUNAS NA ABA CONCLUIDAS (0-based)
-        const COL_CONCLUIDAS = {
-            protocolo: 0,      // A
-            cliente: 1,        // B
-            tipoSolicitacao: 2,// C (ou outro)
-            dataEncerramento: 3,// D
-            tecnicoProducao: 11, // L (produção - quem encerrou)
-            tecnicoOriginal: 24, // Y (retrabalho - técnico original)
-            protocoloOriginal: 25,// Z
-            status: 4          // E (ou outro)
-        };
+        /*
+         * PRODUÇÃO (guia CONCLUIDAS)
+         *  - Coluna L (atendente)          -> associa a atividade ao colaborador
+         *  - Coluna D (tipo_solicitacao)   -> tipo da atividade
+         *  - Guia TIPOS ATIVIDADES         -> converte o tipo em CATEGORIA
+         *
+         * Categorias (já sem acento, em maiúsculo) que NÃO entram na contagem:
+         */
+        const CATEGORIAS_IGNORADAS = [
+            'ABASTECIMENTO COMBUSTIVEL',   // liberação de combustível
+            'PRESTACAO CONTAS'             // validação - prestação de contas
+        ];
+        // Categorias que contam como RETIRADA
+        const CATEGORIAS_RETIRADA = ['RETIRADA', 'RECOLHIMENTO'];
+        // Categorias que contam como INSTALAÇÃO
+        const CATEGORIAS_INSTALACAO = ['INSTALACAO'];
+        // Todo o restante (pendência, transferência, serviço, reativação, repetidor,
+        // troca de roteador, upgrade, etc.) conta como MANUTENÇÃO.
+
+        // Posição padrão das colunas caso o cabeçalho não seja encontrado (A=0 ... L=11)
+        const COL_TIPO_PADRAO = 3;        // D
+        const COL_ATENDENTE_PADRAO = 11;  // L
 
         /* ============================================================
            VARIÁVEIS GLOBAIS
@@ -1465,63 +774,16 @@
         let dadosPremio = [];
         let dadosFDT = [];
         let tabelaMetas = [];
+        let mapaTipos = {};            // TIPO normalizado -> CATEGORIA normalizada
+        let mapaProducao = {};         // NOME normalizado -> contagens da guia CONCLUIDAS
+        let producaoDisponivel = false;
         let colaboradoresCompletos = [];
         let planilhaCarregada = false;
         let colaboradorAtual = null;
 
-        let dadosConcluidas = [];
-        let producaoPorDia = {};
-        let retrabalhoPorDia = {};
-        let totaisPorTipo = {};
-        let modoProducao = 'PRODUCAO';
-        let mesCalendario = new Date().getMonth();
-        let anoCalendario = new Date().getFullYear();
-
         const NIVEIS = ['PRATA', 'OURO', 'PLATINA', 'DIAMANTE'];
         const META_RETRABALHO = 4;
         const VALOR_CONCESSAO_INSTALACAO = 3.00;
-
-        const TIPOS_CONTABILIZADOS = [
-            'ACOMPANHAMENTO TECNICO',
-            'INSTALACAO',
-            'PENDENCIA',
-            'REATIVACAO',
-            'REATIVACAO RADIO',
-            'RECOLHIMENTO',
-            'REPETIDOR',
-            'RETIRADA',
-            'SERVICO',
-            'TRANSFERENCIA',
-            'TROCA REPETIDOR',
-            'TROCA ROTEADOR',
-            'TROCA TECNOLOGIA',
-            'UPGRADE',
-            'VALIDACAO INVIABILIDADE'
-        ];
-
-        window.__sessaoLog = [];
-        window.__sessaoHash = null;
-
-        /* ============================================================
-           AUDITORIA
-           ============================================================ */
-        function registrarEvento(tipo, extra) {
-            try {
-                const registro = {
-                    tipo: tipo,
-                    timestamp: new Date().toISOString(),
-                    usuario: (typeof colaboradorAtual !== 'undefined' && colaboradorAtual) ? colaboradorAtual.nome : 'anonimo',
-                    cpf: (typeof colaboradorAtual !== 'undefined' && colaboradorAtual) ? formatarCPF(colaboradorAtual.cpf) : '-',
-                    hash: window.__sessaoHash || null,
-                    userAgent: (navigator.userAgent || '').substring(0, 80)
-                };
-                if (extra) Object.assign(registro, extra);
-                window.__sessaoLog.push(registro);
-                console.warn('📋 [AUDITORIA]', registro);
-            } catch (e) {
-                console.warn('Falha ao registrar evento:', e);
-            }
-        }
 
         /* ============================================================
            HELPERS
@@ -1573,6 +835,13 @@
             return apenasDigitos(v);
         }
 
+        /**
+         * Normaliza nome para comparação:
+         *  - Remove acentos
+         *  - Remove espaços múltiplos
+         *  - Remove caracteres não alfanuméricos
+         *  - Passa para MAIÚSCULO
+         */
         function normalizarNome(nome) {
             if (!nome) return '';
             return String(nome)
@@ -1584,37 +853,18 @@
                 .toUpperCase();
         }
 
-        function matchNomeInteligente(nomeA, nomeB) {
-            if (!nomeA || !nomeB) return false;
-            const a = normalizarNome(nomeA);
-            const b = normalizarNome(nomeB);
-            if (!a || !b) return false;
-
-            if (a === b) return true;
-            if (a.includes(b) || b.includes(a)) return true;
-
-            const tokensA = a.split(' ').filter(Boolean);
-            const tokensB = b.split(' ').filter(Boolean);
-            if (tokensA.length === 0 || tokensB.length === 0) return false;
-
-            const setA = new Set(tokensA);
-            const setB = new Set(tokensB);
-            const inter = [...setA].filter(t => setB.has(t));
-
-            if (inter.length >= 2) return true;
-            if (inter.length === 1 && inter[0].length >= 5) return true;
-
-            const menores = tokensA.length <= tokensB.length ? tokensA : tokensB;
-            const maiores = tokensA.length <= tokensB.length ? tokensB : tokensA;
-            let matches = 0;
-            for (const t of menores) {
-                if (maiores.some(m => m === t || (t.length >= 4 && m.length >= 4 && (m.startsWith(t.substring(0, 4)) || t.startsWith(m.substring(0, 4)))))) {
-                    matches++;
-                }
-            }
-            if (menores.length > 0 && (matches / menores.length) >= 0.6 && matches >= 2) return true;
-
-            return false;
+        /**
+         * Normaliza texto de tipo/categoria (mantém hífens e pontos,
+         * só remove acentos, espaços extras e passa para MAIÚSCULO).
+         */
+        function normalizarTexto(txt) {
+            if (txt === undefined || txt === null) return '';
+            return String(txt)
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toUpperCase();
         }
 
         function calcularRetrabalhoDescontado(colaborador) {
@@ -1622,46 +872,6 @@
             const pontosMeta = num(colaborador.ind4);
             const descontados = Math.max(0, atividades - pontosMeta);
             return { atividades, pontosMeta, descontados };
-        }
-
-        function gerarHashSessao(colaborador) {
-            const base = (colaborador.cpf || '') + Date.now() + Math.random().toString(36);
-            let hash = 0;
-            for (let i = 0; i < base.length; i++) {
-                hash = ((hash << 5) - hash) + base.charCodeAt(i);
-                hash = hash & hash;
-            }
-            return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
-        }
-
-        /* ============================================================
-           CLASSIFICAÇÃO DE TIPO DE ATIVIDADE (PRODUÇÃO)
-           ============================================================ */
-        function classificarTipoProducao(tipoRaw) {
-            if (!tipoRaw) return null;
-            const t = normalizarNome(tipoRaw);
-            const regras = [
-                ['ACOMPANHAMENTO', 'ACOMPANHAMENTO TECNICO'],
-                ['VALIDACAO INVIABILIDADE', 'VALIDACAO INVIABILIDADE'],
-                ['INVIABILIDADE', 'VALIDACAO INVIABILIDADE'],
-                ['TROCA TECNOLOGIA', 'TROCA TECNOLOGIA'],
-                ['TROCA REPETIDOR', 'TROCA REPETIDOR'],
-                ['TROCA ROTEADOR', 'TROCA ROTEADOR'],
-                ['REATIVACAO RADIO', 'REATIVACAO RADIO'],
-                ['REATIVACAO', 'REATIVACAO'],
-                ['REPETIDOR', 'REPETIDOR'],
-                ['RECOLHIMENTO', 'RECOLHIMENTO'],
-                ['RETIRADA', 'RETIRADA'],
-                ['INSTALACAO', 'INSTALACAO'],
-                ['PENDENCIA', 'PENDENCIA'],
-                ['SERVICO', 'SERVICO'],
-                ['TRANSFERENCIA', 'TRANSFERENCIA'],
-                ['UPGRADE', 'UPGRADE']
-            ];
-            for (const [chave, destino] of regras) {
-                if (t.includes(chave)) return destino;
-            }
-            return null;
         }
 
         /* ============================================================
@@ -1681,7 +891,8 @@
                 dadosPremio = processarRelatorioControladoria(workbook);
                 dadosFDT = processarFDT(workbook);
                 tabelaMetas = processarTabelaMetas(workbook);
-                dadosConcluidas = processarConcluidas(workbook);
+                mapaTipos = processarTiposAtividades(workbook);
+                mapaProducao = processarConcluidas(workbook, mapaTipos);
 
                 if (dadosPremio.length === 0) throw new Error('Nenhum colaborador encontrado na planilha.');
                 if (tabelaMetas.length === 0) throw new Error('Tabela de metas não encontrada.');
@@ -1695,19 +906,27 @@
             }
         }
 
+        /**
+         * Localiza uma guia pelo nome. Primeiro tenta correspondência exata
+         * (ignorando acentos/maiúsculas/símbolos), depois "contém".
+         */
         function encontrarGuia(workbook, nomesPossiveis) {
-            const nomesNormalizados = nomesPossiveis.map(n => n.toLowerCase().replace(/[^a-z0-9]/g, ''));
+            const limpar = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+            const nomesNormalizados = nomesPossiveis.map(limpar);
+
             for (const sheetName of workbook.SheetNames) {
-                const normalizado = sheetName.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (nomesNormalizados.some(n => normalizado.includes(n) || n.includes(normalizado))) {
-                    return sheetName;
-                }
+                if (nomesNormalizados.includes(limpar(sheetName))) return sheetName;
+            }
+            for (const sheetName of workbook.SheetNames) {
+                const normalizado = limpar(sheetName);
+                if (nomesNormalizados.some(n => normalizado.includes(n))) return sheetName;
             }
             return null;
         }
 
+        /* ---------- RELATÓRIO CONTROLADORIA ---------- */
         function processarRelatorioControladoria(workbook) {
-            const sheetName = encontrarGuia(workbook, ['relatorio controladoria', 'controladoria', 'premio', 'prêmio']);
+            const sheetName = encontrarGuia(workbook, ['relatorio controladoria', 'controladoria', 'premio']);
             if (!sheetName) return [];
             const sheet = workbook.Sheets[sheetName];
             const dados = XLSX.utils.sheet_to_json(sheet, { header: 1 });
@@ -1746,6 +965,8 @@
                     retComDesconto: linha[3] || '0',
                     ind4: linha[4] || '0',
                     totalRetrabalhos: linha[5] || '0',
+                    // Valores originais do relatório (usados só como reserva
+                    // caso a guia CONCLUIDAS não exista na planilha)
                     retirada: linha[6] || '0',
                     instalacao: linha[7] || '0',
                     manutencao: linha[8] || '0',
@@ -1763,6 +984,7 @@
             return colaboradores;
         }
 
+        /* ---------- FDT ---------- */
         function processarFDT(workbook) {
             const sheetName = encontrarGuia(workbook, ['fdt']);
             if (!sheetName) return [];
@@ -1808,6 +1030,7 @@
             return fdt;
         }
 
+        /* ---------- TABELA DE METAS ---------- */
         function processarTabelaMetas(workbook) {
             const sheetName = encontrarGuia(workbook, ['tabela de metas', 'tabela metas', 'metas']);
             if (!sheetName) return [];
@@ -1861,126 +1084,129 @@
         }
 
         /* ============================================================
-           PROCESSAMENTO DA ABA CONCLUIDAS  (CORRIGIDO)
+           PRODUÇÃO — GUIA "TIPOS ATIVIDADES" + GUIA "CONCLUIDAS"
            ============================================================ */
-        function processarConcluidas(workbook) {
-            const sheetName = encontrarGuia(workbook, ['concluidas', 'concluídas']);
-            if (!sheetName) return [];
-            const sheet = workbook.Sheets[sheetName];
-            const dados = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-            if (dados.length < 2) return [];
+        /**
+         * Lê a guia TIPOS ATIVIDADES:
+         *   coluna A = TIPO DE SOLICITAÇÃO  |  coluna B = CATEGORIA
+         * Retorna { 'TIPO NORMALIZADO': 'CATEGORIA NORMALIZADA' }
+         */
+        function processarTiposAtividades(workbook) {
+            const sheetName = encontrarGuia(workbook, ['tipos atividades', 'tipos de atividades', 'tipos']);
+            const mapa = {};
+            if (!sheetName) {
+                console.warn('⚠️ Guia "TIPOS ATIVIDADES" não encontrada. Será usada classificação por palavras-chave.');
+                return mapa;
+            }
+            const dados = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
 
-            // Localiza a linha de cabeçalho (procura "protocolo")
-            let linhaCabecalho = -1;
-            for (let i = 0; i < Math.min(5, dados.length); i++) {
+            for (let i = 0; i < dados.length; i++) {
                 const linha = dados[i];
-                if (linha && linha.some(c => (c || '').toString().toLowerCase().includes('protocolo'))) {
-                    linhaCabecalho = i;
-                    break;
-                }
+                if (!linha) continue;
+                const tipo = normalizarTexto(linha[0]);
+                const categoria = normalizarTexto(linha[1]);
+                if (!tipo || !categoria) continue;
+                if (tipo === 'TIPO DE SOLICITACAO') continue; // cabeçalho
+                mapa[tipo] = categoria;
             }
-            if (linhaCabecalho === -1) linhaCabecalho = 0;
-
-            // Mapeia índices das colunas pelo cabeçalho (flexível)
-            const cabecalho = (dados[linhaCabecalho] || []).map(c => (c || '').toString().toLowerCase());
-            function acharColuna(termos) {
-                for (let j = 0; j < cabecalho.length; j++) {
-                    const c = cabecalho[j];
-                    for (const t of termos) {
-                        if (c.includes(t)) return j;
-                    }
-                }
-                return -1;
-            }
-
-            // Colunas fixas (fallback)
-            const colProtocolo = acharColuna(['protocolo']) !== -1 ? acharColuna(['protocolo']) : 0;
-            const colCliente = acharColuna(['cliente', 'nome_cliente', 'nome cliente']) !== -1 ? acharColuna(['cliente', 'nome_cliente', 'nome cliente']) : 1;
-            const colTipo = acharColuna(['tipo', 'solicitacao', 'solicitação', 'servico', 'serviço']) !== -1 ? acharColuna(['tipo', 'solicitacao', 'solicitação', 'servico', 'serviço']) : 2;
-            const colData = acharColuna(['data_primeiro_relato_encerramento', 'data_encerramento', 'encerramento', 'data']) !== -1 ? acharColuna(['data_primeiro_relato_encerramento', 'data_encerramento', 'encerramento', 'data']) : 3;
-            const colStatus = acharColuna(['status']) !== -1 ? acharColuna(['status']) : 4;
-
-            // 🔥 CORREÇÃO: colunas de técnico e protocolo original (Y e Z) - mapeia pelo cabeçalho
-            let colTecnicoProd = 11;  // L (fallback)
-            let colTecnicoRetrab = 24; // Y (fallback)
-            let colProtOriginal = 25;  // Z (fallback)
-
-            const idxTecProdCab = acharColuna(['tecnico_producao', 'técnico_produção', 'tecnico producao', 'técnico produção']);
-            if (idxTecProdCab !== -1) colTecnicoProd = idxTecProdCab;
-
-            const idxTecRetrabCab = acharColuna(['tecnico_original', 'técnico_original', 'tecnico original', 'técnico original']);
-            if (idxTecRetrabCab !== -1) colTecnicoRetrab = idxTecRetrabCab;
-
-            const idxProtOrigCab = acharColuna(['protocolo_original', 'protocolo original']);
-            if (idxProtOrigCab !== -1) colProtOriginal = idxProtOrigCab;
-
-            const resultado = [];
-            for (let i = linhaCabecalho + 1; i < dados.length; i++) {
-                const linha = dados[i];
-                if (!linha || linha.length < 5) continue;
-
-                const status = (linha[colStatus] || '').toString().trim();
-
-                // 🔥 CORREÇÃO: filtra apenas se status for explicitamente algo diferente de encerrado/concluído
-                // Se status for vazio, ainda consideramos (pode ser que não tenha status preenchido)
-                if (status) {
-                    const statusLower = status.toLowerCase();
-                    const ehEncerrado = statusLower.includes('encerr') ||
-                                        statusLower.includes('conclu') ||
-                                        statusLower.includes('finaliz') ||
-                                        statusLower.includes('fechado');
-                    if (!ehEncerrado) continue;
-                }
-
-                const dataEncerramento = parseDataExcel(linha[colData]);
-                if (!dataEncerramento) continue;
-
-                // 🔥 CORREÇÃO: captura técnico de produção (L), técnico original (Y) e protocolo original (Z)
-                const tecnicoProducao = String(linha[colTecnicoProd] || '').trim();
-                const tecnicoOriginal = String(linha[colTecnicoRetrab] || '').trim();
-                const protocoloOriginal = String(linha[colProtOriginal] || '').trim();
-
-                resultado.push({
-                    protocolo: String(linha[colProtocolo] || '').trim(),
-                    cliente: String(linha[colCliente] || '').trim(),
-                    tipoSolicitacao: String(linha[colTipo] || '').trim(),
-                    dataEncerramento: dataEncerramento,
-                    tecnicoProducao: tecnicoProducao,
-                    tecnicoOriginal: tecnicoOriginal,
-                    protocoloOriginal: protocoloOriginal,
-                    status: status
-                });
-            }
-            return resultado;
+            return mapa;
         }
 
-        function parseDataExcel(valor) {
-            if (!valor) return null;
-            if (valor instanceof Date) return isNaN(valor) ? null : valor;
-            if (typeof valor === 'number') {
-                const epoch = new Date(Date.UTC(1899, 11, 30));
-                const d = new Date(epoch.getTime() + valor * 86400000);
-                return isNaN(d) ? null : d;
+        /**
+         * Converte um tipo de solicitação (coluna D de CONCLUIDAS) em um dos grupos:
+         *   'retirada' | 'instalacao' | 'manutencao' | null (ignorar)
+         */
+        function classificarAtividade(tipoBruto, mapa, desconhecidos) {
+            const tipo = normalizarTexto(tipoBruto);
+            if (!tipo) return null;
+
+            let categoria = mapa[tipo];
+
+            // Reserva: se o tipo não está na guia TIPOS ATIVIDADES, classifica por palavra-chave
+            if (!categoria) {
+                if (desconhecidos) desconhecidos[tipo] = (desconhecidos[tipo] || 0) + 1;
+                if (tipo.includes('COMBUSTIVEL')) categoria = 'ABASTECIMENTO COMBUSTIVEL';
+                else if (tipo.includes('PRESTACAO')) categoria = 'PRESTACAO CONTAS';
+                else if (tipo.includes('RETRABALHO')) categoria = 'PENDENCIA';
+                else if (tipo.includes('INSTALACAO')) categoria = 'INSTALACAO';
+                else if (tipo.includes('RETIRADA') || tipo.includes('RECOLH')) categoria = 'RETIRADA';
+                else categoria = 'PENDENCIA';
             }
-            const s = String(valor).trim();
-            if (!s) return null;
 
-            let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-            if (m) return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
-
-            m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-            if (m) return new Date(parseInt(m[3]), parseInt(m[2]) - 1, parseInt(m[1]));
-
-            const d = new Date(s);
-            return isNaN(d) ? null : d;
+            if (CATEGORIAS_IGNORADAS.includes(categoria)) return null;
+            if (CATEGORIAS_RETIRADA.includes(categoria)) return 'retirada';
+            if (CATEGORIAS_INSTALACAO.includes(categoria)) return 'instalacao';
+            return 'manutencao';
         }
 
-        function chaveData(d) {
-            const y = d.getFullYear();
-            const m = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${y}-${m}-${day}`;
+        /**
+         * Lê a guia CONCLUIDAS e conta as atividades de cada colaborador.
+         *  - Coluna L (atendente)        => colaborador
+         *  - Coluna D (tipo_solicitacao) => tipo da atividade
+         * Retorna { 'NOME NORMALIZADO': { retirada, instalacao, manutencao, total, ignoradas } }
+         */
+        function processarConcluidas(workbook, mapa) {
+            producaoDisponivel = false;
+            const sheetName = encontrarGuia(workbook, ['concluidas', 'concluidas ']);
+            if (!sheetName) {
+                console.warn('⚠️ Guia "CONCLUIDAS" não encontrada. Usando valores do Relatório Controladoria.');
+                return {};
+            }
+
+            const dados = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1 });
+            if (dados.length < 2) return {};
+
+            // Localiza as colunas pelo cabeçalho; se não achar, usa D e L
+            let colTipo = COL_TIPO_PADRAO;
+            let colAtendente = COL_ATENDENTE_PADRAO;
+            const cab = dados[0] || [];
+            for (let j = 0; j < cab.length; j++) {
+                const h = normalizarTexto(cab[j]).toLowerCase();
+                if (h === 'tipo_solicitacao') colTipo = j;
+                if (h === 'atendente') colAtendente = j;
+            }
+
+            const producao = {};
+            const desconhecidos = {};
+            let totalLinhas = 0, semAtendente = 0, ignoradasTotal = 0;
+
+            for (let i = 1; i < dados.length; i++) {
+                const linha = dados[i];
+                if (!linha) continue;
+
+                const chave = normalizarNome(linha[colAtendente]);
+                const tipoBruto = linha[colTipo];
+                if (!tipoBruto && !chave) continue;
+                totalLinhas++;
+
+                if (!chave) { semAtendente++; continue; }
+
+                if (!producao[chave]) {
+                    producao[chave] = { retirada: 0, instalacao: 0, manutencao: 0, total: 0, ignoradas: 0 };
+                }
+
+                const grupo = classificarAtividade(tipoBruto, mapa, desconhecidos);
+                if (grupo === null) {
+                    producao[chave].ignoradas++;
+                    ignoradasTotal++;
+                    continue;
+                }
+                producao[chave][grupo]++;
+                producao[chave].total++;
+            }
+
+            producaoDisponivel = true;
+
+            console.log('===== PRODUÇÃO (CONCLUIDAS) =====');
+            console.log('Linhas lidas:', totalLinhas,
+                '| sem atendente:', semAtendente,
+                '| ignoradas (combustível/prestação de contas):', ignoradasTotal,
+                '| colaboradores:', Object.keys(producao).length);
+            if (Object.keys(desconhecidos).length > 0) {
+                console.warn('⚠️ Tipos fora da guia TIPOS ATIVIDADES (classificados por palavra-chave):', desconhecidos);
+            }
+            return producao;
         }
 
         /* ============================================================
@@ -1988,7 +1214,7 @@
            ============================================================ */
         function calcularPremio(colaborador) {
             const equipe = (colaborador.equipe || '').toString().trim().toUpperCase();
-            const dias = parseInt(colaborador.dc) || 0;
+            const dias = parseInt(colaborador.du) || 0;
             const pontuacaoFinal = num(colaborador.pv);
 
             const vazio = {
@@ -2164,7 +1390,11 @@
             };
         }
 
+        /* ============================================================
+           COMBINAR DADOS (nome normalizado + CPF como fallback)
+           ============================================================ */
         function combinarDados() {
+            // Mapa: NOME normalizado -> dados da FDT (supervisor, whatsapp, cpf)
             const mapaFDT = {};
             dadosFDT.forEach(item => {
                 const chave = normalizarNome(item.tecnico);
@@ -2185,12 +1415,33 @@
             colaboradoresCompletos = dadosPremio.map(colab => {
                 const chave = normalizarNome(colab.nome);
                 const infoFDT = mapaFDT[chave] || { supervisor: 'Não alocado', whatsapp: '', cpf: '' };
-                const premio = calcularPremio(colab);
-                const retrab = calcularRetrabalhoDescontado(colab);
-                const resultadoInfo = determinarResultado(colab, premio);
+
+                // ===== PRODUÇÃO vinda da guia CONCLUIDAS =====
+                // (coluna L = colaborador | coluna D = tipo da atividade)
+                let producao = {
+                    retirada: colab.retirada,
+                    instalacao: colab.instalacao,
+                    manutencao: colab.manutencao,
+                    at: colab.at
+                };
+                if (producaoDisponivel) {
+                    const p = mapaProducao[chave] || { retirada: 0, instalacao: 0, manutencao: 0, total: 0, ignoradas: 0 };
+                    producao = {
+                        retirada: p.retirada,
+                        instalacao: p.instalacao,
+                        manutencao: p.manutencao,
+                        at: p.total
+                    };
+                }
+
+                const colabAtualizado = { ...colab, ...producao };
+
+                const premio = calcularPremio(colabAtualizado);
+                const retrab = calcularRetrabalhoDescontado(colabAtualizado);
+                const resultadoInfo = determinarResultado(colabAtualizado, premio);
 
                 return {
-                    ...colab,
+                    ...colabAtualizado,
                     nomeNormalizado: chave,
                     supervisor: infoFDT.supervisor,
                     whatsapp: infoFDT.whatsapp,
@@ -2207,49 +1458,26 @@
         }
 
         /* ============================================================
-           NAVEGAÇÃO
+           NAVEGAÇÃO ENTRE TELAS
            ============================================================ */
-        function esconderTodas() {
-            ['telaLogin','telaLoading','telaErro','telaMenu','telaRelatorio','telaProducao'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-        }
-
-        function irPara(id) {
-            esconderTodas();
-            const el = document.getElementById(id);
-            if (el) el.classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
         function setLoading() {
-            esconderTodas();
+            document.getElementById('telaLogin').classList.add('hidden');
+            document.getElementById('telaErro').classList.add('hidden');
+            document.getElementById('telaRelatorio').classList.add('hidden');
             document.getElementById('telaLoading').classList.remove('hidden');
         }
 
         function setErro(titulo, msg) {
-            esconderTodas();
+            document.getElementById('telaLogin').classList.add('hidden');
+            document.getElementById('telaLoading').classList.add('hidden');
+            document.getElementById('telaRelatorio').classList.add('hidden');
             document.getElementById('telaErro').classList.remove('hidden');
             document.getElementById('erroTitulo').textContent = titulo;
             document.getElementById('erroMsg').textContent = msg;
         }
 
-        function voltarLogin() {
-            colaboradorAtual = null;
-            removerWatermark();
-            document.getElementById('cpfInput').value = '';
-            document.getElementById('loginError').classList.remove('show');
-            irPara('telaLogin');
-        }
-
-        function voltarMenu() {
-            removerWatermark();
-            irPara('telaMenu');
-        }
-
         /* ============================================================
-           AUTENTICAÇÃO
+           AUTENTICAÇÃO (busca primeiro na FDT pelo CPF)
            ============================================================ */
         async function autenticar() {
             const input = document.getElementById('cpfInput');
@@ -2278,10 +1506,14 @@
             try {
                 await carregarPlanilha();
 
+                // PASSO 1: Localizar o técnico na FDT pelo CPF
                 const registrosFDT = dadosFDT.filter(f => f.cpf === cpfDigitado);
 
                 if (registrosFDT.length === 0) {
-                    setErro('CPF não encontrado', 'Não encontramos nenhum colaborador com este CPF na base de dados. Verifique com seu supervisor.');
+                    setErro(
+                        'CPF não encontrado',
+                        'Não encontramos nenhum colaborador com este CPF na base de dados. Verifique com seu supervisor.'
+                    );
                     return;
                 }
 
@@ -2292,12 +1524,17 @@
                 const tecnicoFDT = registrosFDT[0];
                 const nomeNormalizadoFDT = normalizarNome(tecnicoFDT.tecnico);
 
-                let colaborador = colaboradoresCompletos.find(c => c.nomeNormalizado === nomeNormalizadoFDT);
+                // PASSO 2: Localizar o colaborador no RELATÓRIO pelo nome normalizado
+                let colaborador = colaboradoresCompletos.find(
+                    c => c.nomeNormalizado === nomeNormalizadoFDT
+                );
 
+                // Fallback 1: match por CPF direto
                 if (!colaborador) {
                     colaborador = colaboradoresCompletos.find(c => c.cpf === cpfDigitado);
                 }
 
+                // Fallback 2: match parcial pelo primeiro + último nome
                 if (!colaborador) {
                     const partesFDT = nomeNormalizadoFDT.split(' ').filter(Boolean);
                     if (partesFDT.length >= 2) {
@@ -2315,247 +1552,70 @@
                         } else if (candidatos.length > 1) {
                             const porCPF = candidatos.find(c => c.cpf === cpfDigitado);
                             colaborador = porCPF || candidatos[0];
+                            console.warn('⚠️ Múltiplos candidatos por nome, usando o primeiro:', candidatos.map(c => c.nome));
                         }
                     }
                 }
 
                 if (!colaborador) {
-                    setErro('Colaborador não localizado', 'Encontramos seu CPF, mas não localizamos seu registro. Verifique com seu supervisor.');
+                    setErro(
+                        'Colaborador não localizado',
+                        'Encontramos seu CPF, mas não localizamos seu registro de desempenho. Verifique com seu supervisor se seu nome está idêntico nas planilhas.'
+                    );
                     return;
                 }
 
+                // PASSO 3: Forçar o CPF do colaborador a ser o do usuário logado
                 colaborador.cpf = cpfDigitado;
-                if (!colaborador.whatsapp && tecnicoFDT.whatsapp) colaborador.whatsapp = tecnicoFDT.whatsapp;
+                if (!colaborador.whatsapp && tecnicoFDT.whatsapp) {
+                    colaborador.whatsapp = tecnicoFDT.whatsapp;
+                }
                 if (!colaborador.supervisor || colaborador.supervisor === 'Não alocado') {
                     colaborador.supervisor = tecnicoFDT.supervisor || colaborador.supervisor;
                 }
 
+                // ===== LOG DE AUDITORIA =====
+                console.log('===== AUTENTICAÇÃO =====');
+                console.log('CPF digitado:', cpfDigitado);
+                console.log('Nome FDT normalizado:', nomeNormalizadoFDT);
+                console.log('Colaborador escolhido:', {
+                    nome: colaborador.nome,
+                    cpf: colaborador.cpf,
+                    nomeNormalizado: colaborador.nomeNormalizado
+                });
+                console.log('Produção (CONCLUIDAS):', {
+                    retirada: colaborador.retirada,
+                    instalacao: colaborador.instalacao,
+                    manutencao: colaborador.manutencao,
+                    total: colaborador.at,
+                    ignoradas: (mapaProducao[colaborador.nomeNormalizado] || {}).ignoradas || 0
+                });
+
                 colaboradorAtual = colaborador;
-
-                window.__sessaoHash = gerarHashSessao(colaborador);
-                gerarWatermark(colaborador.cpf);
-
-                mostrarMenu();
+                mostrarRelatorio(colaborador);
 
             } catch (err) {
                 console.error(err);
-                setErro('Erro ao carregar dados', 'Não foi possível carregar a base. Detalhe: ' + err.message);
+                setErro(
+                    'Erro ao carregar dados',
+                    'Não foi possível carregar a base de dados. Tente novamente em alguns instantes. Detalhe: ' + err.message
+                );
             }
+        }
+
+        function voltarLogin() {
+            colaboradorAtual = null;
+            removerWatermark();
+            document.getElementById('cpfInput').value = '';
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('telaLogin').classList.remove('hidden');
+            document.getElementById('telaLoading').classList.add('hidden');
+            document.getElementById('telaErro').classList.add('hidden');
+            document.getElementById('telaRelatorio').classList.add('hidden');
         }
 
         /* ============================================================
-           MENU PÓS-AUTENTICAÇÃO
-           ============================================================ */
-        function mostrarMenu() {
-            document.getElementById('menuNome').textContent = 'Bem-vindo(a), ' + colaboradorAtual.nome;
-            document.getElementById('menuSupervisor').textContent = 'Supervisor: ' + (colaboradorAtual.supervisor || 'Não alocado');
-            irPara('telaMenu');
-            abrirAceite();
-        }
-
-        /* ============================================================
-           MODAL DE ACEITE
-           ============================================================ */
-        function abrirAceite() {
-            const modal = document.getElementById('aceiteModal');
-            if (!modal) return;
-
-            if (!window.__sessaoHash) {
-                window.__sessaoHash = gerarHashSessao(colaboradorAtual);
-            }
-
-            document.getElementById('hashRodape').textContent =
-                'ID da sessão: ' + window.__sessaoHash + ' • ' + new Date().toLocaleString('pt-BR');
-
-            const cb = document.getElementById('aceiteCheckbox');
-            if (cb) cb.checked = false;
-            const btn = document.getElementById('btnAceitar');
-            if (btn) btn.disabled = true;
-
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('ativo'), 20);
-
-            registrarEvento('aceite_exibido');
-        }
-
-        function toggleAceite(checkbox) {
-            const btn = document.getElementById('btnAceitar');
-            if (btn) btn.disabled = !checkbox.checked;
-        }
-
-        function confirmarAceite() {
-            const modal = document.getElementById('aceiteModal');
-            if (!modal) return;
-
-            registrarEvento('aceite_confirmado', { hash: window.__sessaoHash });
-
-            modal.classList.remove('ativo');
-            setTimeout(() => { modal.style.display = 'none'; }, 300);
-
-            setTimeout(iniciarBlurDinamico, 100);
-        }
-
-        function cancelarAceite() {
-            const modal = document.getElementById('aceiteModal');
-            if (modal) {
-                modal.classList.remove('ativo');
-                setTimeout(() => { modal.style.display = 'none'; }, 300);
-            }
-            registrarEvento('aceite_recusado');
-            voltarLogin();
-        }
-
-        /* ============================================================
-           BLUR DINÂMICO
-           ============================================================ */
-        function iniciarBlurDinamico() {
-            const alvos = document.querySelectorAll('.card-financeiro, .bloco-financeiro');
-            alvos.forEach(el => el.classList.add('blur-suave'));
-
-            let _currentHovered = null;
-            let _touchAtivo = null;
-
-            if (window.__blurOver) document.removeEventListener('mouseover', window.__blurOver, true);
-            if (window.__blurOut) document.removeEventListener('mouseout', window.__blurOut, true);
-            if (window.__blurTouchStart) document.removeEventListener('touchstart', window.__blurTouchStart, true);
-            if (window.__blurTouchEnd) document.removeEventListener('touchend', window.__blurTouchEnd, true);
-            if (window.__blurTouchCancel) document.removeEventListener('touchcancel', window.__blurTouchCancel, true);
-            if (window.__blurTouchMove) document.removeEventListener('touchmove', window.__blurTouchMove, true);
-
-            function focar(el) {
-                if (!el) return;
-                if (_currentHovered && _currentHovered !== el) {
-                    _currentHovered.classList.remove('em-foco');
-                    _currentHovered.classList.add('blur-suave');
-                }
-                _currentHovered = el;
-                el.classList.remove('blur-suave');
-                el.classList.add('em-foco');
-            }
-
-            function desfocar(el) {
-                if (!el) return;
-                el.classList.remove('em-foco');
-                el.classList.add('blur-suave');
-                if (_currentHovered === el) _currentHovered = null;
-            }
-
-            window.__blurOver = function(e) {
-                const alvo = e.target.closest('.card-financeiro, .bloco-financeiro');
-                if (alvo) focar(alvo);
-            };
-
-            window.__blurOut = function(e) {
-                const alvo = e.target.closest('.card-financeiro, .bloco-financeiro');
-                if (alvo) {
-                    const proximo = e.relatedTarget;
-                    if (!proximo || !alvo.contains(proximo)) desfocar(alvo);
-                }
-            };
-
-            window.__blurTouchStart = function(e) {
-                const alvo = e.target.closest('.card-financeiro, .bloco-financeiro');
-                if (!alvo) return;
-
-                _touchAtivo = alvo;
-                focar(alvo);
-
-                const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
-                if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
-                    e.preventDefault();
-                }
-            };
-
-            window.__blurTouchEnd = function() {
-                if (_touchAtivo) {
-                    desfocar(_touchAtivo);
-                    _touchAtivo = null;
-                }
-            };
-
-            window.__blurTouchCancel = function() {
-                if (_touchAtivo) {
-                    desfocar(_touchAtivo);
-                    _touchAtivo = null;
-                }
-            };
-
-            window.__blurTouchMove = function(e) {
-                if (!_touchAtivo) return;
-                const toque = e.touches[0];
-                if (!toque) return;
-                const elementoNoPonto = document.elementFromPoint(toque.clientX, toque.clientY);
-                if (elementoNoPonto && !_touchAtivo.contains(elementoNoPonto)) {
-                    desfocar(_touchAtivo);
-                    _touchAtivo = null;
-                }
-            };
-
-            document.addEventListener('mouseover', window.__blurOver, true);
-            document.addEventListener('mouseout', window.__blurOut, true);
-            document.addEventListener('touchstart', window.__blurTouchStart, { passive: false, capture: true });
-            document.addEventListener('touchend', window.__blurTouchEnd, { passive: true, capture: true });
-            document.addEventListener('touchcancel', window.__blurTouchCancel, { passive: true, capture: true });
-            document.addEventListener('touchmove', window.__blurTouchMove, { passive: true, capture: true });
-        }
-
-        /* ============================================================
-           WATERMARK
-           ============================================================ */
-        function gerarWatermark(cpf) {
-            const layer = document.getElementById('watermarkLayer');
-            if (!layer) return;
-
-            layer.innerHTML = '';
-            layer.classList.remove('ativo');
-            if (!cpf) return;
-
-            const cpfFormatado = formatarCPF(cpf);
-            const agora = new Date();
-            const dataHora = agora.toLocaleDateString('pt-BR') + ' ' +
-                            agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const textoCompleto = 'CPF: ' + cpfFormatado + ' • ' + dataHora;
-
-            const largura = window.innerWidth;
-            const altura = window.innerHeight;
-            const espacamentoX = 320;
-            const espacamentoY = 180;
-            const colunas = Math.ceil(largura / espacamentoX) + 1;
-            const linhas = Math.ceil(altura / espacamentoY) + 1;
-
-            for (let i = 0; i < colunas; i++) {
-                for (let j = 0; j < linhas; j++) {
-                    const item = document.createElement('div');
-                    item.className = 'watermark-item';
-                    item.textContent = textoCompleto;
-                    const offsetX = (j % 2 === 0) ? 0 : espacamentoX / 2;
-                    item.style.left = (i * espacamentoX + offsetX) + 'px';
-                    item.style.top = (j * espacamentoY) + 'px';
-                    layer.appendChild(item);
-                }
-            }
-            layer.classList.add('active');
-            layer.classList.add('ativo');
-        }
-
-        function removerWatermark() {
-            const layer = document.getElementById('watermarkLayer');
-            if (layer) {
-                layer.innerHTML = '';
-                layer.classList.remove('ativo');
-            }
-        }
-
-        let _watermarkResizeTimer = null;
-        window.addEventListener('resize', function() {
-            clearTimeout(_watermarkResizeTimer);
-            _watermarkResizeTimer = setTimeout(function() {
-                if (colaboradorAtual && colaboradorAtual.cpf) gerarWatermark(colaboradorAtual.cpf);
-            }, 250);
-        });
-
-        /* ============================================================
-           RELATÓRIO DE PRÊMIO
+           EXIBIÇÃO DO RELATÓRIO
            ============================================================ */
         function nivelBadge(nivel) {
             const map = {
@@ -2579,9 +1639,16 @@
             return 'badge-nao-atingido';
         }
 
-        function mostrarRelatorio() {
-            const colaborador = colaboradorAtual;
-            if (!colaborador) return;
+        function mostrarRelatorio(colaborador) {
+            // GUARD DE SEGURANÇA: CPF do colaborador deve bater com o do login
+            const cpfInput = apenasDigitos(document.getElementById('cpfInput').value);
+            if (cpfInput && colaborador.cpf && colaborador.cpf !== cpfInput) {
+                console.error('🚨 ERRO DE SEGURANÇA: CPF do colaborador não corresponde ao CPF logado!',
+                    { cpfDigitado: cpfInput, cpfColaborador: colaborador.cpf, nome: colaborador.nome });
+                alert('Erro de segurança: os dados retornados não correspondem ao CPF informado. Tente novamente.');
+                voltarLogin();
+                return;
+            }
 
             const det = colaborador.premioDetalhes || {};
             const retrab = colaborador.retrabalhoDescontado || { atividades: 0, pontosMeta: 0, descontados: 0 };
@@ -2604,10 +1671,22 @@
                         </div>
                     </div>
                     <div class="card-content">
-                        <div class="card-row"><span class="card-label">Índice</span><span class="card-value">${(num(colaborador.indice) * 100).toFixed(2)}%</span></div>
-                        <div class="card-row"><span class="card-label">Pontos Meta</span><span class="card-value">&lt; ${META_RETRABALHO}% (${retrab.pontosMeta.toFixed(2)})</span></div>
-                        <div class="card-row"><span class="card-label">Atividades de Retrabalho</span><span class="card-value">${retrab.atividades.toFixed(2)}</span></div>
-                        <div class="card-row"><span class="card-label">Retrabalhos Descontados</span><span class="card-value ${retrab.descontados > 0 ? 'desconto' : ''}">${retrab.descontados.toFixed(2)}</span></div>
+                        <div class="card-row">
+                            <span class="card-label">Índice</span>
+                            <span class="card-value">${(num(colaborador.indice) * 100).toFixed(2)}%</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Pontos Meta</span>
+                            <span class="card-value">&lt; ${META_RETRABALHO}% (${retrab.pontosMeta.toFixed(2)})</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Atividades de Retrabalho</span>
+                            <span class="card-value">${retrab.atividades.toFixed(2)}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Retrabalhos Descontados</span>
+                            <span class="card-value ${retrab.descontados > 0 ? 'desconto' : ''}">${retrab.descontados.toFixed(2)}</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2618,14 +1697,26 @@
                         <div class="card-icon">P</div>
                         <div>
                             <div class="card-title">Produção</div>
-                            <div class="card-subtitle">Atividades</div>
+                            <div class="card-subtitle">Atividades concluídas</div>
                         </div>
                     </div>
                     <div class="card-content">
-                        <div class="card-row"><span class="card-label">Retirada</span><span class="card-value">${colaborador.retirada}</span></div>
-                        <div class="card-row"><span class="card-label">Instalação</span><span class="card-value">${colaborador.instalacao}</span></div>
-                        <div class="card-row"><span class="card-label">Manutenção</span><span class="card-value">${colaborador.manutencao}</span></div>
-                        <div class="card-row"><span class="card-label">P.Total</span><span class="card-value highlight">${colaborador.at}</span></div>
+                        <div class="card-row">
+                            <span class="card-label">Retirada</span>
+                            <span class="card-value">${colaborador.retirada}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Instalação</span>
+                            <span class="card-value">${colaborador.instalacao}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Manutenção</span>
+                            <span class="card-value">${colaborador.manutencao}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">P.Total</span>
+                            <span class="card-value highlight">${colaborador.at}</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -2640,15 +1731,24 @@
                         </div>
                     </div>
                     <div class="card-content">
-                        <div class="card-row"><span class="card-label">P.Final</span><span class="card-value">${num(colaborador.pv).toFixed(2)}</span></div>
-                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${colaborador.dc}</span></div>
-                        <div class="card-row"><span class="card-label">Média</span><span class="card-value">${num(colaborador.med).toFixed(2)}</span></div>
+                        <div class="card-row">
+                            <span class="card-label">P.Final</span>
+                            <span class="card-value">${num(colaborador.pv).toFixed(2)}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Dias Trabalhados</span>
+                            <span class="card-value">${colaborador.du}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Média</span>
+                            <span class="card-value">${num(colaborador.med).toFixed(2)}</span>
+                        </div>
                     </div>
                 </div>
             `;
 
             const cardResultFinal = `
-                <div class="card result-card card-financeiro" data-protegido="true">
+                <div class="card result-card">
                     <div class="result-row">
                         <div class="result-item">
                             <div class="result-label">Resultado</div>
@@ -2671,7 +1771,7 @@
                 const metaTotal = num(det.metaTotal);
                 const extras = num(det.extras);
                 const pontuacaoFinal = num(det.pontuacaoFinal, num(colaborador.pv));
-                const diasDet = det.dias !== undefined ? det.dias : colaborador.dc;
+                const diasDet = det.dias !== undefined ? det.dias : colaborador.du;
                 const ae = num(det.ae);
                 const valorBase = num(det.valorBase);
                 const valorExtras = num(det.valorExtras);
@@ -2686,16 +1786,22 @@
                                 <div class="card-subtitle">Cálculo com base na Tabela de Metas</div>
                             </div>
                         </div>
-                        <div class="card-row"><span class="card-label">Nível Atingido</span><span class="card-value">${det.nivel}</span></div>
-                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${diasDet}</span></div>
+                        <div class="card-row">
+                            <span class="card-label">Nível Atingido</span>
+                            <span class="card-value">${det.nivel}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">Dias Trabalhados</span>
+                            <span class="card-value">${diasDet}</span>
+                        </div>
                         <div class="calculos-bloco">
                             <div class="calculos-titulo">Meta Alcançada</div>
                             <div class="calculo-linha"><span>P. Final do Técnico</span><span>${pontuacaoFinal.toFixed(2)}</span></div>
                             <div class="calculo-linha"><span>Meta do Nível (${det.nivel} - ${diasDet} dias)</span><span>${metaTotal.toFixed(2)}</span></div>
-                            <div class="calculo-linha meta-atingida"><span>Meta Alcançada</span><span>${pontuacaoFinal.toFixed(2)} >= ${metaTotal.toFixed(2)}</span></div>
+                            <div class="calculo-linha meta-atingida"><span>Meta Alcançada</span><span>${pontuacaoFinal.toFixed(2)} &gt;= ${metaTotal.toFixed(2)}</span></div>
                             <div class="calculo-linha"><span>Pontos Extras</span><span>${extras.toFixed(2)}</span></div>
                         </div>
-                        <div class="calculos-bloco bloco-financeiro" data-protegido="true">
+                        <div class="calculos-bloco">
                             <div class="calculos-titulo">Cálculo Detalhado (R$)</div>
                             <div class="calculo-linha"><span>Valor Base (${det.nivel})</span><span>${formatarValor(valorBase)}</span></div>
                             <div class="calculo-linha"><span>Pontos Extras</span><span>${extras.toFixed(2)}</span></div>
@@ -2716,7 +1822,7 @@
                 if (bateuMeta) {
                     const metaTotal = num(det.metaTotal);
                     const pontuacaoFinal = num(det.pontuacaoFinal, num(colaborador.pv));
-                    const diasDet = det.dias !== undefined ? det.dias : colaborador.dc;
+                    const diasDet = det.dias !== undefined ? det.dias : colaborador.du;
                     const extras = num(det.extras);
 
                     corpoConcessao = `
@@ -2727,10 +1833,10 @@
                             <div class="calculos-titulo">Meta Alcançada</div>
                             <div class="calculo-linha"><span>P. Final do Técnico</span><span>${pontuacaoFinal.toFixed(2)}</span></div>
                             <div class="calculo-linha"><span>Meta do Nível (${nivelConcessao} - ${diasDet} dias)</span><span>${metaTotal.toFixed(2)}</span></div>
-                            <div class="calculo-linha meta-atingida"><span>Meta Alcançada</span><span>${pontuacaoFinal.toFixed(2)} >= ${metaTotal.toFixed(2)}</span></div>
+                            <div class="calculo-linha meta-atingida"><span>Meta Alcançada</span><span>${pontuacaoFinal.toFixed(2)} &gt;= ${metaTotal.toFixed(2)}</span></div>
                             ${extras > 0 ? `<div class="calculo-linha"><span>Pontos Extras</span><span>${extras.toFixed(2)}</span></div>` : ''}
                         </div>
-                        <div class="calculos-bloco concessao bloco-financeiro" data-protegido="true">
+                        <div class="calculos-bloco concessao">
                             <div class="calculos-titulo">Valor da Concessão</div>
                             <div class="calculo-linha"><span>Valor Concedido</span><span>${formatarValor(valorConcessao)}</span></div>
                             <div class="calculo-linha total" style="background:#fff3e0;color:#e65100;"><span>VALOR TOTAL</span><span>${formatarValor(valorConcessao)}</span></div>
@@ -2757,10 +1863,10 @@
                     corpoConcessao = `
                         <div class="aviso-concessao">⚠️ Meta não foi alcançada, mas foi concedido por ter ficado muito perto</div>
                         <div class="card-row"><span class="card-label">Situação</span><span class="card-value" style="background:#fff3e0;color:#e65100;">Meta não alcançada</span></div>
-                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${colaborador.dc || '0'}</span></div>
+                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${colaborador.du || '0'}</span></div>
                         <div class="card-row"><span class="card-label">P. Final do Técnico</span><span class="card-value">${num(colaborador.pv).toFixed(2)}</span></div>
                         ${refNivelHTML}
-                        <div class="calculos-bloco concessao bloco-financeiro" data-protegido="true">
+                        <div class="calculos-bloco concessao">
                             <div class="calculos-titulo">Concessão Proporcional</div>
                             <div class="calculo-linha"><span>P. Final do Técnico</span><span>${num(colaborador.pv).toFixed(2)}</span></div>
                             <div class="calculo-linha"><span>(-) Retrabalhos Descontados</span><span style="color:#c62828;">- ${retrabDesc.toFixed(2)}</span></div>
@@ -2772,9 +1878,9 @@
                     `;
                 } else {
                     corpoConcessao = `
-                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${colaborador.dc || '0'}</span></div>
+                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${colaborador.du || '0'}</span></div>
                         <div class="card-row"><span class="card-label">P. Final do Técnico</span><span class="card-value">${num(colaborador.pv).toFixed(2)}</span></div>
-                        <div class="calculos-bloco concessao bloco-financeiro" data-protegido="true">
+                        <div class="calculos-bloco concessao">
                             <div class="calculos-titulo">Valor da Concessão</div>
                             <div class="calculo-linha"><span>Valor Concedido</span><span>${formatarValor(valorConcessao)}</span></div>
                             <div class="calculo-linha total" style="background:#fff3e0;color:#e65100;"><span>VALOR TOTAL</span><span>${formatarValor(valorConcessao)}</span></div>
@@ -2823,7 +1929,7 @@
                             </div>
                         </div>
                         <div class="card-row"><span class="card-label">Resultado</span><span class="card-value" style="background:#ffebee;color:#c62828;">Premio não atingido</span></div>
-                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${colaborador.dc || '0'}</span></div>
+                        <div class="card-row"><span class="card-label">Dias Trabalhados</span><span class="card-value">${colaborador.du || '0'}</span></div>
                         <div class="card-row"><span class="card-label">P. Final do Técnico</span><span class="card-value">${num(colaborador.pv).toFixed(2)}</span></div>
                         ${refHTML}
                     </div>
@@ -2847,274 +1953,94 @@
                 btnWhats.style.display = 'none';
             }
 
-            irPara('telaRelatorio');
+            document.getElementById('telaLogin').classList.add('hidden');
+            document.getElementById('telaLoading').classList.add('hidden');
+            document.getElementById('telaErro').classList.add('hidden');
+            document.getElementById('telaRelatorio').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
             gerarWatermark(colaborador.cpf);
-            setTimeout(iniciarBlurDinamico, 100);
         }
 
         /* ============================================================
-           TELA DE PRODUÇÃO
+           WATERMARK DINÂMICO
            ============================================================ */
-        function mostrarProducao() {
-            if (!colaboradorAtual) return;
+        function gerarWatermark(cpf) {
+            const layer = document.getElementById('watermarkLayer');
+            if (!layer) return;
 
-            document.getElementById('prodNome').textContent = colaboradorAtual.nome;
-            document.getElementById('prodSupervisor').textContent = 'Supervisor: ' + (colaboradorAtual.supervisor || 'Não alocado');
+            layer.innerHTML = '';
+            layer.classList.remove('ativo');
 
-            calcularProducaoColaborador(colaboradorAtual);
-            renderizarTotaisPorTipo();
-            renderizarCalendario();
+            if (!cpf) return;
 
-            irPara('telaProducao');
-            gerarWatermark(colaboradorAtual.cpf);
-        }
+            const cpfFormatado = formatarCPF(cpf);
+            const agora = new Date();
+            const dataHora = agora.toLocaleDateString('pt-BR') + ' ' +
+                            agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const textoCompleto = 'CPF: ' + cpfFormatado + ' • ' + dataHora;
 
-        /**
-         * Calcula produção e retrabalho APENAS do colaborador logado.
-         * Produção: técnico na coluna L (11) = colaborador
-         * Retrabalho: técnico original na coluna Y (24) = colaborador
-         */
-        function calcularProducaoColaborador(colaborador) {
-            producaoPorDia = {};
-            retrabalhoPorDia = {};
-            totaisPorTipo = {};
+            const largura = window.innerWidth;
+            const altura = window.innerHeight;
 
-            if (!dadosConcluidas || dadosConcluidas.length === 0) {
-                console.warn('⚠️ Nenhum dado na aba CONCLUIDAS');
-                return;
-            }
+            const espacamentoX = 320;
+            const espacamentoY = 180;
 
-            const nomeColaborador = colaborador.nome;
-            console.log('🔍 Calculando produção para:', nomeColaborador);
-            console.log('📋 Total de registros CONCLUIDAS:', dadosConcluidas.length);
+            const colunas = Math.ceil(largura / espacamentoX) + 1;
+            const linhas = Math.ceil(altura / espacamentoY) + 1;
 
-            let contProd = 0;
-            let contRetrab = 0;
-
-            for (const item of dadosConcluidas) {
-                const dataEncer = item.dataEncerramento;
-                if (!dataEncer) continue;
-                const chave = chaveData(dataEncer);
-
-                // ---- PRODUÇÃO: técnico que encerrou (coluna L) ----
-                if (item.tecnicoProducao && matchNomeInteligente(nomeColaborador, item.tecnicoProducao)) {
-                    const tipoClassif = classificarTipoProducao(item.tipoSolicitacao);
-                    if (tipoClassif && TIPOS_CONTABILIZADOS.includes(tipoClassif)) {
-                        if (!producaoPorDia[chave]) producaoPorDia[chave] = [];
-                        producaoPorDia[chave].push({
-                            protocolo: item.protocolo,
-                            cliente: item.cliente,
-                            tipo: tipoClassif
-                        });
-                        totaisPorTipo[tipoClassif] = (totaisPorTipo[tipoClassif] || 0) + 1;
-                        contProd++;
-                    }
-                }
-
-                // ---- RETRABALHO: técnico original (coluna Y) ----
-                if (item.tecnicoOriginal && matchNomeInteligente(nomeColaborador, item.tecnicoOriginal)) {
-                    if (!retrabalhoPorDia[chave]) retrabalhoPorDia[chave] = [];
-                    retrabalhoPorDia[chave].push({
-                        cliente: item.cliente,
-                        protocoloOriginal: item.protocoloOriginal || item.protocolo,
-                        protocolo: item.protocolo
-                    });
-                    contRetrab++;
+            for (let i = 0; i < colunas; i++) {
+                for (let j = 0; j < linhas; j++) {
+                    const item = document.createElement('div');
+                    item.className = 'watermark-item';
+                    item.textContent = textoCompleto;
+                    const offsetX = (j % 2 === 0) ? 0 : espacamentoX / 2;
+                    item.style.left = (i * espacamentoX + offsetX) + 'px';
+                    item.style.top = (j * espacamentoY) + 'px';
+                    layer.appendChild(item);
                 }
             }
 
-            console.log('📊 Produção contabilizada:', contProd);
-            console.log('📊 Retrabalhos contabilizados:', contRetrab);
+            layer.classList.add('ativo');
         }
 
-        function renderizarTotaisPorTipo() {
-            const container = document.getElementById('prodTotais');
-            if (!container) return;
-
-            const tipos = Object.keys(totaisPorTipo).filter(t => totaisPorTipo[t] > 0);
-            if (tipos.length === 0) {
-                container.innerHTML = `<div class="prod-total-geral"><span>Nenhuma atividade contabilizada no período</span><span>0</span></div>`;
-                return;
+        function removerWatermark() {
+            const layer = document.getElementById('watermarkLayer');
+            if (layer) {
+                layer.innerHTML = '';
+                layer.classList.remove('ativo');
             }
-
-            tipos.sort((a, b) => totaisPorTipo[b] - totaisPorTipo[a]);
-
-            let html = '';
-            for (const tipo of tipos) {
-                html += `
-                    <div class="prod-total-item">
-                        <div class="prod-total-label">${tipo}</div>
-                        <div class="prod-total-value">${totaisPorTipo[tipo]}</div>
-                    </div>
-                `;
-            }
-
-            const totalGeral = tipos.reduce((s, t) => s + totaisPorTipo[t], 0);
-            html += `
-                <div class="prod-total-geral">
-                    <span>TOTAL GERAL</span>
-                    <span>${totalGeral}</span>
-                </div>
-            `;
-
-            container.innerHTML = html;
         }
 
-        function renderizarCalendario() {
-            const grid = document.getElementById('calGrid');
-            const titulo = document.getElementById('calTitulo');
-            if (!grid || !titulo) return;
-
-            const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-            titulo.textContent = meses[mesCalendario] + ' / ' + anoCalendario;
-
-            const base = modoProducao === 'PRODUCAO' ? producaoPorDia : retrabalhoPorDia;
-            const classeTipo = modoProducao === 'PRODUCAO' ? 'prod' : 'retrab';
-
-            const diasSemana = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-            let html = '';
-            for (const d of diasSemana) {
-                html += `<div class="cal-dia-semana">${d}</div>`;
-            }
-
-            const primeiro = new Date(anoCalendario, mesCalendario, 1);
-            const offset = (primeiro.getDay() + 6) % 7;
-            const ultimoDia = new Date(anoCalendario, mesCalendario + 1, 0).getDate();
-
-            const celulas = [];
-            for (let i = 0; i < offset; i++) celulas.push(null);
-            for (let d = 1; d <= ultimoDia; d++) celulas.push(d);
-            while (celulas.length % 7 !== 0) celulas.push(null);
-
-            for (const dia of celulas) {
-                if (dia === null) {
-                    html += `<div class="cal-cell vazio"></div>`;
-                    continue;
+        let _watermarkResizeTimer = null;
+        window.addEventListener('resize', function() {
+            clearTimeout(_watermarkResizeTimer);
+            _watermarkResizeTimer = setTimeout(function() {
+                if (colaboradorAtual && colaboradorAtual.cpf) {
+                    gerarWatermark(colaboradorAtual.cpf);
                 }
-                const chave = `${anoCalendario}-${String(mesCalendario + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-                const registros = base[chave] || [];
-                const qtd = registros.length;
-
-                if (qtd > 0) {
-                    html += `
-                        <div class="cal-cell com-dados ${classeTipo}" data-chave="${chave}" data-qtd="${qtd}">
-                            <div class="cal-cell-numero">${dia}</div>
-                            <div class="cal-cell-qtd">${qtd}</div>
-                        </div>
-                    `;
-                } else {
-                    html += `<div class="cal-cell sem-dados"><div class="cal-cell-numero">${dia}</div></div>`;
-                }
-            }
-
-            grid.innerHTML = html;
-
-            grid.querySelectorAll('.cal-cell.com-dados').forEach(el => {
-                el.addEventListener('click', () => {
-                    const chave = el.getAttribute('data-chave');
-                    abrirDiaModal(chave);
-                });
-            });
-        }
-
-        /* ============================================================
-           MODAL DE DETALHES DO DIA
-           ============================================================ */
-        function abrirDiaModal(chave) {
-            const base = modoProducao === 'PRODUCAO' ? producaoPorDia : retrabalhoPorDia;
-            const registros = base[chave] || [];
-
-            const modal = document.getElementById('diaModal');
-            const icone = document.getElementById('diaIcone');
-            const titulo = document.getElementById('diaTitulo');
-            const subtitulo = document.getElementById('diaSubtitulo');
-            const lista = document.getElementById('diaLista');
-            const total = document.getElementById('diaTotal');
-
-            const [ano, mes, dia] = chave.split('-');
-            const dataFmt = `${dia}/${mes}/${ano}`;
-
-            if (modoProducao === 'PRODUCAO') {
-                icone.className = 'dia-header-icon prod';
-                icone.textContent = '🟢';
-                titulo.textContent = 'Produção — ' + dataFmt;
-                subtitulo.textContent = registros.length + ' atividade(s) encerrada(s)';
-            } else {
-                icone.className = 'dia-header-icon retrab';
-                icone.textContent = '🔴';
-                titulo.textContent = 'Retrabalho — ' + dataFmt;
-                subtitulo.textContent = registros.length + ' retrabalho(s) no dia';
-            }
-
-            if (registros.length === 0) {
-                lista.innerHTML = `<div class="dia-vazio">Nenhum registro neste dia.</div>`;
-            } else {
-                let html = '';
-                registros.forEach((r, i) => {
-                    const numIdx = `<span class="dia-item-num">${i + 1}</span>`;
-                    if (modoProducao === 'PRODUCAO') {
-                        html += `
-                            <div class="dia-item">
-                                <div class="dia-item-protocolo" style="font-weight:700;color:#1a237e;margin-bottom:3px;font-size:0.88rem;">
-                                    ${numIdx}Protocolo: ${r.protocolo || '—'}
-                                </div>
-                                <div class="dia-item-cliente" style="color:#475569;font-size:0.8rem;">
-                                    Cliente: ${r.cliente || '—'}
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        html += `
-                            <div class="dia-item" style="border-left-color:#c62828;">
-                                <div class="dia-item-protocolo" style="font-weight:700;color:#c62828;margin-bottom:3px;font-size:0.88rem;">
-                                    ${numIdx}Cliente: ${r.cliente || '—'}
-                                </div>
-                                <div class="dia-item-cliente" style="color:#475569;font-size:0.8rem;">
-                                    Protocolo Original: ${r.protocoloOriginal || '—'}
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                lista.innerHTML = html;
-            }
-
-            total.textContent = 'Total: ' + registros.length;
-
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('ativo'), 20);
-        }
-
-        function fecharDiaModal() {
-            const modal = document.getElementById('diaModal');
-            if (!modal) return;
-            modal.classList.remove('ativo');
-            setTimeout(() => { modal.style.display = 'none'; }, 250);
-        }
+            }, 250);
+        });
 
         /* ============================================================
            PDF
            ============================================================ */
         function baixarPDF() {
-            try {
-                if (!colaboradorAtual) {
-                    alert('Nenhum colaborador carregado. Faça login novamente.');
-                    return;
-                }
-                if (!window.jspdf || !window.jspdf.jsPDF) {
-                    alert('Biblioteca de PDF ainda não carregou. Aguarde 2 segundos e tente novamente.');
-                    return;
-                }
-                registrarEvento('pdf_gerado');
-                gerarPDF(colaboradorAtual);
-            } catch (e) {
-                console.error('Erro ao acionar PDF:', e);
-                alert('Erro ao gerar PDF: ' + (e.message || e));
+            if (!colaboradorAtual) {
+                alert('Nenhum colaborador carregado.');
+                return;
             }
+            gerarPDF(colaboradorAtual);
         }
 
         function gerarPDF(colaborador) {
             try {
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    alert('Biblioteca de PDF ainda não carregou. Aguarde alguns segundos e tente novamente.');
+                    return;
+                }
+
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
@@ -3123,6 +2049,7 @@
                 const pageHeight = doc.internal.pageSize.getHeight();
                 const det = colaborador.premioDetalhes || {};
                 const retrab = colaborador.retrabalhoDescontado || { atividades: 0, pontosMeta: 0, descontados: 0 };
+                const metaRef = colaborador.metaReferencia || det.metaReferencia;
 
                 const margem = 12;
                 const larguraUtil = pageWidth - margem * 2;
@@ -3174,10 +2101,12 @@
                 doc.setFillColor(255, 255, 255);
                 doc.setDrawColor(224, 231, 255);
                 doc.roundedRect(x1, y, larguraCard, alturaCard, 2, 2, 'FD');
+
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(26, 35, 126);
                 doc.text("RETRABALHO", x1 + 3, y + 5);
+
                 doc.setDrawColor(240, 243, 255);
                 doc.line(x1 + 3, y + 7, x1 + larguraCard - 3, y + 7);
 
@@ -3190,23 +2119,28 @@
 
                 doc.setFontSize(7.5);
                 linhasRetrab.forEach((linha, i) => {
-                    const yL = y + 12 + i * 5;
+                    const yLinha = y + 12 + i * 5;
                     doc.setFont("helvetica", "normal");
                     doc.setTextColor(100, 116, 139);
-                    doc.text(linha[0], x1 + 3, yL);
+                    doc.text(linha[0], x1 + 3, yLinha);
                     doc.setFont("helvetica", "bold");
-                    if (linha[0] === "Descontados" && retrab.descontados > 0) doc.setTextColor(198, 40, 40);
-                    else doc.setTextColor(26, 35, 126);
-                    doc.text(linha[1], x1 + larguraCard - 3, yL, { align: "right" });
+                    if (linha[0] === "Descontados" && retrab.descontados > 0) {
+                        doc.setTextColor(198, 40, 40);
+                    } else {
+                        doc.setTextColor(26, 35, 126);
+                    }
+                    doc.text(linha[1], x1 + larguraCard - 3, yLinha, { align: "right" });
                 });
 
                 doc.setFillColor(255, 255, 255);
                 doc.setDrawColor(224, 231, 255);
                 doc.roundedRect(x2, y, larguraCard, alturaCard, 2, 2, 'FD');
+
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(26, 35, 126);
                 doc.text("PRODUCAO", x2 + 3, y + 5);
+
                 doc.setDrawColor(240, 243, 255);
                 doc.line(x2 + 3, y + 7, x2 + larguraCard - 3, y + 7);
 
@@ -3219,40 +2153,42 @@
 
                 doc.setFontSize(7.5);
                 linhasProd.forEach((linha, i) => {
-                    const yL = y + 12 + i * 5;
+                    const yLinha = y + 12 + i * 5;
                     doc.setFont("helvetica", "normal");
                     doc.setTextColor(100, 116, 139);
-                    doc.text(linha[0], x2 + 3, yL);
+                    doc.text(linha[0], x2 + 3, yLinha);
                     doc.setFont("helvetica", "bold");
                     doc.setTextColor(26, 35, 126);
-                    doc.text(linha[1], x2 + larguraCard - 3, yL, { align: "right" });
+                    doc.text(linha[1], x2 + larguraCard - 3, yLinha, { align: "right" });
                 });
 
                 doc.setFillColor(255, 255, 255);
                 doc.setDrawColor(224, 231, 255);
                 doc.roundedRect(x3, y, larguraCard, alturaCard, 2, 2, 'FD');
+
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(26, 35, 126);
                 doc.text("RESULTADOS", x3 + 3, y + 5);
+
                 doc.setDrawColor(240, 243, 255);
                 doc.line(x3 + 3, y + 7, x3 + larguraCard - 3, y + 7);
 
                 const linhasRes = [
                     ["P.Final", num(colaborador.pv).toFixed(2)],
-                    ["Dias Trab.", String(colaborador.dc || '0')],
+                    ["Dias Trab.", String(colaborador.du || '0')],
                     ["Media", num(colaborador.med).toFixed(2)]
                 ];
 
                 doc.setFontSize(7.5);
                 linhasRes.forEach((linha, i) => {
-                    const yL = y + 12 + i * 5;
+                    const yLinha = y + 12 + i * 5;
                     doc.setFont("helvetica", "normal");
                     doc.setTextColor(100, 116, 139);
-                    doc.text(linha[0], x3 + 3, yL);
+                    doc.text(linha[0], x3 + 3, yLinha);
                     doc.setFont("helvetica", "bold");
                     doc.setTextColor(26, 35, 126);
-                    doc.text(linha[1], x3 + larguraCard - 3, yL, { align: "right" });
+                    doc.text(linha[1], x3 + larguraCard - 3, yLinha, { align: "right" });
                 });
 
                 y += alturaCard + 6;
@@ -3261,43 +2197,352 @@
                 doc.setDrawColor(26, 35, 126);
                 doc.setLineWidth(0.5);
                 doc.roundedRect(margem, y, larguraUtil, 18, 2, 2, 'FD');
+
                 doc.setFontSize(9);
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(100, 116, 139);
                 doc.text("Resultado:", margem + 5, y + 7);
+
                 doc.setFont("helvetica", "bold");
-                if (colaborador.resultado === 'Premio') doc.setTextColor(46, 125, 50);
-                else if (colaborador.resultado === 'Concessão') doc.setTextColor(230, 81, 0);
-                else doc.setTextColor(198, 40, 40);
+                if (colaborador.resultado === 'Premio') {
+                    doc.setTextColor(46, 125, 50);
+                } else if (colaborador.resultado === 'Concessão') {
+                    doc.setTextColor(230, 81, 0);
+                } else {
+                    doc.setTextColor(198, 40, 40);
+                }
                 doc.text(String(colaborador.resultado || '-'), margem + 5, y + 13);
 
                 doc.setFont("helvetica", "normal");
                 doc.setTextColor(100, 116, 139);
                 doc.text("Nivel:", pageWidth / 2 - 10, y + 7);
+
                 doc.setFont("helvetica", "bold");
                 doc.setTextColor(26, 35, 126);
                 doc.text(String(colaborador.nivelPremio === 'NENHUM' ? '-' : colaborador.nivelPremio), pageWidth / 2 - 10, y + 13);
 
                 y += 22;
 
+                if (colaborador.resultado === 'Premio' && det.nivel) {
+                    const alturaDet = 42;
+                    if (y + alturaDet > pageHeight - 15) { doc.addPage(); y = 15; }
+
+                    doc.setFillColor(255, 248, 225);
+                    doc.setDrawColor(255, 193, 7);
+                    doc.setLineWidth(0.4);
+                    doc.roundedRect(margem, y, larguraUtil, alturaDet, 2, 2, 'FD');
+
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(184, 134, 11);
+                    doc.text("DETALHAMENTO DO PREMIO", pageWidth / 2, y + 6, { align: "center" });
+
+                    doc.setDrawColor(255, 193, 7);
+                    doc.line(margem + 3, y + 8, margem + larguraUtil - 3, y + 8);
+
+                    const metaTotal = num(det.metaTotal);
+                    const extras = num(det.extras);
+                    const pontuacaoFinal = num(det.pontuacaoFinal, num(colaborador.pv));
+                    const diasDet = det.dias !== undefined ? det.dias : colaborador.du;
+
+                    doc.setFontSize(8.5);
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("Nivel Atingido:", margem + 5, y + 14);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(26, 35, 126);
+                    doc.text(String(det.nivel), margem + 40, y + 14);
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("Dias Trabalhados:", margem + 5, y + 21);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(String(diasDet), margem + 40, y + 21);
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("P. Final:", margem + 5, y + 28);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(pontuacaoFinal.toFixed(2), margem + 40, y + 28);
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("Meta do Nivel:", pageWidth / 2 + 5, y + 14);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(metaTotal.toFixed(2), pageWidth - margem - 5, y + 14, { align: "right" });
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("Meta Alcancada:", pageWidth / 2 + 5, y + 21);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(46, 125, 50);
+                    doc.text(pontuacaoFinal.toFixed(2) + " >= " + metaTotal.toFixed(2), pageWidth - margem - 5, y + 21, { align: "right" });
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setTextColor(100, 100, 100);
+                    doc.text("Pontos Extras:", pageWidth / 2 + 5, y + 28);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(46, 125, 50);
+                    doc.text(extras.toFixed(2), pageWidth - margem - 5, y + 28, { align: "right" });
+
+                    doc.setFillColor(232, 245, 233);
+                    doc.roundedRect(margem + 3, y + 33, larguraUtil - 6, 7, 1, 1, 'F');
+
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(46, 125, 50);
+                    doc.setFontSize(9);
+                    doc.text("META ALCANCADA COM SUCESSO", margem + 6, y + 38);
+
+                    y += alturaDet + 5;
+
+                } else if (colaborador.resultado === 'Concessão') {
+                    const isProporcional = det.tipoConcessao === 'instalacao_proporcional';
+                    const nivelConcessao = colaborador.nivelPremio !== 'NENHUM' ? colaborador.nivelPremio : null;
+                    const bateuMeta = det.bateuMeta || (nivelConcessao !== null);
+
+                    let alturaConc = 38;
+                    if (bateuMeta) alturaConc = 45;
+                    else if (isProporcional) alturaConc = 55;
+
+                    if (y + alturaConc > pageHeight - 15) { doc.addPage(); y = 15; }
+
+                    doc.setFillColor(255, 243, 224);
+                    doc.setDrawColor(255, 152, 0);
+                    doc.setLineWidth(0.4);
+                    doc.roundedRect(margem, y, larguraUtil, alturaConc, 2, 2, 'FD');
+
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(230, 81, 0);
+                    doc.text("DETALHAMENTO DA CONCESSAO", pageWidth / 2, y + 6, { align: "center" });
+
+                    doc.setDrawColor(255, 152, 0);
+                    doc.line(margem + 3, y + 8, margem + larguraUtil - 3, y + 8);
+
+                    if (bateuMeta) {
+                        const metaTotal = num(det.metaTotal);
+                        const pontuacaoFinal = num(det.pontuacaoFinal, num(colaborador.pv));
+                        const diasDet = det.dias !== undefined ? det.dias : colaborador.du;
+                        const extras = num(det.extras);
+
+                        doc.setFontSize(9);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(46, 125, 50);
+                        doc.text("META ALCANCADA - NIVEL " + String(nivelConcessao), margem + 5, y + 14);
+
+                        doc.setFontSize(8.5);
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Dias Trabalhados:", margem + 5, y + 21);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(String(diasDet), margem + 40, y + 21);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("P. Final:", margem + 5, y + 28);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(pontuacaoFinal.toFixed(2), margem + 40, y + 28);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Meta do Nivel:", pageWidth / 2 + 5, y + 21);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(metaTotal.toFixed(2), pageWidth - margem - 5, y + 21, { align: "right" });
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Pontos Extras:", pageWidth / 2 + 5, y + 28);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(46, 125, 50);
+                        doc.text(extras.toFixed(2), pageWidth - margem - 5, y + 28, { align: "right" });
+
+                        doc.setFillColor(232, 245, 233);
+                        doc.roundedRect(margem + 3, y + 34, larguraUtil - 6, 8, 1, 1, 'F');
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(46, 125, 50);
+                        doc.setFontSize(9);
+                        doc.text("VALOR CONCEDIDO - NIVEL ALCANCADO", margem + 6, y + 39);
+                        doc.setFontSize(7.5);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(String(nivelConcessao), pageWidth - margem - 6, y + 39, { align: "right" });
+
+                    } else if (isProporcional) {
+                        const pontosValidos = num(det.pontosValidos);
+                        const valorPorPonto = num(det.valorPorPonto, VALOR_CONCESSAO_INSTALACAO);
+
+                        doc.setFontSize(8.5);
+                        doc.setFont("helvetica", "italic");
+                        doc.setTextColor(120, 80, 0);
+                        doc.text("Meta nao alcancada - concedido por ter ficado muito perto", margem + 5, y + 13);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Dias Trabalhados:", margem + 5, y + 20);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(String(colaborador.du || '0'), margem + 40, y + 20);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("P. Final:", margem + 5, y + 26);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(num(colaborador.pv).toFixed(2), margem + 40, y + 26);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Nivel Referencia:", pageWidth / 2 + 5, y + 20);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(String(nivelConcessao || '-'), pageWidth - margem - 5, y + 20, { align: "right" });
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Pontos Validos:", pageWidth / 2 + 5, y + 26);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(pontosValidos.toFixed(2), pageWidth - margem - 5, y + 26, { align: "right" });
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Valor por Ponto:", pageWidth / 2 + 5, y + 32);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text("R$ " + valorPorPonto.toFixed(2), pageWidth - margem - 5, y + 32, { align: "right" });
+
+                        doc.setFillColor(255, 224, 178);
+                        doc.roundedRect(margem + 3, y + 42, larguraUtil - 6, 8, 1, 1, 'F');
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(230, 81, 0);
+                        doc.setFontSize(9);
+                        doc.text("VALOR DA CONCESSAO PROPORCIONAL", margem + 6, y + 47);
+                        doc.setFontSize(7.5);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(pontosValidos.toFixed(2) + " pts x R$ " + valorPorPonto.toFixed(2), pageWidth - margem - 6, y + 47, { align: "right" });
+
+                    } else {
+                        doc.setFontSize(8.5);
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Dias Trabalhados:", margem + 5, y + 14);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(String(colaborador.du || '0'), margem + 40, y + 14);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("P. Final:", margem + 5, y + 21);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(num(colaborador.pv).toFixed(2), margem + 40, y + 21);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Nivel Referencia:", pageWidth / 2 + 5, y + 14);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(String(nivelConcessao || '-'), pageWidth - margem - 5, y + 14, { align: "right" });
+
+                        doc.setFillColor(255, 224, 178);
+                        doc.roundedRect(margem + 3, y + 28, larguraUtil - 6, 7, 1, 1, 'F');
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(230, 81, 0);
+                        doc.setFontSize(9);
+                        doc.text("VALOR CONCEDIDO CONFORME PLANILHA", margem + 6, y + 33);
+                    }
+
+                    y += alturaConc + 5;
+
+                } else {
+                    const alturaNao = metaRef ? 45 : 20;
+                    if (y + alturaNao > pageHeight - 15) { doc.addPage(); y = 15; }
+
+                    doc.setFillColor(255, 235, 238);
+                    doc.setDrawColor(198, 40, 40);
+                    doc.setLineWidth(0.4);
+                    doc.roundedRect(margem, y, larguraUtil, alturaNao, 2, 2, 'FD');
+
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "bold");
+                    doc.setTextColor(198, 40, 40);
+                    doc.text("PREMIO NAO ATINGIDO", pageWidth / 2, y + 6, { align: "center" });
+
+                    doc.setDrawColor(198, 40, 40);
+                    doc.line(margem + 3, y + 8, margem + larguraUtil - 3, y + 8);
+
+                    if (metaRef) {
+                        doc.setFontSize(9);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(230, 81, 0);
+                        doc.text("NIVEL MAIS PROXIMO - " + String(metaRef.nivel || 'PRATA'), margem + 5, y + 14);
+
+                        doc.setFontSize(8.5);
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Dias Trabalhados:", margem + 5, y + 21);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(String(metaRef.dias), margem + 40, y + 21);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("Meta do Nivel:", margem + 5, y + 28);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(num(metaRef.metaTotal).toFixed(2) + " pontos", margem + 40, y + 28);
+
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(100, 100, 100);
+                        doc.text("P. Final do Tecnico:", margem + 5, y + 35);
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(num(metaRef.pontuacaoFinal).toFixed(2) + " pontos", margem + 40, y + 35);
+
+                        doc.setFillColor(255, 243, 224);
+                        doc.roundedRect(margem + 3, y + 38, larguraUtil - 6, 7, 1, 1, 'F');
+                        doc.setFont("helvetica", "bold");
+                        doc.setTextColor(230, 81, 0);
+                        doc.setFontSize(9);
+                        doc.text("FALTARAM " + num(metaRef.faltou).toFixed(2) + " PONTOS", margem + 6, y + 43);
+                        doc.setFontSize(8);
+                        doc.text("(" + num(metaRef.metaTotal).toFixed(2) + " - " + num(metaRef.pontuacaoFinal).toFixed(2) + ")", pageWidth - margem - 6, y + 43, { align: "right" });
+
+                        y += alturaNao + 5;
+                    } else {
+                        y += 20 + 5;
+                    }
+                }
+
+                // ===== WATERMARK NO PDF =====
                 try {
                     const cpfUser = formatarCPF(colaborador.cpf || '');
                     const dataHoraPDF = new Date().toLocaleString('pt-BR');
-                    const marcaTexto = 'CPF: ' + cpfUser + ' • ' + dataHoraPDF + ' • ID: ' + (window.__sessaoHash || 'N/A');
+                    const marcaTexto = 'CPF: ' + cpfUser + ' • ' + dataHoraPDF;
 
                     doc.setTextColor(220, 220, 230);
                     doc.setFontSize(9);
                     doc.setFont("helvetica", "bold");
 
+                    const posicoes = [];
                     const passoX = 70;
                     const passoY = 50;
                     for (let px = 10; px < pageWidth; px += passoX) {
                         for (let py = 30; py < pageHeight; py += passoY) {
-                            doc.text(marcaTexto, px, py, { angle: 30 });
+                            posicoes.push({ x: px, y: py });
                         }
                     }
+
+                    posicoes.forEach(p => {
+                        doc.text(marcaTexto, p.x, p.y, { angle: 30 });
+                    });
                 } catch (e) {
-                    console.warn('Watermark PDF:', e);
+                    console.warn('Não foi possível aplicar watermark no PDF:', e);
                 }
 
                 doc.setDrawColor(200, 200, 200);
@@ -3307,7 +2552,7 @@
                 doc.setFontSize(7.5);
                 doc.setTextColor(150, 150, 150);
                 doc.setFont("helvetica", "normal");
-                doc.text("Documento gerado em: " + dataAtual + " • ID da sessão: " + (window.__sessaoHash || '-') + " • Sistema de Gestão de Prêmios", pageWidth / 2, pageHeight - 7, { align: "center" });
+                doc.text("Documento gerado em: " + dataAtual + " - Sistema de Gestao de Premios", pageWidth / 2, pageHeight - 7, { align: "center" });
 
                 const nomeArquivo = 'premio_' + String(colaborador.nome || 'colaborador')
                     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -3315,6 +2560,7 @@
 
                 doc.save(nomeArquivo);
                 console.log('PDF gerado:', nomeArquivo);
+
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
                 alert('Erro ao gerar PDF: ' + (error.message || error));
@@ -3325,96 +2571,79 @@
            WHATSAPP
            ============================================================ */
         function enviarWhatsApp() {
-            try {
-                if (!colaboradorAtual) {
-                    alert('Nenhum colaborador carregado. Faça login novamente.');
-                    return;
-                }
-                if (!colaboradorAtual.whatsapp) {
-                    alert('Seu número de WhatsApp não está cadastrado na planilha. Fale com seu supervisor.');
-                    return;
-                }
+            if (!colaboradorAtual || !colaboradorAtual.whatsapp) return;
+            const colaborador = colaboradorAtual;
+            const det = colaborador.premioDetalhes || {};
+            const retrab = colaborador.retrabalhoDescontado || { atividades: 0, pontosMeta: 0, descontados: 0 };
+            const metaRef = colaborador.metaReferencia || det.metaReferencia;
 
-                registrarEvento('whatsapp_enviado');
+            let mensagem = '';
+            mensagem += '*RELATORIO DE PREMIO - 2026*\n\n';
+            mensagem += '*Colaborador:* ' + colaborador.nome + '\n';
+            mensagem += '*Supervisor:* ' + (colaborador.supervisor || 'Nao alocado') + '\n\n';
 
-                const colaborador = colaboradorAtual;
-                const det = colaborador.premioDetalhes || {};
-                const retrab = colaborador.retrabalhoDescontado || { atividades: 0, pontosMeta: 0, descontados: 0 };
-                const metaRef = colaborador.metaReferencia || det.metaReferencia;
+            mensagem += '*RETRABALHO*\n';
+            mensagem += '- Indice: ' + (num(colaborador.indice) * 100).toFixed(2) + '%\n';
+            mensagem += '- Pontos Meta: < ' + META_RETRABALHO + '% (' + retrab.pontosMeta.toFixed(2) + ')\n';
+            mensagem += '- Atividades de Retrabalho: ' + retrab.atividades.toFixed(2) + '\n';
+            mensagem += '- Retrabalhos Descontados: ' + retrab.descontados.toFixed(2) + '\n\n';
 
-                let mensagem = '';
-                mensagem += '*RELATORIO DE PREMIO - 2026*\n\n';
-                mensagem += '*Colaborador:* ' + colaborador.nome + '\n';
-                mensagem += '*Supervisor:* ' + (colaborador.supervisor || 'Nao alocado') + '\n\n';
+            mensagem += '*PRODUCAO*\n';
+            mensagem += '- Retirada: ' + (colaborador.retirada || '0') + '\n';
+            mensagem += '- Instalacao: ' + (colaborador.instalacao || '0') + '\n';
+            mensagem += '- Manutencao: ' + (colaborador.manutencao || '0') + '\n';
+            mensagem += '- P.Total: ' + (colaborador.at || '0') + '\n\n';
 
-                mensagem += '*RETRABALHO*\n';
-                mensagem += '- Indice: ' + (num(colaborador.indice) * 100).toFixed(2) + '%\n';
-                mensagem += '- Pontos Meta: < ' + META_RETRABALHO + '% (' + retrab.pontosMeta.toFixed(2) + ')\n';
-                mensagem += '- Atividades de Retrabalho: ' + retrab.atividades.toFixed(2) + '\n';
-                mensagem += '- Retrabalhos Descontados: ' + retrab.descontados.toFixed(2) + '\n\n';
+            mensagem += '*RESULTADO*\n';
+            mensagem += '- P.Final: ' + num(colaborador.pv).toFixed(2) + '\n';
+            mensagem += '- Dias Trabalhados: ' + (colaborador.du || '0') + '\n';
+            mensagem += '- Media: ' + num(colaborador.med).toFixed(2) + '\n\n';
 
-                mensagem += '*PRODUCAO*\n';
-                mensagem += '- Retirada: ' + (colaborador.retirada || '0') + '\n';
-                mensagem += '- Instalacao: ' + (colaborador.instalacao || '0') + '\n';
-                mensagem += '- Manutencao: ' + (colaborador.manutencao || '0') + '\n';
-                mensagem += '- P.Total: ' + (colaborador.at || '0') + '\n\n';
+            if (colaborador.resultado === 'Premio' && det.nivel) {
+                mensagem += '*META ALCANCADA*\n';
+                mensagem += '- Nivel: ' + det.nivel + '\n';
+                mensagem += '- P. Final: ' + num(det.pontuacaoFinal, num(colaborador.pv)).toFixed(2) + '\n';
+                mensagem += '- Meta do Nivel: ' + num(det.metaTotal).toFixed(2) + '\n';
+                mensagem += '- Pontos Extras: ' + num(det.extras).toFixed(2) + '\n';
+                mensagem += '- Resultado: PREMIO ATINGIDO\n';
+            } else if (colaborador.resultado === 'Concessão') {
+                const isProporcional = det.tipoConcessao === 'instalacao_proporcional';
+                const nivelConcessao = colaborador.nivelPremio !== 'NENHUM' ? colaborador.nivelPremio : null;
+                const bateuMeta = det.bateuMeta || (nivelConcessao !== null);
 
-                mensagem += '*RESULTADO*\n';
-                mensagem += '- P.Final: ' + num(colaborador.pv).toFixed(2) + '\n';
-                mensagem += '- Dias Trabalhados: ' + (colaborador.dc || '0') + '\n';
-                mensagem += '- Media: ' + num(colaborador.med).toFixed(2) + '\n\n';
-
-                if (colaborador.resultado === 'Premio' && det.nivel) {
-                    mensagem += '*META ALCANCADA*\n';
-                    mensagem += '- Nivel: ' + det.nivel + '\n';
+                if (bateuMeta) {
+                    mensagem += '*CONCESSAO - META ALCANCADA*\n';
+                    mensagem += '- Nivel Alcancado: ' + nivelConcessao + '\n';
                     mensagem += '- P. Final: ' + num(det.pontuacaoFinal, num(colaborador.pv)).toFixed(2) + '\n';
                     mensagem += '- Meta do Nivel: ' + num(det.metaTotal).toFixed(2) + '\n';
-                    mensagem += '- Pontos Extras: ' + num(det.extras).toFixed(2) + '\n';
-                    mensagem += '- Resultado: PREMIO ATINGIDO\n';
-                } else if (colaborador.resultado === 'Concessão') {
-                    const isProporcional = det.tipoConcessao === 'instalacao_proporcional';
-                    const nivelConcessao = colaborador.nivelPremio !== 'NENHUM' ? colaborador.nivelPremio : null;
-                    const bateuMeta = det.bateuMeta || (nivelConcessao !== null);
-
-                    if (bateuMeta) {
-                        mensagem += '*CONCESSAO - META ALCANCADA*\n';
-                        mensagem += '- Nivel Alcancado: ' + nivelConcessao + '\n';
-                        mensagem += '- P. Final: ' + num(det.pontuacaoFinal, num(colaborador.pv)).toFixed(2) + '\n';
-                        mensagem += '- Meta do Nivel: ' + num(det.metaTotal).toFixed(2) + '\n';
-                        if (num(det.extras) > 0) mensagem += '- Pontos Extras: ' + num(det.extras).toFixed(2) + '\n';
-                        mensagem += '- Resultado: CONCESSAO (NIVEL ' + nivelConcessao + ')\n';
-                    } else if (isProporcional) {
-                        mensagem += '*CONCESSAO - META NAO ALCANCADA*\n';
-                        mensagem += '- Situacao: Meta nao alcancada, mas concedido por ter ficado muito perto\n';
-                        if (metaRef) {
-                            mensagem += '- Nivel de Referencia: ' + (metaRef.nivel || 'PRATA') + '\n';
-                            mensagem += '- Faltaram: ' + num(metaRef.faltou).toFixed(2) + ' pontos\n';
-                        }
-                        mensagem += '- Pontos Validos: ' + num(det.pontosValidos).toFixed(2) + '\n';
-                        mensagem += '- Valor por Ponto: R$ ' + num(det.valorPorPonto, 3).toFixed(2) + '\n';
-                        mensagem += '- Valor da Concessao: R$ ' + num(colaborador.valor).toFixed(2) + '\n';
-                    } else {
-                        mensagem += '*CONCESSAO*\n- Resultado: CONCESSAO CONFORME PLANILHA\n';
-                    }
-                } else {
-                    mensagem += '*PREMIO NAO ATINGIDO*\n\n';
+                    if (num(det.extras) > 0) mensagem += '- Pontos Extras: ' + num(det.extras).toFixed(2) + '\n';
+                    mensagem += '- Resultado: CONCESSAO (NIVEL ' + nivelConcessao + ')\n';
+                } else if (isProporcional) {
+                    mensagem += '*CONCESSAO - META NAO ALCANCADA*\n';
+                    mensagem += '- Situacao: Meta nao alcancada, mas concedido por ter ficado muito perto\n';
                     if (metaRef) {
-                        mensagem += '*NIVEL MAIS PROXIMO (' + String(metaRef.nivel || 'PRATA') + ')*\n';
-                        mensagem += '- Dias Trabalhados: ' + metaRef.dias + '\n';
-                        mensagem += '- Meta do Nivel: ' + num(metaRef.metaTotal).toFixed(2) + ' pontos\n';
-                        mensagem += '- P. Final do Tecnico: ' + num(metaRef.pontuacaoFinal).toFixed(2) + ' pontos\n\n';
-                        mensagem += '*CALCULO:*\n';
-                        mensagem += num(metaRef.metaTotal).toFixed(2) + ' - ' + num(metaRef.pontuacaoFinal).toFixed(2) + ' = ' + num(metaRef.faltou).toFixed(2) + ' pontos faltaram\n';
+                        mensagem += '- Nivel de Referencia: ' + (metaRef.nivel || 'PRATA') + '\n';
+                        mensagem += '- Faltaram: ' + num(metaRef.faltou).toFixed(2) + ' pontos\n';
                     }
+                    mensagem += '- Pontos Validos: ' + num(det.pontosValidos).toFixed(2) + '\n';
+                    mensagem += '- Valor por Ponto: R$ ' + num(det.valorPorPonto, 3).toFixed(2) + '\n';
+                    mensagem += '- Valor da Concessao: R$ ' + num(colaborador.valor).toFixed(2) + '\n';
+                } else {
+                    mensagem += '*CONCESSAO*\n- Resultado: CONCESSAO CONFORME PLANILHA\n';
                 }
-
-                const numeroLimpo = String(colaborador.whatsapp).replace(/\D/g, '');
-                const url = 'https://wa.me/55' + numeroLimpo + '?text=' + encodeURIComponent(mensagem);
-                window.open(url, '_blank');
-            } catch (e) {
-                console.error('Erro ao enviar WhatsApp:', e);
-                alert('Erro ao abrir WhatsApp: ' + (e.message || e));
+            } else {
+                mensagem += '*PREMIO NAO ATINGIDO*\n\n';
+                if (metaRef) {
+                    mensagem += '*NIVEL MAIS PROXIMO (' + String(metaRef.nivel || 'PRATA') + ')*\n';
+                    mensagem += '- Dias Trabalhados: ' + metaRef.dias + '\n';
+                    mensagem += '- Meta do Nivel: ' + num(metaRef.metaTotal).toFixed(2) + ' pontos\n';
+                    mensagem += '- P. Final do Tecnico: ' + num(metaRef.pontuacaoFinal).toFixed(2) + ' pontos\n\n';
+                    mensagem += '*CALCULO:*\n';
+                    mensagem += num(metaRef.metaTotal).toFixed(2) + ' - ' + num(metaRef.pontuacaoFinal).toFixed(2) + ' = ' + num(metaRef.faltou).toFixed(2) + ' pontos faltaram\n';
+                }
             }
+
+            window.open('https://wa.me/55' + colaborador.whatsapp + '?text=' + encodeURIComponent(mensagem), '_blank');
         }
 
         /* ============================================================
@@ -3423,269 +2652,192 @@
         (function protecaoPrint() {
             'use strict';
 
-            function mostrarProibicao(msg) {
-                const overlay = document.getElementById('printOverlay');
-                if (!overlay) return;
+            const MSG_PADRAO = 'Esta ação não é permitida por questões de privacidade.';
 
-                if (msg) {
-                    const p = overlay.querySelector('p');
-                    if (p) p.innerHTML = '<strong>' + msg + '</strong><br>O conteúdo deste relatório é confidencial e sua captura foi registrada com data, hora e identificação.';
+            function mostrarBloqueio(msg) {
+                let overlay = document.getElementById('printOverlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'printOverlay';
+                    overlay.innerHTML = `
+                        <div class="print-overlay-content">
+                            <div class="print-overlay-icon">🔒</div>
+                            <h2>Captura bloqueada</h2>
+                            <p id="printOverlayMsg">${msg || MSG_PADRAO}</p>
+                        </div>
+                    `;
+                    document.body.appendChild(overlay);
+                } else {
+                    const p = overlay.querySelector('#printOverlayMsg') || overlay.querySelector('p');
+                    if (p) p.textContent = msg || MSG_PADRAO;
                 }
-
-                overlay.classList.add('ativo');
-
+                overlay.style.display = 'flex';
+                overlay.style.opacity = '1';
                 clearTimeout(window.__printOverlayTimer);
                 window.__printOverlayTimer = setTimeout(() => {
-                    overlay.classList.remove('ativo');
-                }, 2500);
+                    overlay.style.opacity = '0';
+                    setTimeout(() => { overlay.style.display = 'none'; }, 250);
+                }, 1800);
             }
 
             document.addEventListener('keydown', function(e) {
                 const key = (e.key || '').toLowerCase();
 
-                if (e.key === 'PrintScreen' || e.code === 'PrintScreen' || key === 'printscreen') {
+                if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+                    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
                     try {
                         if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText('').catch(() => {});
                         }
                     } catch (_) {}
-                    registrarEvento('printscreen_detectado');
-                    mostrarProibicao('Captura de tela proibida.');
+                    document.body.classList.add('screen-blurred');
+                    setTimeout(() => document.body.classList.remove('screen-blurred'), 1200);
+                    mostrarBloqueio('Captura de tela detectada e bloqueada.');
                     return false;
+                }
+
+                if (e.ctrlKey || e.metaKey) {
+                    if (key === 'p') { e.preventDefault(); e.stopImmediatePropagation(); mostrarBloqueio('Impressão não permitida.'); return false; }
+                    if (key === 's' && !e.shiftKey) { e.preventDefault(); e.stopImmediatePropagation(); mostrarBloqueio('Salvamento não permitido.'); return false; }
+                    if (e.shiftKey && key === 's') {
+                        e.preventDefault(); e.stopImmediatePropagation();
+                        document.body.classList.add('screen-blurred');
+                        setTimeout(() => document.body.classList.remove('screen-blurred'), 1200);
+                        mostrarBloqueio('Captura de tela não permitida.'); return false;
+                    }
+                    if (e.shiftKey && (key === 'i' || key === 'j' || key === 'c')) {
+                        e.preventDefault(); e.stopImmediatePropagation();
+                        mostrarBloqueio('Ferramentas de desenvolvedor bloqueadas.'); return false;
+                    }
+                    if (key === 'u') { e.preventDefault(); e.stopImmediatePropagation(); mostrarBloqueio('Código-fonte bloqueado.'); return false; }
+                    if (key === 'a') {
+                        const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+                        if (tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); e.stopImmediatePropagation(); return false; }
+                    }
                 }
 
                 if (e.shiftKey && e.metaKey && key === 's') {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    registrarEvento('win_shift_s_detectado');
-                    mostrarProibicao('Captura de tela proibida.');
-                    return false;
+                    e.preventDefault(); e.stopImmediatePropagation();
+                    document.body.classList.add('screen-blurred');
+                    setTimeout(() => document.body.classList.remove('screen-blurred'), 1200);
+                    mostrarBloqueio('Captura de tela não permitida.'); return false;
                 }
 
-                if (e.ctrlKey && key === 'p') {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    registrarEvento('ctrl_p_bloqueado');
-                    mostrarProibicao('Impressão bloqueada. Use o botão "Baixar PDF".');
-                    return false;
-                }
-
-                if (e.ctrlKey && key === 's' && !e.shiftKey) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    registrarEvento('ctrl_s_bloqueado');
-                    mostrarProibicao('Salvamento bloqueado.');
-                    return false;
-                }
-
-                if (e.key === 'F12' || e.code === 'F12' ||
-                    (e.ctrlKey && e.shiftKey && (key === 'i' || key === 'j' || key === 'c'))) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    registrarEvento('devtools_bloqueado');
-                    mostrarProibicao('Ferramentas de desenvolvedor bloqueadas.');
-                    return false;
+                if (e.key === 'F12' || e.code === 'F12') {
+                    e.preventDefault(); e.stopImmediatePropagation();
+                    mostrarBloqueio('Ferramentas de desenvolvedor bloqueadas.'); return false;
                 }
             }, true);
 
             document.addEventListener('contextmenu', function(e) {
-                if (e.target.closest('#relatorioConteudo') || e.target.closest('#telaProducao')) {
+                e.preventDefault(); e.stopImmediatePropagation(); return false;
+            }, true);
+
+            document.addEventListener('dragstart', e => { e.preventDefault(); return false; }, true);
+            document.addEventListener('selectstart', function(e) {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+                if (tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); return false; }
+            }, true);
+            document.addEventListener('copy', function(e) {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+                if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
                     e.preventDefault();
-                    return false;
+                    try { e.clipboardData && e.clipboardData.setData('text/plain', 'Cópia não permitida.'); } catch (_) {}
+                    mostrarBloqueio('Cópia de conteúdo não permitida.'); return false;
                 }
+            }, true);
+            document.addEventListener('cut', function(e) {
+                const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+                if (tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); return false; }
+            }, true);
+
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) return;
+                window.__longPressTimer = setTimeout(function() {
+                    document.body.classList.add('screen-blurred');
+                    setTimeout(() => document.body.classList.remove('screen-blurred'), 1200);
+                    mostrarBloqueio('Toque longo bloqueado.');
+                }, 700);
+            }, true);
+            ['touchend','touchmove','touchcancel'].forEach(evt => {
+                document.addEventListener(evt, function() {
+                    clearTimeout(window.__longPressTimer);
+                }, true);
             });
 
-            document.addEventListener('copy', function(e) {
-                const dentro = e.target.closest && (e.target.closest('#relatorioConteudo') || e.target.closest('#telaProducao'));
-                const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
-                if (dentro && tag !== 'INPUT' && tag !== 'TEXTAREA') {
-                    e.preventDefault();
-                    try { e.clipboardData && e.clipboardData.setData('text/plain', 'Cópia bloqueada.'); } catch (_) {}
-                    registrarEvento('copy_bloqueado');
-                    mostrarProibicao('Cópia de conteúdo bloqueada.');
-                    return false;
+            let blurTimer = null;
+
+            window.addEventListener('blur', function() {
+                document.body.classList.add('screen-blurred');
+                blurTimer = setTimeout(() => { document.body.classList.add('screen-blurred-hard'); }, 100);
+            });
+
+            window.addEventListener('focus', function() {
+                clearTimeout(blurTimer);
+                document.body.classList.remove('screen-blurred');
+                document.body.classList.remove('screen-blurred-hard');
+            });
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    document.body.classList.add('screen-blurred');
+                    document.body.classList.add('screen-blurred-hard');
+                } else {
+                    document.body.classList.remove('screen-blurred');
+                    document.body.classList.remove('screen-blurred-hard');
                 }
             });
 
             window.print = function() {
-                registrarEvento('window_print_bloqueado');
-                mostrarProibicao('Impressão bloqueada. Use o botão "Baixar PDF".');
+                mostrarBloqueio('Impressão não permitida.');
                 return false;
             };
 
             window.addEventListener('beforeprint', function() {
-                registrarEvento('beforeprint_bloqueado');
-                mostrarProibicao('Impressão bloqueada.');
+                document.body.classList.add('screen-blurred-hard');
+                mostrarBloqueio('Impressão bloqueada.');
             });
+
+            try {
+                const mql = window.matchMedia('print');
+                mql.addListener(function(mqlEvent) {
+                    if (mqlEvent.matches) {
+                        document.body.classList.add('screen-blurred-hard');
+                        mostrarBloqueio('Impressão bloqueada.');
+                    }
+                });
+            } catch (_) {}
 
             if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
                 navigator.mediaDevices.getDisplayMedia = function() {
-                    registrarEvento('getdisplaymedia_bloqueado');
-                    mostrarProibicao('Compartilhamento de tela não permitido.');
-                    return Promise.reject(new Error('Compartilhamento bloqueado.'));
+                    mostrarBloqueio('Compartilhamento de tela não permitido.');
+                    return Promise.reject(new Error('Compartilhamento de tela bloqueado.'));
                 };
             }
 
+            document.addEventListener('mouseleave', function(e) {
+                if (e.clientY <= 0 || e.clientX <= 0 ||
+                    e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+                    document.body.classList.add('screen-blurred');
+                }
+            });
+            document.addEventListener('mouseenter', function() {
+                document.body.classList.remove('screen-blurred');
+            });
+
             console.log('%c⚠️ AVISO DE SEGURANÇA', 'color:#c62828;font-size:16px;font-weight:bold;');
-            console.log('%cCaptura de tela, impressão e cópia são proibidas e registradas.', 'color:#c62828;font-size:12px;');
+            console.log('%cEsta página contém dados confidenciais. Tentativas de captura, cópia ou compartilhamento são registradas e bloqueadas.', 'color:#c62828;font-size:12px;');
 
         })();
 
         /* ============================================================
-           HANDLERS DOS BOTÕES
+           MÁSCARA CPF + ENTER
            ============================================================ */
-        document.addEventListener('DOMContentLoaded', function() {
-            const btnLogin = document.getElementById('btnLogin');
-            if (btnLogin) {
-                btnLogin.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    autenticar();
-                });
-            }
-
-            const btnIrPremio = document.getElementById('btnIrPremio');
-            if (btnIrPremio) {
-                btnIrPremio.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    mostrarRelatorio();
-                });
-            }
-
-            const btnIrProducao = document.getElementById('btnIrProducao');
-            if (btnIrProducao) {
-                btnIrProducao.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    mostrarProducao();
-                });
-            }
-
-            const btnVoltarMenu = document.getElementById('btnVoltarMenu');
-            if (btnVoltarMenu) {
-                btnVoltarMenu.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    voltarMenu();
-                });
-            }
-
-            const btnVoltarMenuProd = document.getElementById('btnVoltarMenuProd');
-            if (btnVoltarMenuProd) {
-                btnVoltarMenuProd.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    voltarMenu();
-                });
-            }
-
-            const btnSairMenu = document.getElementById('btnSairMenu');
-            if (btnSairMenu) {
-                btnSairMenu.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    voltarLogin();
-                });
-            }
-
-            const toggleProd = document.getElementById('toggleProd');
-            const toggleRetrab = document.getElementById('toggleRetrab');
-            if (toggleProd && toggleRetrab) {
-                toggleProd.addEventListener('click', function() {
-                    modoProducao = 'PRODUCAO';
-                    toggleProd.classList.add('ativo-prod');
-                    toggleProd.classList.remove('ativo-retrab');
-                    toggleRetrab.classList.remove('ativo-prod');
-                    toggleRetrab.classList.remove('ativo-retrab');
-                    renderizarCalendario();
-                });
-                toggleRetrab.addEventListener('click', function() {
-                    modoProducao = 'RETRABALHO';
-                    toggleRetrab.classList.add('ativo-retrab');
-                    toggleRetrab.classList.remove('ativo-prod');
-                    toggleProd.classList.remove('ativo-prod');
-                    toggleProd.classList.remove('ativo-retrab');
-                    renderizarCalendario();
-                });
-            }
-
-            const calPrev = document.getElementById('calPrev');
-            const calNext = document.getElementById('calNext');
-            if (calPrev) {
-                calPrev.addEventListener('click', function() {
-                    mesCalendario--;
-                    if (mesCalendario < 0) { mesCalendario = 11; anoCalendario--; }
-                    renderizarCalendario();
-                });
-            }
-            if (calNext) {
-                calNext.addEventListener('click', function() {
-                    mesCalendario++;
-                    if (mesCalendario > 11) { mesCalendario = 0; anoCalendario++; }
-                    renderizarCalendario();
-                });
-            }
-
-            const btnPDF = document.getElementById('btnPDF');
-            if (btnPDF) {
-                btnPDF.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    baixarPDF();
-                });
-            }
-
-            const btnWhats = document.getElementById('btnWhats');
-            if (btnWhats) {
-                btnWhats.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    enviarWhatsApp();
-                });
-            }
-
-            const btnVoltarErro = document.getElementById('btnVoltarErro');
-            if (btnVoltarErro) {
-                btnVoltarErro.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    voltarLogin();
-                });
-            }
-
-            const btnCancelarAceite = document.querySelector('.aceite-botoes .btn-secondary');
-            if (btnCancelarAceite) {
-                btnCancelarAceite.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    cancelarAceite();
-                });
-            }
-
-            const btnConfirmarAceite = document.getElementById('btnAceitar');
-            if (btnConfirmarAceite) {
-                btnConfirmarAceite.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    confirmarAceite();
-                });
-            }
-
-            const cbAceite = document.getElementById('aceiteCheckbox');
-            if (cbAceite) {
-                cbAceite.addEventListener('change', function() {
-                    toggleAceite(this);
-                });
-            }
-
-            const inputCPF = document.getElementById('cpfInput');
-            if (inputCPF) {
-                inputCPF.addEventListener('input', function(e) {
-                    e.target.value = formatarCPF(e.target.value);
-                });
-                inputCPF.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') autenticar();
-                });
-            }
-
-            const diaModal = document.getElementById('diaModal');
-            if (diaModal) {
-                diaModal.addEventListener('click', function(e) {
-                    if (e.target === diaModal) fecharDiaModal();
-                });
-            }
-
-            console.log('✅ Handlers dos botões registrados com sucesso');
+        document.getElementById('cpfInput').addEventListener('input', (e) => {
+            e.target.value = formatarCPF(e.target.value);
+        });
+        document.getElementById('cpfInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') autenticar();
         });
     </script>
 </body>
